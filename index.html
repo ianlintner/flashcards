@@ -333,7 +333,7 @@
               <textarea
                 id="input-area"
                 spellcheck="false"
-                rows="16"
+                rows="10"
                 class="w-full resize-y border border-slate-200 rounded-lg p-3 font-mono text-[13px] leading-relaxed text-slate-700 bg-slate-50/80 outline-none transition-colors focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
                 placeholder="Paste JSON, YAML, or Markdown flashcard content here..."
               ></textarea>
@@ -347,7 +347,7 @@
           </section>
 
           <!-- ── Deck Library ───────────────────────────────────────────── -->
-          <details class="section-card" id="deck-library-section">
+          <details class="section-card" id="deck-library-section" open>
             <summary class="section-header">
               <svg
                 class="w-4 h-4 text-orange-500"
@@ -393,36 +393,6 @@
               <div id="deck-library-container"></div>
             </div>
           </details>
-
-          <!-- ── Preview (shows after parse) ────────────────────────────── -->
-          <section class="section-card hidden" id="preview-section">
-            <div class="section-header">
-              <svg
-                class="w-4 h-4 text-blue-500"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-              </svg>
-              <h2>Preview</h2>
-            </div>
-            <div
-              id="card-count"
-              class="text-sm font-semibold text-emerald-600 px-5 py-2.5 bg-emerald-50 border-b border-slate-200"
-            ></div>
-            <div id="card-preview" class="flex flex-wrap gap-3 p-4"></div>
-          </section>
         </div>
 
         <!-- ════════════════════════════════════════════════════════════════ -->
