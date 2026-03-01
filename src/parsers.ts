@@ -55,10 +55,20 @@ export function parseMarkdown(
 
   // Split by card separator (line that is exactly the separator, trimmed)
   const sepRegex = new RegExp(`^\\s*${escapeRegex(cardSeparator)}\\s*$`, "gm");
-  const blocks = normalised
+  const rawBlocks = normalised
     .split(sepRegex)
     .map((b) => b.trim())
     .filter(Boolean);
+
+  // The content before the first separator is a preamble (title / comments) —
+  // skip it silently unless it contains a "---" divider (i.e. looks like a card).
+  const firstSepIndex = normalised.search(sepRegex);
+  const preamble =
+    firstSepIndex > 0 ? normalised.slice(0, firstSepIndex).trim() : "";
+  const blocks =
+    preamble && rawBlocks.length > 0 && rawBlocks[0] === preamble
+      ? rawBlocks.slice(1)
+      : rawBlocks;
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
