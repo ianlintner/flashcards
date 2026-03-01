@@ -11,19 +11,19 @@
     active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed;
 }
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+  @apply bg-blue-600 text-white hover:bg-blue-700 shadow-sm;
 }
 .btn-success {
-  @apply bg-emerald-600 text-white hover:bg-emerald-700;
+  @apply bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm;
 }
 .btn-warning {
-  @apply bg-orange-500 text-white hover:bg-orange-600;
+  @apply bg-orange-500 text-white hover:bg-orange-600 shadow-sm;
 }
 .btn-danger {
   @apply bg-red-600 text-white hover:bg-red-700;
 }
 .btn-ghost {
-  @apply bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200;
+  @apply bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300;
 }
 .btn-sm {
   @apply text-xs px-3 py-1.5;
@@ -34,11 +34,11 @@
   @apply bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden;
 }
 .section-header {
-  @apply px-5 py-3 bg-slate-50/80 border-b border-slate-200
+  @apply px-4 py-2.5 bg-slate-50/80 border-b border-slate-200
     flex items-center gap-2.5 text-sm font-semibold text-slate-700;
 }
 .section-body {
-  @apply p-5;
+  @apply p-4;
 }
 
 /* ── Collapsible details ────────────────────────────────────────────────────── */
@@ -84,21 +84,21 @@ details > summary::-webkit-details-marker {
 
 /* ── Card thumbnails (dynamically rendered in JS) ───────────────────────────── */
 .card-thumb {
-  @apply w-40 rounded-lg overflow-hidden shadow-sm border border-slate-200
+  @apply w-36 rounded-lg overflow-hidden shadow-sm border border-slate-200
     relative bg-white shrink-0;
 }
 .thumb-face {
-  @apply px-2.5 py-2;
+  @apply px-2 py-1.5;
 }
 .thumb-front {
-  @apply bg-blue-50 border-b border-blue-100;
+  @apply bg-blue-50/80 border-b border-blue-100;
 }
 .thumb-back {
-  @apply bg-emerald-50;
+  @apply bg-emerald-50/80;
 }
 .thumb-label {
-  @apply inline-block text-[10px] font-bold tracking-wide px-1.5 py-0.5
-    rounded mb-1;
+  @apply inline-block text-[9px] font-bold tracking-wide px-1.5 py-0.5
+    rounded mb-0.5;
 }
 .thumb-front .thumb-label {
   @apply bg-blue-600 text-white;
@@ -110,15 +110,15 @@ details > summary::-webkit-details-marker {
   @apply text-[10px] font-semibold text-slate-500 mb-0.5 leading-tight;
 }
 .thumb-body {
-  @apply text-[10px] text-slate-600 leading-snug max-h-14 overflow-hidden;
+  @apply text-[10px] text-slate-600 leading-snug max-h-12 overflow-hidden;
 }
 .thumb-num {
-  @apply absolute bottom-1 right-1.5 text-[9px] text-slate-400;
+  @apply absolute bottom-0.5 right-1.5 text-[9px] text-slate-400;
 }
 
 /* ── Deck library cards (dynamically rendered in JS) ────────────────────────── */
 .deck-card {
-  @apply bg-slate-50 border border-slate-200 rounded-lg p-3
+  @apply bg-white border border-slate-200 rounded-lg p-3
     cursor-pointer transition-all duration-150 flex flex-col gap-1
     hover:border-blue-400 hover:shadow-md;
 }

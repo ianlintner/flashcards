@@ -11,200 +11,221 @@
       rel="stylesheet"
     />
   </head>
-  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
     <!-- ── Header ─────────────────────────────────────────────────────────── -->
     <header
-      class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg"
+      class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg sticky top-0 z-30"
     >
       <div
-        class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between gap-4 flex-wrap"
+        class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4 flex-wrap"
       >
-        <div>
-          <h1 class="text-xl font-bold tracking-tight">
-            Flashcard PDF Generator
-          </h1>
-          <p class="text-sm text-slate-400 mt-0.5">
-            Generate print-ready index card flashcards as PDF — entirely in your
-            browser
-          </p>
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-600 rounded-lg p-1.5">
+            <svg
+              class="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold tracking-tight leading-tight">
+              Flashcard PDF Generator
+            </h1>
+            <p class="text-xs text-slate-400 hidden sm:block">
+              Print-ready index cards — entirely in your browser
+            </p>
+          </div>
         </div>
         <span
           id="dimension-badge"
-          class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap"
-          >6 × 4 in · Landscape</span
+          class="bg-blue-500/20 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap border border-blue-500/30"
+          >6 &times; 4 in &middot; Landscape</span
         >
       </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-6 space-y-5">
-      <!-- ── AI Assistant Guide ───────────────────────────────────────────── -->
-      <details class="section-card" id="ai-guide-section">
-        <summary class="section-header">
-          <svg
-            class="w-4 h-4 text-violet-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.3 24.3 0 0 1 4.5 0m0 0v5.714a2.25 2.25 0 0 0 .659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5l-2.47 2.47a2.25 2.25 0 0 1-1.591.659H9.061a2.25 2.25 0 0 1-1.591-.659L5 14.5m14 0V17a2.25 2.25 0 0 1-2.25 2.25H7.25A2.25 2.25 0 0 1 5 17v-2.5"
-            />
-          </svg>
-          <h2>AI Assistant Guide</h2>
-          <span class="ml-auto text-xs text-slate-400">
-            Use Claude, Gemini, or ChatGPT to generate cards
-          </span>
-          <svg
-            class="w-4 h-4 text-slate-400 transition-transform duration-200 chevron-icon"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m9 5 7 7-7 7"
-            />
-          </svg>
-        </summary>
-        <div class="section-body space-y-4">
-          <p class="text-sm text-slate-600">
-            If you have a browser AI extension (Claude, Gemini, ChatGPT, etc.),
-            you can ask it to generate flashcard content. Copy the prompt below,
-            customize the topic, and paste the AI's output into the editor.
-          </p>
-
-          <!-- Prompt template -->
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="field-label">Prompt Template</span>
-              <button class="btn btn-ghost btn-sm" id="copy-prompt-btn">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
-                  />
-                </svg>
-                Copy Prompt
-              </button>
-            </div>
-            <div class="prompt-block" id="ai-prompt-text">
-              Generate flashcards in Markdown format about [YOUR TOPIC HERE].
-              FORMAT RULES: - Start and end each card with === on its own line -
-              Separate front and back with --- on its own line - Optionally add
-              # Topic as the first line of the front side - Use ONLY plain ASCII
-              characters - Use -> instead of arrows, ^2 instead of superscripts
-              - Use - instead of em dashes or en dashes - No emoji or special
-              Unicode symbols EXAMPLE: === # Array Access What is the time
-              complexity of accessing an element by index in an array? --- O(1)
-              - Constant time. Arrays use contiguous memory so any index is a
-              direct pointer offset. === # Binary Search What is the time
-              complexity of binary search? --- O(log n) - Logarithmic time.
-              Requires a sorted array. Halves the search space on each
-              comparison. === Generate [NUMBER] flashcards covering: [DESCRIBE
-              THE TOPICS]
-            </div>
-          </div>
-
-          <!-- Quick tips -->
-          <div
-            class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-600"
-          >
-            <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
-              <div class="font-semibold text-blue-700 mb-1">
-                Supported Formats
-              </div>
-              You can also ask the AI to output JSON or YAML instead of
-              Markdown. All three formats are supported by this tool.
-            </div>
-            <div class="bg-amber-50 rounded-lg p-3 border border-amber-100">
-              <div class="font-semibold text-amber-700 mb-1">
-                Encoding Warning
-              </div>
-              PDFs use Latin-1 encoding. Ask the AI to avoid emoji, Unicode
-              arrows, and special symbols. Use plain ASCII only.
-            </div>
-            <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
-              <div class="font-semibold text-emerald-700 mb-1">Pro Tip</div>
-              Ask for complexity notations expressed as O(n), O(n^2), O(log n)
-              and use \n in JSON for line breaks.
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <!-- ── Card Content Input ───────────────────────────────────────────── -->
-      <section class="section-card">
-        <div class="section-header">
-          <svg
-            class="w-4 h-4 text-blue-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-            />
-          </svg>
-          <h2>Card Content</h2>
-        </div>
-        <div class="section-body space-y-4">
-          <!-- Format toolbar -->
-          <div class="flex flex-wrap gap-4 items-end">
-            <div>
-              <label class="field-label" for="format-select">Format</label>
-              <select id="format-select" class="field-input">
-                <option value="markdown">Markdown</option>
-                <option value="json">JSON</option>
-                <option value="yaml">YAML</option>
-                <option value="auto">Auto-detect</option>
-              </select>
-            </div>
-            <div id="separator-row">
-              <label class="field-label" for="separator-input"
-                >Card separator</label
+    <!-- ── Main: Two-column workspace ─────────────────────────────────────── -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5">
+      <div class="flex flex-col lg:flex-row gap-5 items-start">
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- LEFT COLUMN: Input + Deck Library                              -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <div class="w-full lg:w-[58%] space-y-5 min-w-0">
+          <!-- ── Card Content Input ─────────────────────────────────────── -->
+          <section class="section-card">
+            <div class="section-header">
+              <svg
+                class="w-4 h-4 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
               >
-              <input
-                id="separator-input"
-                type="text"
-                value="==="
-                placeholder="==="
-                class="field-input w-20"
-              />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
+              <h2>Card Content</h2>
+              <span class="ml-auto text-xs text-slate-400"
+                >Paste or type your flashcards</span
+              >
             </div>
-          </div>
+            <div class="section-body space-y-3">
+              <!-- Format toolbar -->
+              <div class="flex flex-wrap gap-3 items-end">
+                <div>
+                  <label class="field-label" for="format-select">Format</label>
+                  <select id="format-select" class="field-input">
+                    <option value="markdown">Markdown</option>
+                    <option value="json">JSON</option>
+                    <option value="yaml">YAML</option>
+                    <option value="auto">Auto-detect</option>
+                  </select>
+                </div>
+                <div id="separator-row">
+                  <label class="field-label" for="separator-input"
+                    >Separator</label
+                  >
+                  <input
+                    id="separator-input"
+                    type="text"
+                    value="==="
+                    placeholder="==="
+                    class="field-input w-16"
+                  />
+                </div>
+                <div class="flex gap-1.5 items-end">
+                  <span class="text-xs text-slate-400 pb-2.5">Load:</span>
+                  <button class="btn btn-ghost btn-sm" data-example="markdown">
+                    MD
+                  </button>
+                  <button class="btn btn-ghost btn-sm" data-example="json">
+                    JSON
+                  </button>
+                  <button class="btn btn-ghost btn-sm" data-example="yaml">
+                    YAML
+                  </button>
+                </div>
+              </div>
 
-          <!-- Textarea -->
-          <textarea
-            id="input-area"
-            spellcheck="false"
-            class="w-full min-h-[260px] resize-y border border-slate-200 rounded-lg p-3.5 font-mono text-[13px] leading-relaxed text-slate-700 bg-slate-50/80 outline-none transition-colors focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-            placeholder="Paste JSON, YAML, or Markdown content here…"
-          ></textarea>
+              <!-- Textarea -->
+              <textarea
+                id="input-area"
+                spellcheck="false"
+                rows="16"
+                class="w-full resize-y border border-slate-200 rounded-lg p-3 font-mono text-[13px] leading-relaxed text-slate-700 bg-slate-50/80 outline-none transition-colors focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                placeholder="Paste JSON, YAML, or Markdown flashcard content here..."
+              ></textarea>
 
-          <!-- Error box -->
-          <div
-            id="error-box"
-            class="bg-red-50 border border-red-200 rounded-lg p-3 hidden"
-          ></div>
+              <!-- Error box -->
+              <div
+                id="error-box"
+                class="bg-red-50 border border-red-200 rounded-lg p-3 hidden"
+              ></div>
+            </div>
+          </section>
 
-          <!-- Action buttons -->
-          <div class="flex flex-wrap gap-3">
-            <button class="btn btn-primary" id="parse-btn">
+          <!-- ── Deck Library ───────────────────────────────────────────── -->
+          <details class="section-card" id="deck-library-section">
+            <summary class="section-header">
+              <svg
+                class="w-4 h-4 text-orange-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+                />
+              </svg>
+              <h2>Deck Library</h2>
+              <span
+                id="deck-total-badge"
+                class="bg-slate-800 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+              ></span>
+              <svg
+                class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m9 5 7 7-7 7"
+                />
+              </svg>
+            </summary>
+            <div class="section-body space-y-3">
+              <div class="flex flex-wrap gap-2">
+                <button class="btn btn-warning btn-sm" id="load-all-decks-btn">
+                  Load All Decks
+                </button>
+                <button class="btn btn-ghost btn-sm" id="load-all-btn">
+                  Load Big O Cards (25)
+                </button>
+              </div>
+              <div id="deck-library-container"></div>
+            </div>
+          </details>
+
+          <!-- ── Preview (shows after parse) ────────────────────────────── -->
+          <section class="section-card hidden" id="preview-section">
+            <div class="section-header">
+              <svg
+                class="w-4 h-4 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <h2>Preview</h2>
+            </div>
+            <div
+              id="card-count"
+              class="text-sm font-semibold text-emerald-600 px-5 py-2.5 bg-emerald-50 border-b border-slate-200"
+            ></div>
+            <div id="card-preview" class="flex flex-wrap gap-3 p-4"></div>
+          </section>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- RIGHT COLUMN: Options + Actions (sticky on desktop)            -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <div
+          class="w-full lg:w-[42%] lg:sticky lg:top-[68px] space-y-5 min-w-0"
+        >
+          <!-- ── Actions ────────────────────────────────────────────────── -->
+          <div class="flex gap-3">
+            <button
+              class="btn btn-primary flex-1 justify-center py-2.5"
+              id="parse-btn"
+            >
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -220,9 +241,13 @@
               </svg>
               Parse Cards
             </button>
-            <button class="btn btn-success" id="generate-btn" disabled>
+            <button
+              class="btn btn-success flex-1 justify-center py-2.5 text-base"
+              id="generate-btn"
+              disabled
+            >
               <svg
-                class="w-4 h-4"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
@@ -236,313 +261,336 @@
               </svg>
               Download PDF
             </button>
-            <button class="btn btn-warning" id="load-all-btn">
-              Load Example (25 Big O Cards)
-            </button>
-          </div>
-        </div>
-
-        <!-- Example format buttons -->
-        <div
-          class="px-5 py-3 bg-slate-50/60 border-t border-slate-200 flex flex-wrap gap-2 items-center"
-        >
-          <span class="text-xs text-slate-400 mr-1">Load example format:</span>
-          <button class="btn btn-ghost btn-sm" data-example="markdown">
-            Markdown
-          </button>
-          <button class="btn btn-ghost btn-sm" data-example="json">JSON</button>
-          <button class="btn btn-ghost btn-sm" data-example="yaml">YAML</button>
-        </div>
-      </section>
-
-      <!-- ── Deck Library ─────────────────────────────────────────────────── -->
-      <details class="section-card" open id="deck-library-section">
-        <summary class="section-header">
-          <svg
-            class="w-4 h-4 text-orange-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
-            />
-          </svg>
-          <h2>Deck Library</h2>
-          <span
-            id="deck-total-badge"
-            class="bg-slate-800 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
-          ></span>
-          <svg
-            class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m9 5 7 7-7 7"
-            />
-          </svg>
-        </summary>
-        <div class="section-body space-y-3">
-          <div class="flex flex-wrap gap-2">
-            <button class="btn btn-warning btn-sm" id="load-all-decks-btn">
-              Load All Decks
-            </button>
-          </div>
-          <div id="deck-library-container"></div>
-        </div>
-      </details>
-
-      <!-- ── PDF Options ──────────────────────────────────────────────────── -->
-      <section class="section-card">
-        <div class="section-header">
-          <svg
-            class="w-4 h-4 text-emerald-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-            />
-          </svg>
-          <h2>PDF Options</h2>
-        </div>
-        <div class="section-body space-y-5">
-          <!-- Row 1: Title + Card Size -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="sm:col-span-2">
-              <label class="field-label" for="pdf-title"
-                >PDF Title / Filename</label
-              >
-              <input
-                id="pdf-title"
-                type="text"
-                value="Big O Notation"
-                placeholder="flashcards"
-                class="field-input w-full"
-              />
-            </div>
-            <div>
-              <label class="field-label" for="card-size">Card Size</label>
-              <select id="card-size" class="field-input w-full">
-                <option value="3x5">3 × 5 in</option>
-                <option value="4x6" selected>4 × 6 in (Standard)</option>
-                <option value="5x7">5 × 7 in (Jumbo)</option>
-                <option value="a6">A6 (105 × 148 mm)</option>
-                <option value="a7">A7 (74 × 105 mm)</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">Orientation</label>
-              <div class="flex gap-4 mt-1.5">
-                <label
-                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="orientation"
-                    value="landscape"
-                    checked
-                    class="accent-blue-600"
-                  />
-                  Landscape
-                </label>
-                <label
-                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="orientation"
-                    value="portrait"
-                    class="accent-blue-600"
-                  />
-                  Portrait
-                </label>
-              </div>
-            </div>
           </div>
 
-          <!-- Row 2: Font + Size + Card numbers + Page filter -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <label class="field-label" for="font-family">Font</label>
-              <select id="font-family" class="field-input w-full">
-                <option value="helvetica" selected>
-                  Helvetica (Sans-serif)
-                </option>
-                <option value="courier">Courier (Monospace)</option>
-                <option value="times">Times New Roman (Serif)</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label" for="font-size"
-                >Body Font Size (pt)</label
+          <!-- ── PDF Options ────────────────────────────────────────────── -->
+          <section class="section-card">
+            <div class="section-header">
+              <svg
+                class="w-4 h-4 text-emerald-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
               >
-              <input
-                id="font-size"
-                type="number"
-                value="18"
-                min="8"
-                max="28"
-                step="0.5"
-                class="field-input w-20"
-              />
-            </div>
-            <div class="flex items-end pb-1">
-              <label
-                class="inline-flex items-center gap-2 text-sm cursor-pointer"
-              >
-                <input
-                  id="include-nums"
-                  type="checkbox"
-                  checked
-                  class="w-4 h-4 accent-blue-600 cursor-pointer"
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
                 />
-                Show card numbers
-              </label>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              <h2>PDF Options</h2>
             </div>
+            <div class="section-body space-y-4">
+              <!-- Title -->
+              <div>
+                <label class="field-label" for="pdf-title"
+                  >PDF Title / Filename</label
+                >
+                <input
+                  id="pdf-title"
+                  type="text"
+                  value="Big O Notation"
+                  placeholder="flashcards"
+                  class="field-input w-full"
+                />
+              </div>
+
+              <!-- Card Size + Orientation row -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="field-label" for="card-size">Card Size</label>
+                  <select id="card-size" class="field-input w-full">
+                    <option value="3x5">3 &times; 5 in</option>
+                    <option value="4x6" selected>4 &times; 6 in</option>
+                    <option value="5x7">5 &times; 7 in</option>
+                    <option value="a6">A6 (105&times;148mm)</option>
+                    <option value="a7">A7 (74&times;105mm)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label">Orientation</label>
+                  <div class="flex gap-3 mt-1.5">
+                    <label
+                      class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="orientation"
+                        value="landscape"
+                        checked
+                        class="accent-blue-600"
+                      />
+                      Landscape
+                    </label>
+                    <label
+                      class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="orientation"
+                        value="portrait"
+                        class="accent-blue-600"
+                      />
+                      Portrait
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Font + Size row -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="field-label" for="font-family">Font</label>
+                  <select id="font-family" class="field-input w-full">
+                    <option value="helvetica" selected>Helvetica</option>
+                    <option value="courier">Courier</option>
+                    <option value="times">Times New Roman</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="font-size"
+                    >Font Size (pt)</label
+                  >
+                  <input
+                    id="font-size"
+                    type="number"
+                    value="18"
+                    min="8"
+                    max="28"
+                    step="0.5"
+                    class="field-input w-full"
+                  />
+                </div>
+              </div>
+
+              <!-- Page filter + Card numbers row -->
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <span class="field-label">Pages</span>
+                  <div class="flex flex-col gap-0.5 mt-1">
+                    <label
+                      class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="page-filter"
+                        value="all"
+                        checked
+                        class="accent-blue-600 cursor-pointer"
+                      />
+                      All pages
+                    </label>
+                    <label
+                      class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="page-filter"
+                        value="fronts"
+                        class="accent-blue-600 cursor-pointer"
+                      />
+                      Fronts only
+                    </label>
+                    <label
+                      class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        name="page-filter"
+                        value="backs"
+                        class="accent-blue-600 cursor-pointer"
+                      />
+                      Backs only
+                    </label>
+                  </div>
+                </div>
+                <div class="flex items-start pt-5">
+                  <label
+                    class="inline-flex items-center gap-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      id="include-nums"
+                      type="checkbox"
+                      checked
+                      class="w-4 h-4 accent-blue-600 cursor-pointer"
+                    />
+                    Show card numbers
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Print tips footer -->
+            <div
+              class="px-5 py-3 bg-slate-50/80 border-t border-slate-100 text-xs text-slate-400 space-y-1"
+            >
+              <div>
+                <strong class="text-slate-500">Print:</strong> Set paper size to
+                card size, scale to <strong>100%</strong>.
+              </div>
+              <div>
+                <strong class="text-slate-500">Duplex:</strong> Print
+                <em>Fronts only</em>, reload pages, then print
+                <em>Backs only</em>.
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <!-- FULL-WIDTH: Reference sections (collapsed)                     -->
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <div class="space-y-4 mt-5">
+        <!-- ── AI Assistant Guide ───────────────────────────────────────── -->
+        <details class="section-card" id="ai-guide-section">
+          <summary class="section-header">
+            <svg
+              class="w-4 h-4 text-violet-500"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.3 24.3 0 0 1 4.5 0m0 0v5.714a2.25 2.25 0 0 0 .659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5l-2.47 2.47a2.25 2.25 0 0 1-1.591.659H9.061a2.25 2.25 0 0 1-1.591-.659L5 14.5m14 0V17a2.25 2.25 0 0 1-2.25 2.25H7.25A2.25 2.25 0 0 1 5 17v-2.5"
+              />
+            </svg>
+            <h2>AI Assistant Guide</h2>
+            <span class="ml-auto text-xs text-slate-400"
+              >Generate cards with Claude, Gemini, or ChatGPT</span
+            >
+            <svg
+              class="w-4 h-4 text-slate-400 transition-transform duration-200 chevron-icon"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9 5 7 7-7 7"
+              />
+            </svg>
+          </summary>
+          <div class="section-body space-y-4">
+            <p class="text-sm text-slate-600">
+              If you have a browser AI extension, copy the prompt below,
+              customize the topic, and paste the AI's output into the editor
+              above.
+            </p>
             <div>
-              <span class="field-label">Pages</span>
-              <div class="flex flex-col gap-1 mt-1">
-                <label
-                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="page-filter"
-                    value="all"
-                    checked
-                    class="accent-blue-600 cursor-pointer"
-                  />
-                  All (front &amp; back)
-                </label>
-                <label
-                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="page-filter"
-                    value="fronts"
-                    class="accent-blue-600 cursor-pointer"
-                  />
-                  Fronts only
-                </label>
-                <label
-                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="page-filter"
-                    value="backs"
-                    class="accent-blue-600 cursor-pointer"
-                  />
-                  Backs only
-                </label>
+              <div class="flex items-center justify-between mb-2">
+                <span class="field-label">Prompt Template</span>
+                <button class="btn btn-ghost btn-sm" id="copy-prompt-btn">
+                  <svg
+                    class="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+                    />
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              <div class="prompt-block" id="ai-prompt-text">
+                Generate flashcards in Markdown format about [YOUR TOPIC HERE].
+                FORMAT RULES: - Start and end each card with === on its own line
+                - Separate front and back with --- on its own line - Optionally
+                add # Topic as the first line of the front side - Use ONLY plain
+                ASCII characters - Use -> instead of arrows, ^2 instead of
+                superscripts - Use - instead of em dashes or en dashes - No
+                emoji or special Unicode symbols EXAMPLE: === # Array Access
+                What is the time complexity of accessing an element by index in
+                an array? --- O(1) - Constant time. Arrays use contiguous memory
+                so any index is a direct pointer offset. === # Binary Search
+                What is the time complexity of binary search? --- O(log n) -
+                Logarithmic time. Requires a sorted array. Halves the search
+                space on each comparison. === Generate [NUMBER] flashcards
+                covering: [DESCRIBE THE TOPICS]
+              </div>
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-600"
+            >
+              <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                <div class="font-semibold text-blue-700 mb-1">
+                  Supported Formats
+                </div>
+                You can also ask the AI to output JSON or YAML. All three
+                formats work.
+              </div>
+              <div class="bg-amber-50 rounded-lg p-3 border border-amber-100">
+                <div class="font-semibold text-amber-700 mb-1">
+                  Encoding Warning
+                </div>
+                PDFs use Latin-1 encoding. Ask the AI to avoid emoji, Unicode
+                arrows, and special symbols.
+              </div>
+              <div
+                class="bg-emerald-50 rounded-lg p-3 border border-emerald-100"
+              >
+                <div class="font-semibold text-emerald-700 mb-1">Pro Tip</div>
+                Use O(n), O(n^2), O(log n) notation and \n in JSON for line
+                breaks.
               </div>
             </div>
           </div>
+        </details>
 
-          <!-- Print instructions -->
-          <div
-            class="text-xs text-slate-400 bg-slate-50 rounded-lg px-4 py-3 border border-slate-100"
-          >
-            <strong class="text-slate-500">Print tip:</strong> In your print
-            dialog, set paper size to match your card size, orientation to match
-            your selection, and scale to <strong>Actual size (100%)</strong>.
-            White background, black text only — minimal ink usage.
-            <br />
-            <strong class="text-slate-500">Duplex printing:</strong> To print
-            double-sided without auto-duplex, first generate &amp; print
-            <em>Fronts only</em>, reload the printed pages, then generate &amp;
-            print <em>Backs only</em>.
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Preview ──────────────────────────────────────────────────────── -->
-      <section class="section-card hidden" id="preview-section">
-        <div class="section-header">
-          <svg
-            class="w-4 h-4 text-blue-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-            />
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-            />
-          </svg>
-          <h2>Preview</h2>
-        </div>
-        <div
-          id="card-count"
-          class="text-sm font-semibold text-emerald-600 px-5 py-2.5 bg-emerald-50 border-b border-slate-200"
-        ></div>
-        <div id="card-preview" class="flex flex-wrap gap-3.5 p-4"></div>
-      </section>
-
-      <!-- ── Format Reference ─────────────────────────────────────────────── -->
-      <details class="section-card">
-        <summary class="section-header">
-          <svg
-            class="w-4 h-4 text-slate-500"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
-            />
-          </svg>
-          <h2>Input Format Reference</h2>
-          <svg
-            class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m9 5 7 7-7 7"
-            />
-          </svg>
-        </summary>
-        <div class="section-body">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <h3 class="text-sm font-bold text-slate-700 mb-2">Markdown</h3>
-              <pre
-                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
-              ><code class="bg-slate-200/60 px-1 rounded">===</code>
+        <!-- ── Format Reference ───────────────────────────────────────────── -->
+        <details class="section-card">
+          <summary class="section-header">
+            <svg
+              class="w-4 h-4 text-slate-500"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+              />
+            </svg>
+            <h2>Input Format Reference</h2>
+            <svg
+              class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9 5 7 7-7 7"
+              />
+            </svg>
+          </summary>
+          <div class="section-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <h3 class="text-sm font-bold text-slate-700 mb-2">Markdown</h3>
+                <pre
+                  class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
+                ><code class="bg-slate-200/60 px-1 rounded">===</code>
 # Optional topic heading
 Front text of the card
 here on multiple lines
@@ -550,19 +598,18 @@ here on multiple lines
 Back text / answer
 goes here
 <code class="bg-slate-200/60 px-1 rounded">===</code></pre>
-              <p class="text-[11px] text-slate-400 mt-2">
-                <code class="bg-slate-200/60 px-1 rounded">===</code> separates
-                cards.
-                <code class="bg-slate-200/60 px-1 rounded">---</code> splits
-                front / back.
-              </p>
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <h3 class="text-sm font-bold text-slate-700 mb-2">JSON</h3>
-              <pre
-                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
-              >
+                <p class="text-[11px] text-slate-400 mt-2">
+                  <code class="bg-slate-200/60 px-1 rounded">===</code>
+                  separates cards.
+                  <code class="bg-slate-200/60 px-1 rounded">---</code> splits
+                  front / back.
+                </p>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <h3 class="text-sm font-bold text-slate-700 mb-2">JSON</h3>
+                <pre
+                  class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
+                >
 [
   {
     "topic": "Array Access",
@@ -570,27 +617,24 @@ goes here
     "back": "Answer text"
   }
 ]</pre
-              >
-              <p class="text-[11px] text-slate-400 mt-2">
-                Aliases:
-                <code class="bg-slate-200/60 px-1 rounded">question</code>/<code
-                  class="bg-slate-200/60 px-1 rounded"
-                  >q</code
                 >
-                for front,
-                <code class="bg-slate-200/60 px-1 rounded">answer</code>/<code
-                  class="bg-slate-200/60 px-1 rounded"
-                  >a</code
+                <p class="text-[11px] text-slate-400 mt-2">
+                  Aliases:
+                  <code class="bg-slate-200/60 px-1 rounded">question</code
+                  >/<code class="bg-slate-200/60 px-1 rounded">q</code> for
+                  front,
+                  <code class="bg-slate-200/60 px-1 rounded">answer</code>/<code
+                    class="bg-slate-200/60 px-1 rounded"
+                    >a</code
+                  >
+                  for back.
+                </p>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <h3 class="text-sm font-bold text-slate-700 mb-2">YAML</h3>
+                <pre
+                  class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
                 >
-                for back.
-              </p>
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <h3 class="text-sm font-bold text-slate-700 mb-2">YAML</h3>
-              <pre
-                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
-              >
 - topic: Array Access
   front: |
     Question text
@@ -598,26 +642,25 @@ goes here
   back: |
     Answer text
     also multiline</pre
-              >
-              <p class="text-[11px] text-slate-400 mt-2">
-                Use <code class="bg-slate-200/60 px-1 rounded">|</code> for
-                literal multiline strings. Same field aliases as JSON.
-              </p>
+                >
+                <p class="text-[11px] text-slate-400 mt-2">
+                  Use <code class="bg-slate-200/60 px-1 rounded">|</code> for
+                  literal multiline strings. Same field aliases as JSON.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </details>
+        </details>
+      </div>
     </main>
 
     <!-- ── Footer ─────────────────────────────────────────────────────────── -->
-    <footer class="text-center text-xs text-slate-400 py-8 px-4">
-      Flashcard PDF Generator · runs entirely in your browser · no data is sent
-      to any server
+    <footer class="text-center text-xs text-slate-400 py-6 px-4">
+      Flashcard PDF Generator &middot; runs entirely in your browser &middot; no
+      data is sent to any server
     </footer>
 
     <script type="module" src="/src/main.ts"></script>
-
-    <!-- Chevron rotation for details/summary -->
     <style>
       details[open] .chevron-icon {
         transform: rotate(90deg);
