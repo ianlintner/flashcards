@@ -4,782 +4,624 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flashcard PDF Generator</title>
-    <style>
-      /* ── Reset & base ─────────────────────────────────────────────────────── */
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      :root {
-        --blue: #2980b9;
-        --green: #27ae60;
-        --orange: #e67e22;
-        --dark: #1e2533;
-        --mid: #2c3e50;
-        --light: #ecf0f1;
-        --surface: #ffffff;
-        --border: #d5dce7;
-        --radius: 8px;
-        --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      body {
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: #f0f3f8;
-        color: var(--dark);
-        min-height: 100vh;
-      }
-
-      /* ── Header ───────────────────────────────────────────────────────────── */
-      header {
-        background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 100%);
-        color: #fff;
-        padding: 1.4rem 2rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-      }
-      header .icon {
-        font-size: 2rem;
-      }
-      header h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-      }
-      header p {
-        font-size: 0.82rem;
-        color: #aab4c6;
-        margin-top: 0.2rem;
-      }
-      .badge {
-        margin-left: auto;
-        background: var(--blue);
-        color: #fff;
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.25rem 0.65rem;
-        border-radius: 99px;
-        white-space: nowrap;
-      }
-
-      /* ── Layout ───────────────────────────────────────────────────────────── */
-      main {
-        max-width: 960px;
-        margin: 2rem auto;
-        padding: 0 1.2rem;
-        display: grid;
-        gap: 1.4rem;
-      }
-
-      /* ── Card ─────────────────────────────────────────────────────────────── */
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-      .card-header {
-        padding: 0.75rem 1.2rem;
-        background: #fafbfc;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .card-header h2 {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--mid);
-      }
-      .card-header .icon {
-        font-size: 1.1rem;
-      }
-      .card-body {
-        padding: 1.2rem;
-      }
-
-      /* ── Format toolbar ───────────────────────────────────────────────────── */
-      .toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        align-items: flex-end;
-      }
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-      }
-      .field label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #6b7a99;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      select,
-      input[type="text"],
-      input[type="number"] {
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.42rem 0.7rem;
-        font-size: 0.88rem;
-        color: var(--dark);
-        background: #fff;
-        outline: none;
-        transition: border-color 0.15s;
-      }
-      select:focus,
-      input:focus {
-        border-color: var(--blue);
-        box-shadow: 0 0 0 3px #2980b920;
-      }
-      select {
-        padding-right: 1.8rem;
-        appearance: auto;
-      }
-
-      /* ── Textarea ─────────────────────────────────────────────────────────── */
-      textarea {
-        width: 100%;
-        min-height: 260px;
-        resize: vertical;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.85rem;
-        font-family:
-          "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
-        font-size: 0.82rem;
-        line-height: 1.55;
-        color: #2d3a50;
-        background: #f8f9fc;
-        outline: none;
-        transition: border-color 0.15s;
-      }
-      textarea:focus {
-        border-color: var(--blue);
-        background: #fff;
-        box-shadow: 0 0 0 3px #2980b920;
-      }
-
-      /* ── Buttons ──────────────────────────────────────────────────────────── */
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        padding: 0.5rem 1.1rem;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.88rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition:
-          opacity 0.15s,
-          transform 0.1s;
-        text-decoration: none;
-      }
-      .btn:active {
-        transform: scale(0.97);
-      }
-      .btn:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-      }
-      .btn-primary {
-        background: var(--blue);
-        color: #fff;
-      }
-      .btn-success {
-        background: var(--green);
-        color: #fff;
-      }
-      .btn-orange {
-        background: var(--orange);
-        color: #fff;
-      }
-      .btn-ghost {
-        background: #eef1f7;
-        color: var(--mid);
-        border: 1px solid var(--border);
-      }
-      .btn:not(:disabled):hover {
-        opacity: 0.88;
-      }
-
-      .btn-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        margin-top: 0.85rem;
-      }
-
-      /* ── Example buttons ──────────────────────────────────────────────────── */
-      .example-strip {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 0.8rem 1.2rem;
-        background: #f6f8fc;
-        border-top: 1px solid var(--border);
-      }
-      .example-strip span {
-        font-size: 0.76rem;
-        color: #8a97b0;
-        align-self: center;
-        margin-right: 0.2rem;
-      }
-
-      /* ── Error box ────────────────────────────────────────────────────────── */
-      #error-box {
-        background: #fff5f5;
-        border: 1px solid #fdbfbf;
-        border-radius: 6px;
-        padding: 0.75rem 1rem;
-        display: none;
-      }
-      .err-line {
-        font-size: 0.83rem;
-        color: #c0392b;
-        line-height: 1.5;
-      }
-
-      /* ── Options grid ─────────────────────────────────────────────────────── */
-      .options-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-        gap: 1rem;
-      }
-      .checkbox-field {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.88rem;
-      }
-      .checkbox-field input[type="checkbox"] {
-        width: 1rem;
-        height: 1rem;
-        accent-color: var(--blue);
-        cursor: pointer;
-      }
-
-      /* ── Preview section ──────────────────────────────────────────────────── */
-      #preview-section {
-        display: none;
-      }
-      #card-count {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--green);
-        padding: 0.6rem 1.2rem;
-        background: #f0faf4;
-        border-bottom: 1px solid var(--border);
-      }
-
-      /* ── Card thumbnails ──────────────────────────────────────────────────── */
-      #card-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.9rem;
-        padding: 1.1rem;
-      }
-
-      .card-thumb {
-        width: 160px;
-        border-radius: 6px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--border);
-        position: relative;
-        background: #fff;
-        flex-shrink: 0;
-      }
-      .thumb-face {
-        padding: 0.45rem 0.55rem 0.35rem;
-      }
-      .thumb-front {
-        background: #e8f4fd;
-        border-bottom: 1px solid #c5dff5;
-      }
-      .thumb-back {
-        background: #eafaf1;
-      }
-      .thumb-label {
-        display: inline-block;
-        font-size: 0.6rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        padding: 0.07rem 0.3rem;
-        border-radius: 3px;
-        margin-bottom: 0.25rem;
-      }
-      .thumb-front .thumb-label {
-        background: var(--blue);
-        color: #fff;
-      }
-      .thumb-back .thumb-label {
-        background: var(--green);
-        color: #fff;
-      }
-      .thumb-topic {
-        font-size: 0.62rem;
-        font-weight: 600;
-        color: #5a7a9e;
-        margin-bottom: 0.2rem;
-        line-height: 1.3;
-      }
-      .thumb-body {
-        font-size: 0.63rem;
-        color: #3a4a60;
-        line-height: 1.4;
-        max-height: 3.4rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .thumb-num {
-        position: absolute;
-        bottom: 0.2rem;
-        right: 0.3rem;
-        font-size: 0.58rem;
-        color: #aaa;
-      }
-      .more-cards {
-        align-self: center;
-        font-size: 0.82rem;
-        color: #8a97b0;
-        font-style: italic;
-        padding: 0 0.5rem;
-      }
-
-      /* ── Format docs ──────────────────────────────────────────────────────── */
-      .format-docs {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1rem;
-      }
-      .doc-block {
-        background: #f8f9fc;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 0.8rem 0.9rem;
-      }
-      .doc-block h3 {
-        font-size: 0.82rem;
-        font-weight: 700;
-        margin-bottom: 0.4rem;
-        color: var(--mid);
-      }
-      .doc-block pre {
-        font-size: 0.7rem;
-        line-height: 1.5;
-        white-space: pre-wrap;
-        color: #3a4a60;
-        background: none;
-      }
-      .doc-block code {
-        background: #e8ecf5;
-        padding: 0.05rem 0.2rem;
-        border-radius: 3px;
-      }
-
-      /* ── Footer ───────────────────────────────────────────────────────────── */
-      footer {
-        text-align: center;
-        font-size: 0.75rem;
-        color: #9aa5b8;
-        padding: 2rem 1rem;
-      }
-
-      /* ── Deck Library ───────────────────────────────────────────────────── */
-      .deck-library-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
-      .deck-library-header .total-badge {
-        font-size: 0.72rem;
-        font-weight: 600;
-        background: var(--dark);
-        color: #fff;
-        padding: 0.2rem 0.6rem;
-        border-radius: 10px;
-      }
-      .deck-level-group {
-        margin-top: 1rem;
-      }
-      .deck-level-group:first-child {
-        margin-top: 0.5rem;
-      }
-      .level-heading {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.6rem;
-      }
-      .level-heading h3 {
-        font-size: 0.88rem;
-        font-weight: 700;
-        color: var(--mid);
-        margin: 0;
-      }
-      .level-badge {
-        display: inline-block;
-        font-size: 0.62rem;
-        font-weight: 700;
-        letter-spacing: 0.4px;
-        padding: 0.15rem 0.5rem;
-        border-radius: 10px;
-        color: #fff;
-        text-transform: uppercase;
-      }
-      .level-badge--foundation {
-        background: #2980b9;
-      }
-      .level-badge--intermediate {
-        background: #27ae60;
-      }
-      .level-badge--advanced {
-        background: #e67e22;
-      }
-      .level-badge--senior-staff {
-        background: #8e44ad;
-      }
-      .level-badge--staff-principal {
-        background: #c0392b;
-      }
-      .deck-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 0.65rem;
-      }
-      .deck-card {
-        background: #f8f9fc;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 0.75rem 0.85rem;
-        cursor: pointer;
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s;
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-      }
-      .deck-card:hover {
-        border-color: var(--blue);
-        box-shadow: 0 2px 8px rgba(41, 128, 185, 0.15);
-      }
-      .deck-card-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-      }
-      .deck-card-title {
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: var(--dark);
-      }
-      .deck-card-count {
-        font-size: 0.68rem;
-        font-weight: 600;
-        background: var(--border);
-        color: var(--mid);
-        padding: 0.1rem 0.45rem;
-        border-radius: 8px;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .deck-card-desc {
-        font-size: 0.72rem;
-        color: #6b7d94;
-        line-height: 1.4;
-      }
-      .deck-card-category {
-        font-size: 0.64rem;
-        color: #9aa5b8;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-      }
-      .deck-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-        flex-wrap: wrap;
-      }
-
-      /* ── Responsive ───────────────────────────────────────────────────────── */
-      @media (max-width: 600px) {
-        header {
-          flex-wrap: wrap;
-        }
-        .badge {
-          margin-left: 0;
-        }
-        .deck-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body>
-    <header>
-      <span class="icon">🃏</span>
-      <div>
-        <h1>Flashcard PDF Generator</h1>
-        <p>
-          Generate printable 6 × 4 inch landscape index-card flashcards as PDF —
-          right in your browser.
-        </p>
+  <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <!-- ── Header ─────────────────────────────────────────────────────────── -->
+    <header
+      class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg"
+    >
+      <div
+        class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between gap-4 flex-wrap"
+      >
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">
+            Flashcard PDF Generator
+          </h1>
+          <p class="text-sm text-slate-400 mt-0.5">
+            Generate print-ready index card flashcards as PDF — entirely in your
+            browser
+          </p>
+        </div>
+        <span
+          id="dimension-badge"
+          class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap"
+          >6 × 4 in · Landscape</span
+        >
       </div>
-      <span class="badge">6 × 4 in · Landscape · Ink-Minimal</span>
     </header>
 
-    <main>
-      <!-- ── Input ──────────────────────────────────────────────────────────── -->
-      <section class="card">
-        <div class="card-header">
-          <span class="icon">📝</span>
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-5">
+      <!-- ── AI Assistant Guide ───────────────────────────────────────────── -->
+      <details class="section-card" id="ai-guide-section">
+        <summary class="section-header">
+          <svg
+            class="w-4 h-4 text-violet-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.3 24.3 0 0 1 4.5 0m0 0v5.714a2.25 2.25 0 0 0 .659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5l-2.47 2.47a2.25 2.25 0 0 1-1.591.659H9.061a2.25 2.25 0 0 1-1.591-.659L5 14.5m14 0V17a2.25 2.25 0 0 1-2.25 2.25H7.25A2.25 2.25 0 0 1 5 17v-2.5"
+            />
+          </svg>
+          <h2>AI Assistant Guide</h2>
+          <span class="ml-auto text-xs text-slate-400">
+            Use Claude, Gemini, or ChatGPT to generate cards
+          </span>
+          <svg
+            class="w-4 h-4 text-slate-400 transition-transform duration-200 chevron-icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m9 5 7 7-7 7"
+            />
+          </svg>
+        </summary>
+        <div class="section-body space-y-4">
+          <p class="text-sm text-slate-600">
+            If you have a browser AI extension (Claude, Gemini, ChatGPT, etc.),
+            you can ask it to generate flashcard content. Copy the prompt below,
+            customize the topic, and paste the AI's output into the editor.
+          </p>
+
+          <!-- Prompt template -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="field-label">Prompt Template</span>
+              <button class="btn btn-ghost btn-sm" id="copy-prompt-btn">
+                <svg
+                  class="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+                  />
+                </svg>
+                Copy Prompt
+              </button>
+            </div>
+            <div class="prompt-block" id="ai-prompt-text">
+              Generate flashcards in Markdown format about [YOUR TOPIC HERE].
+              FORMAT RULES: - Start and end each card with === on its own line -
+              Separate front and back with --- on its own line - Optionally add
+              # Topic as the first line of the front side - Use ONLY plain ASCII
+              characters - Use -> instead of arrows, ^2 instead of superscripts
+              - Use - instead of em dashes or en dashes - No emoji or special
+              Unicode symbols EXAMPLE: === # Array Access What is the time
+              complexity of accessing an element by index in an array? --- O(1)
+              - Constant time. Arrays use contiguous memory so any index is a
+              direct pointer offset. === # Binary Search What is the time
+              complexity of binary search? --- O(log n) - Logarithmic time.
+              Requires a sorted array. Halves the search space on each
+              comparison. === Generate [NUMBER] flashcards covering: [DESCRIBE
+              THE TOPICS]
+            </div>
+          </div>
+
+          <!-- Quick tips -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-600"
+          >
+            <div class="bg-blue-50 rounded-lg p-3 border border-blue-100">
+              <div class="font-semibold text-blue-700 mb-1">
+                Supported Formats
+              </div>
+              You can also ask the AI to output JSON or YAML instead of
+              Markdown. All three formats are supported by this tool.
+            </div>
+            <div class="bg-amber-50 rounded-lg p-3 border border-amber-100">
+              <div class="font-semibold text-amber-700 mb-1">
+                Encoding Warning
+              </div>
+              PDFs use Latin-1 encoding. Ask the AI to avoid emoji, Unicode
+              arrows, and special symbols. Use plain ASCII only.
+            </div>
+            <div class="bg-emerald-50 rounded-lg p-3 border border-emerald-100">
+              <div class="font-semibold text-emerald-700 mb-1">Pro Tip</div>
+              Ask for complexity notations expressed as O(n), O(n^2), O(log n)
+              and use \n in JSON for line breaks.
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- ── Card Content Input ───────────────────────────────────────────── -->
+      <section class="section-card">
+        <div class="section-header">
+          <svg
+            class="w-4 h-4 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+            />
+          </svg>
           <h2>Card Content</h2>
         </div>
-        <div class="card-body">
-          <div class="toolbar">
-            <div class="field">
-              <label>Format</label>
-              <select id="format-select">
+        <div class="section-body space-y-4">
+          <!-- Format toolbar -->
+          <div class="flex flex-wrap gap-4 items-end">
+            <div>
+              <label class="field-label" for="format-select">Format</label>
+              <select id="format-select" class="field-input">
                 <option value="markdown">Markdown</option>
                 <option value="json">JSON</option>
                 <option value="yaml">YAML</option>
                 <option value="auto">Auto-detect</option>
               </select>
             </div>
-
-            <div class="field" id="separator-row">
-              <label>Card separator</label>
+            <div id="separator-row">
+              <label class="field-label" for="separator-input"
+                >Card separator</label
+              >
               <input
                 id="separator-input"
                 type="text"
                 value="==="
                 placeholder="==="
-                style="width: 90px"
+                class="field-input w-20"
               />
             </div>
           </div>
 
-          <div style="height: 0.75rem"></div>
-
+          <!-- Textarea -->
           <textarea
             id="input-area"
             spellcheck="false"
+            class="w-full min-h-[260px] resize-y border border-slate-200 rounded-lg p-3.5 font-mono text-[13px] leading-relaxed text-slate-700 bg-slate-50/80 outline-none transition-colors focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
             placeholder="Paste JSON, YAML, or Markdown content here…"
           ></textarea>
 
-          <div id="error-box"></div>
+          <!-- Error box -->
+          <div
+            id="error-box"
+            class="bg-red-50 border border-red-200 rounded-lg p-3 hidden"
+          ></div>
 
-          <div class="btn-group">
+          <!-- Action buttons -->
+          <div class="flex flex-wrap gap-3">
             <button class="btn btn-primary" id="parse-btn">
-              ⚙ Parse Cards
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+                />
+              </svg>
+              Parse Cards
             </button>
             <button class="btn btn-success" id="generate-btn" disabled>
-              ⬇ Download PDF
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
+              </svg>
+              Download PDF
             </button>
-            <button class="btn btn-orange" id="load-all-btn">
-              ⚡ Load all 25 Big O cards
+            <button class="btn btn-warning" id="load-all-btn">
+              Load Example (25 Big O Cards)
             </button>
           </div>
         </div>
 
-        <!-- Example buttons -->
-        <div class="example-strip">
-          <span>Load example:</span>
-          <button
-            class="btn btn-ghost"
-            data-example="markdown"
-            style="font-size: 0.78rem; padding: 0.3rem 0.7rem"
-          >
+        <!-- Example format buttons -->
+        <div
+          class="px-5 py-3 bg-slate-50/60 border-t border-slate-200 flex flex-wrap gap-2 items-center"
+        >
+          <span class="text-xs text-slate-400 mr-1">Load example format:</span>
+          <button class="btn btn-ghost btn-sm" data-example="markdown">
             Markdown
           </button>
-          <button
-            class="btn btn-ghost"
-            data-example="json"
-            style="font-size: 0.78rem; padding: 0.3rem 0.7rem"
-          >
-            JSON
-          </button>
-          <button
-            class="btn btn-ghost"
-            data-example="yaml"
-            style="font-size: 0.78rem; padding: 0.3rem 0.7rem"
-          >
-            YAML
-          </button>
+          <button class="btn btn-ghost btn-sm" data-example="json">JSON</button>
+          <button class="btn btn-ghost btn-sm" data-example="yaml">YAML</button>
         </div>
       </section>
 
-      <!-- ── Deck Library ───────────────────────────────────────────────────── -->
-      <section class="card" id="deck-library-section">
-        <div class="card-header deck-library-header">
-          <span class="icon">📚</span>
+      <!-- ── Deck Library ─────────────────────────────────────────────────── -->
+      <details class="section-card" open id="deck-library-section">
+        <summary class="section-header">
+          <svg
+            class="w-4 h-4 text-orange-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
+          </svg>
           <h2>Deck Library</h2>
-          <span class="total-badge" id="deck-total-badge"></span>
-        </div>
-        <div class="card-body">
-          <div class="deck-actions">
-            <button class="btn btn-orange" id="load-all-decks-btn">
+          <span
+            id="deck-total-badge"
+            class="bg-slate-800 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+          ></span>
+          <svg
+            class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m9 5 7 7-7 7"
+            />
+          </svg>
+        </summary>
+        <div class="section-body space-y-3">
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-warning btn-sm" id="load-all-decks-btn">
               Load All Decks
             </button>
           </div>
           <div id="deck-library-container"></div>
         </div>
-      </section>
+      </details>
 
-      <!-- ── Options ────────────────────────────────────────────────────────── -->
-      <section class="card">
-        <div class="card-header">
-          <span class="icon">⚙</span>
+      <!-- ── PDF Options ──────────────────────────────────────────────────── -->
+      <section class="section-card">
+        <div class="section-header">
+          <svg
+            class="w-4 h-4 text-emerald-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
           <h2>PDF Options</h2>
         </div>
-        <div class="card-body">
-          <div class="options-grid">
-            <div class="field">
-              <label>PDF title / filename</label>
+        <div class="section-body space-y-5">
+          <!-- Row 1: Title + Card Size -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="sm:col-span-2">
+              <label class="field-label" for="pdf-title"
+                >PDF Title / Filename</label
+              >
               <input
                 id="pdf-title"
                 type="text"
                 value="Big O Notation"
                 placeholder="flashcards"
-                style="width: 100%"
+                class="field-input w-full"
               />
             </div>
-            <div class="field">
-              <label>Body font size (pt)</label>
+            <div>
+              <label class="field-label" for="card-size">Card Size</label>
+              <select id="card-size" class="field-input w-full">
+                <option value="3x5">3 × 5 in</option>
+                <option value="4x6" selected>4 × 6 in (Standard)</option>
+                <option value="5x7">5 × 7 in (Jumbo)</option>
+                <option value="a6">A6 (105 × 148 mm)</option>
+                <option value="a7">A7 (74 × 105 mm)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Orientation</label>
+              <div class="flex gap-4 mt-1.5">
+                <label
+                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="orientation"
+                    value="landscape"
+                    checked
+                    class="accent-blue-600"
+                  />
+                  Landscape
+                </label>
+                <label
+                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="orientation"
+                    value="portrait"
+                    class="accent-blue-600"
+                  />
+                  Portrait
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Font + Size + Card numbers + Page filter -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label class="field-label" for="font-family">Font</label>
+              <select id="font-family" class="field-input w-full">
+                <option value="helvetica" selected>
+                  Helvetica (Sans-serif)
+                </option>
+                <option value="courier">Courier (Monospace)</option>
+                <option value="times">Times New Roman (Serif)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="font-size"
+                >Body Font Size (pt)</label
+              >
               <input
                 id="font-size"
                 type="number"
                 value="18"
-                min="10"
-                max="24"
+                min="8"
+                max="28"
                 step="0.5"
-                style="width: 80px"
+                class="field-input w-20"
               />
             </div>
-            <div class="checkbox-field" style="padding-top: 1.4rem">
-              <input id="include-nums" type="checkbox" checked />
-              <label for="include-nums">Show card numbers</label>
+            <div class="flex items-end pb-1">
+              <label
+                class="inline-flex items-center gap-2 text-sm cursor-pointer"
+              >
+                <input
+                  id="include-nums"
+                  type="checkbox"
+                  checked
+                  class="w-4 h-4 accent-blue-600 cursor-pointer"
+                />
+                Show card numbers
+              </label>
+            </div>
+            <div>
+              <span class="field-label">Pages</span>
+              <div class="flex flex-col gap-1 mt-1">
+                <label
+                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="page-filter"
+                    value="all"
+                    checked
+                    class="accent-blue-600 cursor-pointer"
+                  />
+                  All (front &amp; back)
+                </label>
+                <label
+                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="page-filter"
+                    value="fronts"
+                    class="accent-blue-600 cursor-pointer"
+                  />
+                  Fronts only
+                </label>
+                <label
+                  class="inline-flex items-center gap-1.5 text-sm cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="page-filter"
+                    value="backs"
+                    class="accent-blue-600 cursor-pointer"
+                  />
+                  Backs only
+                </label>
+              </div>
             </div>
           </div>
-          <p style="font-size: 0.76rem; color: #9aa5b8; margin-top: 0.75rem">
-            Cards are <strong>6 × 4 inches, landscape</strong> — standard index
-            card, wide-side up. Print dialog: paper
-            <strong>4×6 / Index Card</strong>, orientation
-            <strong>Landscape</strong>, scale
-            <strong>Actual size (100%)</strong>. White background · black text
-            only — minimal ink.
-          </p>
+
+          <!-- Print instructions -->
+          <div
+            class="text-xs text-slate-400 bg-slate-50 rounded-lg px-4 py-3 border border-slate-100"
+          >
+            <strong class="text-slate-500">Print tip:</strong> In your print
+            dialog, set paper size to match your card size, orientation to match
+            your selection, and scale to <strong>Actual size (100%)</strong>.
+            White background, black text only — minimal ink usage.
+            <br />
+            <strong class="text-slate-500">Duplex printing:</strong> To print
+            double-sided without auto-duplex, first generate &amp; print
+            <em>Fronts only</em>, reload the printed pages, then generate &amp;
+            print <em>Backs only</em>.
+          </div>
         </div>
       </section>
 
-      <!-- ── Preview ────────────────────────────────────────────────────────── -->
-      <section class="card" id="preview-section">
-        <div class="card-header">
-          <span class="icon">👁</span>
+      <!-- ── Preview ──────────────────────────────────────────────────────── -->
+      <section class="section-card hidden" id="preview-section">
+        <div class="section-header">
+          <svg
+            class="w-4 h-4 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+            />
+          </svg>
           <h2>Preview</h2>
         </div>
-        <div id="card-count"></div>
-        <div id="card-preview"></div>
+        <div
+          id="card-count"
+          class="text-sm font-semibold text-emerald-600 px-5 py-2.5 bg-emerald-50 border-b border-slate-200"
+        ></div>
+        <div id="card-preview" class="flex flex-wrap gap-3.5 p-4"></div>
       </section>
 
-      <!-- ── Format docs ────────────────────────────────────────────────────── -->
-      <section class="card">
-        <div class="card-header">
-          <span class="icon">📖</span>
+      <!-- ── Format Reference ─────────────────────────────────────────────── -->
+      <details class="section-card">
+        <summary class="section-header">
+          <svg
+            class="w-4 h-4 text-slate-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
+          </svg>
           <h2>Input Format Reference</h2>
-        </div>
-        <div class="card-body">
-          <div class="format-docs">
-            <div class="doc-block">
-              <h3>🔖 Markdown</h3>
-              <pre><code>===</code>
+          <svg
+            class="w-4 h-4 ml-auto text-slate-400 transition-transform duration-200 chevron-icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m9 5 7 7-7 7"
+            />
+          </svg>
+        </summary>
+        <div class="section-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <h3 class="text-sm font-bold text-slate-700 mb-2">Markdown</h3>
+              <pre
+                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
+              ><code class="bg-slate-200/60 px-1 rounded">===</code>
 # Optional topic heading
 Front text of the card
 here on multiple lines
-<code>---</code>
+<code class="bg-slate-200/60 px-1 rounded">---</code>
 Back text / answer
 goes here
-<code>===</code>
-# Next Card
-Another question
-<code>---</code>
-Another answer
-<code>===</code></pre>
-              <p style="font-size: 0.7rem; color: #8a97b0; margin-top: 0.4rem">
-                The <code>===</code> separator can be changed above.<br />
-                Front / back split with a <code>---</code> on its own line.
+<code class="bg-slate-200/60 px-1 rounded">===</code></pre>
+              <p class="text-[11px] text-slate-400 mt-2">
+                <code class="bg-slate-200/60 px-1 rounded">===</code> separates
+                cards.
+                <code class="bg-slate-200/60 px-1 rounded">---</code> splits
+                front / back.
               </p>
             </div>
 
-            <div class="doc-block">
-              <h3>{ } JSON</h3>
-              <pre>
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <h3 class="text-sm font-bold text-slate-700 mb-2">JSON</h3>
+              <pre
+                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
+              >
 [
   {
     "topic": "Array Access",
     "front": "Question text",
     "back": "Answer text"
-  },
-  {
-    "front": "Q without topic",
-    "back": "Answer"
   }
 ]</pre
               >
-              <p style="font-size: 0.7rem; color: #8a97b0; margin-top: 0.4rem">
-                Aliases: <code>question</code>/<code>q</code> → front,
-                <code>answer</code>/<code>a</code> → back.
+              <p class="text-[11px] text-slate-400 mt-2">
+                Aliases:
+                <code class="bg-slate-200/60 px-1 rounded">question</code>/<code
+                  class="bg-slate-200/60 px-1 rounded"
+                  >q</code
+                >
+                for front,
+                <code class="bg-slate-200/60 px-1 rounded">answer</code>/<code
+                  class="bg-slate-200/60 px-1 rounded"
+                  >a</code
+                >
+                for back.
               </p>
             </div>
 
-            <div class="doc-block">
-              <h3>⚡ YAML</h3>
-              <pre>
+            <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <h3 class="text-sm font-bold text-slate-700 mb-2">YAML</h3>
+              <pre
+                class="text-xs leading-relaxed text-slate-600 whitespace-pre-wrap"
+              >
 - topic: Array Access
   front: |
     Question text
     multiline ok
   back: |
     Answer text
-    also multiline
-
-- front: Simple question
-  back: Simple answer</pre
+    also multiline</pre
               >
-              <p style="font-size: 0.7rem; color: #8a97b0; margin-top: 0.4rem">
-                Use <code>|</code> for literal multiline strings. Same field
-                aliases as JSON.
+              <p class="text-[11px] text-slate-400 mt-2">
+                Use <code class="bg-slate-200/60 px-1 rounded">|</code> for
+                literal multiline strings. Same field aliases as JSON.
               </p>
             </div>
           </div>
         </div>
-      </section>
+      </details>
     </main>
 
-    <footer>
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <footer class="text-center text-xs text-slate-400 py-8 px-4">
       Flashcard PDF Generator · runs entirely in your browser · no data is sent
       to any server
     </footer>
 
     <script type="module" src="/src/main.ts"></script>
+
+    <!-- Chevron rotation for details/summary -->
+    <style>
+      details[open] .chevron-icon {
+        transform: rotate(90deg);
+      }
+    </style>
   </body>
 </html>

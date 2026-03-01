@@ -19,26 +19,38 @@ const BADGE_W = 0.72; // badge width
 const BADGE_H = 0.16;
 
 export function generatePDF(cards: Flashcard[], options: PDFOptions): jsPDF {
-  const W = options.cardWidth; // 6" (landscape width)
-  const H = options.cardHeight; // 4" (landscape height)
+  const W = options.cardWidth;
+  const H = options.cardHeight;
+  const orient = options.orientation ?? "landscape";
 
-  // jsPDF landscape: pass [shorter, longer] as format + orientation:"landscape"
+  // jsPDF format: [shorter, longer]; orientation determines layout
+  const shorter = Math.min(W, H);
+  const longer = Math.max(W, H);
+
   const doc = new jsPDF({
-    orientation: "landscape",
+    orientation: orient,
     unit: "in",
-    format: [H, W],
+    format: [shorter, longer],
   });
+
+  const filter = options.pageFilter ?? "all";
+  const includeFronts = filter === "all" || filter === "fronts";
+  const includeBacks = filter === "all" || filter === "backs";
 
   let pageIndex = 0;
 
   cards.forEach((card, idx) => {
-    if (pageIndex > 0) doc.addPage([H, W], "landscape");
-    drawSide(doc, card, "FRONT", card.front, idx + 1, cards.length, options);
-    pageIndex++;
+    if (includeFronts) {
+      if (pageIndex > 0) doc.addPage([shorter, longer], orient);
+      drawSide(doc, card, "FRONT", card.front, idx + 1, cards.length, options);
+      pageIndex++;
+    }
 
-    doc.addPage([H, W], "landscape");
-    drawSide(doc, card, "BACK", card.back, idx + 1, cards.length, options);
-    pageIndex++;
+    if (includeBacks) {
+      if (pageIndex > 0) doc.addPage([shorter, longer], orient);
+      drawSide(doc, card, "BACK", card.back, idx + 1, cards.length, options);
+      pageIndex++;
+    }
   });
 
   return doc;
@@ -69,8 +81,10 @@ function drawSide(
     (doc.setFont("helvetica", "bold").setFontSize(7),
     doc.getTextWidth(sideLabel));
 
+  const font = opts.fontFamily ?? "helvetica";
+
   if (card.topic) {
-    doc.setFont("helvetica", "bold");
+    doc.setFont(font, "bold");
     doc.setFontSize(7.5);
     doc.setTextColor(...MID);
     const maxTopicW = W - PAD * 2 - sideLabelW - 0.2;
@@ -79,7 +93,7 @@ function drawSide(
   }
 
   // Side label — plain text, top-right
-  doc.setFont("helvetica", "bold");
+  doc.setFont(font, "bold");
   doc.setFontSize(7);
   doc.setTextColor(...LIGHT);
   doc.text(sideLabel, W - PAD, metaMidY, {
@@ -100,11 +114,12 @@ function drawSide(
     bodyW,
     bodyBottom,
     opts.fontSize,
+    opts,
   );
 
   // ── Footer ────────────────────────────────────────────────────────────────
   if (opts.includeCardNumbers) {
-    doc.setFont("helvetica", "normal");
+    doc.setFont(font, "normal");
     doc.setFontSize(6.5);
     doc.setTextColor(...VERY_LIGHT);
     doc.text(`${num} / ${total}`, W - PAD, H - 0.07, {
@@ -124,6 +139,7 @@ function drawBodyText(
   maxW: number,
   bottomY: number,
   baseFontSize: number,
+  opts: PDFOptions,
 ): void {
   const bodyH = bottomY - topY;
 
@@ -148,6 +164,7 @@ function drawBodyText(
     if (y > bottomY + 0.02) return; // clip overflow
 
     // Complexity/notation lines -> monospace, slightly smaller
+    const bodyFont = opts.fontFamily ?? "helvetica";
     const isNotation =
       /^\s*(Time|Space|Best|Worst|Average|O\(|T:|S:)|^\s*-{3,}/.test(line);
     if (isNotation) {
@@ -155,7 +172,7 @@ function drawBodyText(
       doc.setFontSize(fontSize * 0.92);
       doc.setTextColor(...BLACK);
     } else {
-      doc.setFont("helvetica", "normal");
+      doc.setFont(bodyFont, "normal");
       doc.setFontSize(fontSize);
       doc.setTextColor(...DARK);
     }

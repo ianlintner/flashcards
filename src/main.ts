@@ -1,3 +1,4 @@
+import "./style.css";
 import { parseJSON, parseYAML, parseMarkdown, detectFormat } from "./parsers";
 import { generatePDF } from "./pdf-generator";
 import {
@@ -6,8 +7,20 @@ import {
   EXAMPLE_JSON,
   EXAMPLE_YAML,
 } from "./examples";
-import type { InputFormat, PDFOptions, Flashcard } from "./types";
-import { DEFAULT_PDF_OPTIONS } from "./types";
+import type {
+  InputFormat,
+  PDFOptions,
+  Flashcard,
+  CardSize,
+  Orientation,
+  FontFamily,
+  PageFilter,
+} from "./types";
+import {
+  DEFAULT_PDF_OPTIONS,
+  CARD_SIZE_PRESETS,
+  getCardDimensions,
+} from "./types";
 import {
   DECK_LIBRARY,
   getDecksByLevel,
@@ -47,17 +60,31 @@ const pdfTitle = document.getElementById("pdf-title") as HTMLInputElement;
 const loadExampleBtns =
   document.querySelectorAll<HTMLButtonElement>("[data-example]");
 
+// New option refs
+const cardSizeSelect = document.getElementById(
+  "card-size",
+) as HTMLSelectElement;
+const fontFamilySelect = document.getElementById(
+  "font-family",
+) as HTMLSelectElement;
+const dimensionBadge = document.getElementById(
+  "dimension-badge",
+) as HTMLElement;
+const copyPromptBtn = document.getElementById(
+  "copy-prompt-btn",
+) as HTMLButtonElement;
+
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
 init();
 
 function init(): void {
-  // Load example markdown by default
   inputArea.value = EXAMPLE_MARKDOWN;
   formatSelect.value = "markdown";
 
   bindEvents();
   toggleSeparatorRow();
+  updateDimensionBadge();
   renderDeckLibrary();
 }
 
@@ -73,19 +100,112 @@ function bindEvents(): void {
     });
   });
 
-  // Auto-detect format on paste / input
+  // Auto-detect on paste / input
   inputArea.addEventListener("input", () => {
     if (formatSelect.value === "auto") {
       const detected = detectFormat(inputArea.value);
       setPlaceholder(detected);
     }
   });
+
+  // Card size & orientation change → update badge
+  cardSizeSelect?.addEventListener("change", updateDimensionBadge);
+  document
+    .querySelectorAll<HTMLInputElement>('input[name="orientation"]')
+    .forEach((r) => r.addEventListener("change", updateDimensionBadge));
+
+  // Copy AI prompt
+  copyPromptBtn?.addEventListener("click", copyAIPrompt);
+
+  // Load example buttons
+  document.getElementById("load-all-btn")?.addEventListener("click", () => {
+    currentCards = [...BIG_O_CARDS];
+    renderPreview(currentCards);
+    previewSection.classList.remove("hidden");
+    generateBtn.disabled = false;
+    clearErrors();
+    cardCount.textContent = `${currentCards.length} cards ready (Big O set)`;
+  });
+
+  document
+    .getElementById("load-all-decks-btn")
+    ?.addEventListener("click", () => {
+      loadAllDecks();
+    });
 }
 
 function toggleSeparatorRow(): void {
   const show =
     formatSelect.value === "markdown" || formatSelect.value === "auto";
   separatorRow.style.display = show ? "" : "none";
+}
+
+// ─── Dimension badge ──────────────────────────────────────────────────────────
+
+function getSelectedOrientation(): Orientation {
+  const checked = document.querySelector<HTMLInputElement>(
+    'input[name="orientation"]:checked',
+  );
+  return (checked?.value as Orientation) || "landscape";
+}
+
+function updateDimensionBadge(): void {
+  if (!dimensionBadge) return;
+  const size = (cardSizeSelect?.value || "4x6") as CardSize;
+  const orientation = getSelectedOrientation();
+  const dims = getCardDimensions(size, orientation);
+  const preset = CARD_SIZE_PRESETS[size];
+  const orientLabel =
+    orientation.charAt(0).toUpperCase() + orientation.slice(1);
+
+  // Show dimensions nicely
+  const wStr = Number.isInteger(dims.width)
+    ? dims.width.toString()
+    : dims.width.toFixed(1);
+  const hStr = Number.isInteger(dims.height)
+    ? dims.height.toString()
+    : dims.height.toFixed(1);
+
+  const unit = size.startsWith("a") ? "mm" : "in";
+  if (unit === "mm") {
+    // Use mm for A sizes
+    const wMm = Math.round(dims.width * 25.4);
+    const hMm = Math.round(dims.height * 25.4);
+    dimensionBadge.textContent = `${wMm} x ${hMm} mm · ${orientLabel}`;
+  } else {
+    dimensionBadge.textContent = `${wStr} x ${hStr} in · ${orientLabel}`;
+  }
+  // Suppress unused variable warning
+  void preset;
+}
+
+// ─── AI Prompt Copy ───────────────────────────────────────────────────────────
+
+function copyAIPrompt(): void {
+  const promptEl = document.getElementById("ai-prompt-text");
+  const text = promptEl?.textContent || "";
+  navigator.clipboard.writeText(text).then(
+    () => {
+      if (copyPromptBtn) {
+        const orig = copyPromptBtn.innerHTML;
+        copyPromptBtn.innerHTML =
+          '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Copied!';
+        setTimeout(() => {
+          copyPromptBtn.innerHTML = orig;
+        }, 2000);
+      }
+    },
+    () => {
+      // Fallback: select text
+      if (promptEl) {
+        const range = document.createRange();
+        range.selectNodeContents(promptEl);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+    },
+  );
 }
 
 // ─── Parse ────────────────────────────────────────────────────────────────────
@@ -128,7 +248,7 @@ function handleParse(): void {
 
   currentCards = result.cards;
   renderPreview(currentCards);
-  previewSection.style.display = "";
+  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
 }
 
@@ -137,10 +257,25 @@ function handleParse(): void {
 function handleGenerate(): void {
   if (!currentCards.length) return;
 
+  const size = (cardSizeSelect?.value || "4x6") as CardSize;
+  const orientation = getSelectedOrientation();
+  const fontFamily = (fontFamilySelect?.value || "helvetica") as FontFamily;
+  const dims = getCardDimensions(size, orientation);
+
+  const pageFilter = (document.querySelector<HTMLInputElement>(
+    'input[name="page-filter"]:checked',
+  )?.value || "all") as PageFilter;
+
   const opts: PDFOptions = {
     ...DEFAULT_PDF_OPTIONS,
-    fontSize: parseFloat(fontSizeInput.value) || 11,
+    cardSize: size,
+    cardWidth: dims.width,
+    cardHeight: dims.height,
+    orientation,
+    fontFamily,
+    fontSize: parseFloat(fontSizeInput.value) || 18,
     includeCardNumbers: includeNums.checked,
+    pageFilter,
     title: pdfTitle.value.trim() || "Flashcards",
   };
 
@@ -149,7 +284,13 @@ function handleGenerate(): void {
   const title = (pdfTitle.value.trim() || "flashcards")
     .replace(/\s+/g, "-")
     .toLowerCase();
-  const filename = `${title}.pdf`;
+  const suffix =
+    pageFilter === "fronts"
+      ? "-fronts"
+      : pageFilter === "backs"
+        ? "-backs"
+        : "";
+  const filename = `${title}${suffix}.pdf`;
   doc.save(filename);
 }
 
@@ -179,8 +320,9 @@ function renderPreview(cards: Flashcard[]): void {
 
   if (cards.length > 12) {
     const more = document.createElement("div");
-    more.className = "more-cards";
-    more.textContent = `+ ${cards.length - 12} more cards…`;
+    more.className =
+      "more-cards self-center text-sm text-slate-400 italic px-2";
+    more.textContent = `+ ${cards.length - 12} more cards...`;
     cardPreview.appendChild(more);
   }
 }
@@ -204,21 +346,24 @@ function loadExample(fmt: InputFormat): void {
   }
   toggleSeparatorRow();
   clearErrors();
-  previewSection.style.display = "none";
+  previewSection.classList.add("hidden");
 }
 
 // ─── Error display ────────────────────────────────────────────────────────────
 
 function showErrors(errs: string[]): void {
   errorBox.innerHTML = errs
-    .map((e) => `<div class="err-line">⚠ ${esc(e)}</div>`)
+    .map(
+      (e) =>
+        `<div class="text-sm text-red-600 leading-relaxed">${esc(e)}</div>`,
+    )
     .join("");
-  errorBox.style.display = "";
+  errorBox.classList.remove("hidden");
 }
 
 function clearErrors(): void {
   errorBox.innerHTML = "";
-  errorBox.style.display = "none";
+  errorBox.classList.add("hidden");
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -256,31 +401,31 @@ function renderDeckLibrary(): void {
     if (!decks || decks.length === 0) continue;
 
     const group = document.createElement("div");
-    group.className = "deck-level-group";
+    group.className = "mt-4 first:mt-2";
 
     const levelCardCount = decks.reduce((s, d) => s + d.cards.length, 0);
 
     group.innerHTML = `
-      <div class="level-heading">
+      <div class="flex items-center gap-2 mb-2">
         <span class="level-badge level-badge--${level}">${LEVEL_LABELS[level as DeckLevel]}</span>
-        <h3>${levelCardCount} cards</h3>
+        <h3 class="text-sm font-bold text-slate-700">${levelCardCount} cards</h3>
       </div>
     `;
 
     const grid = document.createElement("div");
-    grid.className = "deck-grid";
+    grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5";
 
     for (const deck of decks) {
       const card = document.createElement("div");
       card.className = "deck-card";
       card.title = `Click to load "${deck.title}"`;
       card.innerHTML = `
-        <div class="deck-card-top">
-          <span class="deck-card-title">${esc(deck.title)}</span>
-          <span class="deck-card-count">${deck.cards.length} cards</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-sm font-bold text-slate-800">${esc(deck.title)}</span>
+          <span class="text-[11px] font-semibold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">${deck.cards.length} cards</span>
         </div>
-        <div class="deck-card-category">${esc(deck.category)}</div>
-        <div class="deck-card-desc">${esc(deck.description)}</div>
+        <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">${esc(deck.category)}</div>
+        <div class="text-xs text-slate-500 leading-snug">${esc(deck.description)}</div>
       `;
       card.addEventListener("click", () => loadDeck(deck));
       grid.appendChild(card);
@@ -294,7 +439,7 @@ function renderDeckLibrary(): void {
 function loadDeck(deck: DeckInfo): void {
   currentCards = [...deck.cards];
   renderPreview(currentCards);
-  previewSection.style.display = "";
+  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
   pdfTitle.value = deck.title;
@@ -308,24 +453,9 @@ function loadAllDecks(): void {
   }
   currentCards = allCards;
   renderPreview(currentCards);
-  previewSection.style.display = "";
+  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
   pdfTitle.value = "Complete DSA Study Set";
   cardCount.textContent = `${currentCards.length} cards ready — All Decks`;
 }
-
-// ─── Load all 25 pre-built cards on startup ───────────────────────────────────
-
-document.getElementById("load-all-btn")?.addEventListener("click", () => {
-  currentCards = [...BIG_O_CARDS];
-  renderPreview(currentCards);
-  previewSection.style.display = "";
-  generateBtn.disabled = false;
-  clearErrors();
-  cardCount.textContent = `${currentCards.length} cards ready (Big O set)`;
-});
-
-document.getElementById("load-all-decks-btn")?.addEventListener("click", () => {
-  loadAllDecks();
-});
