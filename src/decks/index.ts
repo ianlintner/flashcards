@@ -7,6 +7,18 @@ import { LEETCODE_PROBLEMS } from "./leetcode-problems";
 import { ADVANCED_DATA_STRUCTURES } from "./advanced-data-structures";
 import { ADVANCED_ALGORITHMS } from "./advanced-algorithms";
 import { SYSTEM_DESIGN } from "./system-design";
+import { CONCURRENCY_PARALLELISM } from "./concurrency-parallelism";
+import { DATABASE_INTERNALS } from "./database-internals";
+import { OOP_DESIGN } from "./oop-design";
+import { BEHAVIORAL_INTERVIEW } from "./behavioral-interview";
+import { SYSTEM_DESIGN_ESTIMATION } from "./system-design-estimation";
+import { NETWORKING_FUNDAMENTALS } from "./networking-fundamentals";
+import { OPERATING_SYSTEMS } from "./operating-systems";
+import { DESIGN_PATTERNS } from "./design-patterns";
+import { API_DESIGN } from "./api-design";
+import { SECURITY_FUNDAMENTALS } from "./security-fundamentals";
+import { DISTRIBUTED_SYSTEMS_DEEP } from "./distributed-systems-deep";
+import { LEETCODE_PROBLEMS_EXTENDED } from "./leetcode-problems-extended";
 import type { DeckInfo } from "./types";
 import { LEVEL_ORDER } from "./types";
 
@@ -25,6 +37,18 @@ export const DECK_LIBRARY: DeckInfo[] = [
   ADVANCED_DATA_STRUCTURES,
   ADVANCED_ALGORITHMS,
   SYSTEM_DESIGN,
+  CONCURRENCY_PARALLELISM,
+  DATABASE_INTERNALS,
+  OOP_DESIGN,
+  BEHAVIORAL_INTERVIEW,
+  SYSTEM_DESIGN_ESTIMATION,
+  NETWORKING_FUNDAMENTALS,
+  OPERATING_SYSTEMS,
+  DESIGN_PATTERNS,
+  API_DESIGN,
+  SECURITY_FUNDAMENTALS,
+  DISTRIBUTED_SYSTEMS_DEEP,
+  LEETCODE_PROBLEMS_EXTENDED,
 ].sort((a, b) => {
   const la = LEVEL_ORDER.indexOf(a.level);
   const lb = LEVEL_ORDER.indexOf(b.level);
@@ -59,4 +83,16 @@ export {
   ADVANCED_DATA_STRUCTURES,
   ADVANCED_ALGORITHMS,
   SYSTEM_DESIGN,
+  CONCURRENCY_PARALLELISM,
+  DATABASE_INTERNALS,
+  OOP_DESIGN,
+  BEHAVIORAL_INTERVIEW,
+  SYSTEM_DESIGN_ESTIMATION,
+  NETWORKING_FUNDAMENTALS,
+  OPERATING_SYSTEMS,
+  DESIGN_PATTERNS,
+  API_DESIGN,
+  SECURITY_FUNDAMENTALS,
+  DISTRIBUTED_SYSTEMS_DEEP,
+  LEETCODE_PROBLEMS_EXTENDED,
 };

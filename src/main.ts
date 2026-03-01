@@ -33,6 +33,9 @@ import type { DeckInfo, DeckLevel } from "./decks/index";
 // ─── State ────────────────────────────────────────────────────────────────────
 
 let currentCards: Flashcard[] = [];
+let livePreviewIndex = 0;
+let livePreviewShowBack = false;
+let livePreviewShowBoth = false;
 
 // ─── DOM refs ────────────────────────────────────────────────────────────────
 
@@ -72,6 +75,30 @@ const dimensionBadge = document.getElementById(
 ) as HTMLElement;
 const copyPromptBtn = document.getElementById(
   "copy-prompt-btn",
+) as HTMLButtonElement;
+
+// Live preview refs
+const livePreviewSection = document.getElementById(
+  "live-preview-section",
+) as HTMLElement;
+const liveCardContainer = document.getElementById(
+  "live-card-container",
+) as HTMLElement;
+const liveCardCounter = document.getElementById(
+  "live-card-counter",
+) as HTMLElement;
+const liveCardInfo = document.getElementById("live-card-info") as HTMLElement;
+const prevCardBtn = document.getElementById(
+  "prev-card-btn",
+) as HTMLButtonElement;
+const nextCardBtn = document.getElementById(
+  "next-card-btn",
+) as HTMLButtonElement;
+const flipCardBtn = document.getElementById(
+  "flip-card-btn",
+) as HTMLButtonElement;
+const toggleSideBtn = document.getElementById(
+  "toggle-side-btn",
 ) as HTMLButtonElement;
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
@@ -117,10 +144,56 @@ function bindEvents(): void {
   // Copy AI prompt
   copyPromptBtn?.addEventListener("click", copyAIPrompt);
 
+  // Live preview navigation
+  prevCardBtn?.addEventListener("click", () => navigateLivePreview(-1));
+  nextCardBtn?.addEventListener("click", () => navigateLivePreview(1));
+  flipCardBtn?.addEventListener("click", () => {
+    livePreviewShowBack = !livePreviewShowBack;
+    renderLivePreview();
+  });
+  toggleSideBtn?.addEventListener("click", () => {
+    livePreviewShowBoth = !livePreviewShowBoth;
+    renderLivePreview();
+  });
+
+  // Keyboard shortcuts for live preview
+  document.addEventListener("keydown", (e) => {
+    if (currentCards.length === 0) return;
+    // Don't capture when typing in inputs/textarea
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+    switch (e.key) {
+      case "ArrowLeft":
+        navigateLivePreview(-1);
+        e.preventDefault();
+        break;
+      case "ArrowRight":
+        navigateLivePreview(1);
+        e.preventDefault();
+        break;
+      case "f":
+      case "F":
+        livePreviewShowBack = !livePreviewShowBack;
+        renderLivePreview();
+        e.preventDefault();
+        break;
+      case "b":
+      case "B":
+        livePreviewShowBoth = !livePreviewShowBoth;
+        renderLivePreview();
+        e.preventDefault();
+        break;
+    }
+  });
+
   // Load example buttons
   document.getElementById("load-all-btn")?.addEventListener("click", () => {
     currentCards = [...BIG_O_CARDS];
+    livePreviewIndex = 0;
+    livePreviewShowBack = false;
     renderPreview(currentCards);
+    showLivePreview();
     previewSection.classList.remove("hidden");
     generateBtn.disabled = false;
     clearErrors();
@@ -247,7 +320,10 @@ function handleParse(): void {
   }
 
   currentCards = result.cards;
+  livePreviewIndex = 0;
+  livePreviewShowBack = false;
   renderPreview(currentCards);
+  showLivePreview();
   previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
 }
@@ -444,7 +520,10 @@ function renderDeckLibrary(): void {
 
 function loadDeck(deck: DeckInfo): void {
   currentCards = [...deck.cards];
+  livePreviewIndex = 0;
+  livePreviewShowBack = false;
   renderPreview(currentCards);
+  showLivePreview();
   previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
@@ -458,10 +537,119 @@ function loadAllDecks(): void {
     allCards.push(...deck.cards);
   }
   currentCards = allCards;
+  livePreviewIndex = 0;
+  livePreviewShowBack = false;
   renderPreview(currentCards);
+  showLivePreview();
   previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
   pdfTitle.value = "Complete DSA Study Set";
   cardCount.textContent = `${currentCards.length} cards ready — All Decks`;
+}
+
+// ─── Live Preview ─────────────────────────────────────────────────────────────
+
+function showLivePreview(): void {
+  livePreviewSection.classList.remove("hidden");
+  renderLivePreview();
+}
+
+function navigateLivePreview(delta: number): void {
+  if (currentCards.length === 0) return;
+  livePreviewIndex =
+    (livePreviewIndex + delta + currentCards.length) % currentCards.length;
+  livePreviewShowBack = false;
+  renderLivePreview();
+}
+
+function renderLivePreview(): void {
+  if (!liveCardContainer || currentCards.length === 0) return;
+
+  const card = currentCards[livePreviewIndex];
+  const total = currentCards.length;
+  const idx = livePreviewIndex + 1;
+
+  // Update counter
+  if (liveCardCounter) {
+    liveCardCounter.textContent = `${idx} / ${total}`;
+  }
+  if (liveCardInfo) {
+    liveCardInfo.textContent = card.topic || "";
+  }
+
+  // Update button state
+  if (toggleSideBtn) {
+    toggleSideBtn.classList.toggle("!bg-indigo-50", livePreviewShowBoth);
+    toggleSideBtn.classList.toggle("!border-indigo-300", livePreviewShowBoth);
+  }
+
+  liveCardContainer.innerHTML = "";
+
+  if (livePreviewShowBoth) {
+    // Side-by-side: front + back
+    liveCardContainer.appendChild(buildLiveCard(card, "FRONT", idx, total));
+    liveCardContainer.appendChild(buildLiveCard(card, "BACK", idx, total));
+  } else {
+    // Single card, flippable
+    const side = livePreviewShowBack ? "BACK" : "FRONT";
+    const el = buildLiveCard(card, side, idx, total);
+    el.style.cursor = "pointer";
+    el.addEventListener("click", () => {
+      livePreviewShowBack = !livePreviewShowBack;
+      renderLivePreview();
+    });
+    // Click hint
+    const hint = document.createElement("div");
+    hint.className = "live-card__click-hint";
+    hint.innerHTML = `<span>Click to flip</span>`;
+    el.appendChild(hint);
+    liveCardContainer.appendChild(el);
+  }
+}
+
+function buildLiveCard(
+  card: Flashcard,
+  side: "FRONT" | "BACK",
+  num: number,
+  total: number,
+): HTMLElement {
+  const el = document.createElement("div");
+  el.className = "live-card" + (side === "BACK" ? " live-card--back" : "");
+
+  const text = side === "FRONT" ? card.front : card.back;
+  const badgeClass =
+    side === "FRONT"
+      ? "live-card__side-badge--front"
+      : "live-card__side-badge--back";
+
+  el.innerHTML = `
+    <div class="live-card__topbar">
+      <span class="live-card__topic">${card.topic ? esc(card.topic) : ""}</span>
+      <span class="live-card__side-badge ${badgeClass}">${side}</span>
+    </div>
+    <div class="live-card__body">${formatCardText(esc(text))}</div>
+    <div class="live-card__footer">${num} / ${total}</div>
+  `;
+
+  return el;
+}
+
+function formatCardText(escaped: string): string {
+  // Highlight notation lines (Time:, Space:, O(, Best:, Worst:, etc.)
+  return escaped
+    .split("<br>")
+    .map((line) => {
+      const raw = line
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&");
+      const isNotation =
+        /^\s*(Time|Space|Best|Worst|Average|O\(|T:|S:)|^\s*-{3,}/.test(raw);
+      if (isNotation) {
+        return `<span class="font-mono text-xs text-slate-900">${line}</span>`;
+      }
+      return line;
+    })
+    .join("<br>");
 }

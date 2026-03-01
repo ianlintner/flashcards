@@ -128,3 +128,59 @@ details > summary::-webkit-details-marker {
   @apply bg-slate-900 text-slate-200 rounded-lg p-4 font-mono text-xs
     leading-relaxed whitespace-pre-wrap overflow-x-auto relative;
 }
+
+/* ── Live card preview ─────────────────────────────────────────────────────── */
+.live-card-container {
+  @apply flex gap-6 justify-center items-start flex-wrap;
+}
+
+.live-card {
+  aspect-ratio: 6 / 4;
+  width: min(100%, 540px);
+  @apply bg-white rounded-xl shadow-lg border border-slate-200
+    flex flex-col overflow-hidden relative transition-all duration-300
+    shrink-0;
+}
+.live-card--back {
+  @apply border-emerald-200;
+}
+
+.live-card__topbar {
+  @apply px-4 pt-3 pb-1.5 flex items-center justify-between gap-2 shrink-0;
+}
+.live-card__topic {
+  @apply text-xs font-bold text-slate-400 uppercase tracking-wide truncate;
+}
+.live-card__side-badge {
+  @apply text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full
+    uppercase shrink-0;
+}
+.live-card__side-badge--front {
+  @apply bg-blue-100 text-blue-600;
+}
+.live-card__side-badge--back {
+  @apply bg-emerald-100 text-emerald-600;
+}
+
+.live-card__body {
+  @apply flex-1 px-5 py-3 overflow-y-auto text-sm text-slate-700
+    leading-relaxed whitespace-pre-wrap font-sans;
+}
+.live-card__body--notation {
+  @apply font-mono text-xs;
+}
+
+.live-card__footer {
+  @apply px-4 py-1.5 text-[10px] text-slate-300 text-right shrink-0
+    border-t border-slate-100;
+}
+
+.live-card__click-hint {
+  @apply absolute inset-0 flex items-center justify-center
+    bg-slate-900/5 opacity-0 hover:opacity-100 transition-opacity
+    pointer-events-none;
+}
+.live-card__click-hint span {
+  @apply bg-white/90 backdrop-blur text-slate-500 text-xs font-semibold
+    px-3 py-1.5 rounded-full shadow-sm;
+}
