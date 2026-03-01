@@ -37,6 +37,8 @@ let livePreviewIndex = 0;
 let livePreviewShowBack = false;
 let livePreviewShowBoth = false;
 let pendingDeck: DeckInfo | null = null;
+let hasUserEdits = false;
+let autosaveTimeout: number | null = null;
 
 // ─── DOM refs ────────────────────────────────────────────────────────────────
 
@@ -116,6 +118,12 @@ const modalCancelBtn = document.getElementById(
 const modalConfirmBtn = document.getElementById(
   "modal-confirm-btn",
 ) as HTMLButtonElement;
+const saveStateBtn = document.getElementById(
+  "save-state-btn",
+) as HTMLButtonElement;
+const clearStateBtn = document.getElementById(
+  "clear-state-btn",
+) as HTMLButtonElement;
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
@@ -129,6 +137,12 @@ function init(): void {
   toggleSeparatorRow();
   updateDimensionBadge();
   renderDeckLibrary();
+  updateSaveButtons();
+
+  // Check for saved state after a brief delay to allow page to settle
+  setTimeout(() => {
+    promptRestoreSavedState();
+  }, 300);
 }
 
 function bindEvents(): void {
@@ -228,6 +242,11 @@ function bindEvents(): void {
   confirmModal?.addEventListener("click", (e) => {
     if (e.target === confirmModal) closeModal();
   });
+
+  // State persistence
+  saveStateBtn?.addEventListener("click", saveState);
+  clearStateBtn?.addEventListener("click", clearSavedState);
+  inputArea?.addEventListener("input", handleTextareaInput);
 }
 
 function toggleSeparatorRow(): void {
@@ -456,6 +475,147 @@ function esc(str: string): string {
 function setPlaceholder(_fmt: string): void {
   // could update placeholder text based on detected format
 }
+
+// ─── State Persistence ────────────────────────────────────────────────────────
+
+const STORAGE_KEY = "flashcards_saved_state";
+const AUTOSAVE_DELAY = 1000; // ms
+
+interface SavedState {
+  content: string;
+  format: InputFormat;
+  separator: string;
+  timestamp: number;
+}
+
+function saveState(): void {
+  const state: SavedState = {
+    content: inputArea.value,
+    format: formatSelect.value as InputFormat,
+    separator: separatorInput.value,
+    timestamp: Date.now(),
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showSaveConfirmation();
+  } catch (err) {
+    console.error("Failed to save state:", err);
+  }
+}
+
+function loadSavedState(): SavedState | null {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    return JSON.parse(saved) as SavedState;
+  } catch (err) {
+    console.error("Failed to load saved state:", err);
+    return null;
+  }
+}
+
+function clearSavedState(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    hasUserEdits = false;
+    updateSaveButtons();
+    showClearConfirmation();
+  } catch (err) {
+    console.error("Failed to clear saved state:", err);
+  }
+}
+
+function handleTextareaInput(): void {
+  if (!hasUserEdits) {
+    hasUserEdits = true;
+    updateSaveButtons();
+  }
+
+  // Auto-save with debounce
+  if (autosaveTimeout !== null) {
+    clearTimeout(autosaveTimeout);
+  }
+
+  autosaveTimeout = window.setTimeout(() => {
+    if (hasUserEdits && inputArea.value.trim()) {
+      saveState();
+    }
+  }, AUTOSAVE_DELAY);
+}
+
+function updateSaveButtons(): void {
+  const hasSaved = loadSavedState() !== null;
+  if (saveStateBtn) {
+    saveStateBtn.disabled = !hasUserEdits && !inputArea.value.trim();
+  }
+  if (clearStateBtn) {
+    clearStateBtn.disabled = !hasSaved;
+  }
+}
+
+function showSaveConfirmation(): void {
+  const now = new Date().toLocaleTimeString();
+  cardCount.textContent = `Saved at ${now}`;
+  cardCount.className = "text-sm font-semibold text-blue-600 ml-1";
+  setTimeout(() => {
+    if (currentCards.length > 0) {
+      cardCount.textContent = `${currentCards.length} cards ready`;
+      cardCount.className = "text-sm font-semibold text-emerald-600 ml-1";
+    } else {
+      cardCount.textContent = "";
+    }
+  }, 2000);
+}
+
+function showClearConfirmation(): void {
+  cardCount.textContent = "Saved state cleared";
+  cardCount.className = "text-sm font-semibold text-slate-600 ml-1";
+  setTimeout(() => {
+    if (currentCards.length > 0) {
+      cardCount.textContent = `${currentCards.length} cards ready`;
+      cardCount.className = "text-sm font-semibold text-emerald-600 ml-1";
+    } else {
+      cardCount.textContent = "";
+    }
+  }, 2000);
+}
+
+function promptRestoreSavedState(): void {
+  const saved = loadSavedState();
+  if (!saved) return;
+
+  const timeDiff = Date.now() - saved.timestamp;
+  const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+  let timeStr = "";
+  if (hours > 0) {
+    timeStr = `${hours}h ${minutes}m ago`;
+  } else if (minutes > 0) {
+    timeStr = `${minutes}m ago`;
+  } else {
+    timeStr = "just now";
+  }
+
+  const shouldRestore = confirm(
+    `Found saved content from ${timeStr}.\n\nWould you like to restore it?`,
+  );
+
+  if (shouldRestore) {
+    inputArea.value = saved.content;
+    formatSelect.value = saved.format;
+    separatorInput.value = saved.separator;
+    hasUserEdits = false; // Don't mark as edited when restoring
+    updateSaveButtons();
+  }
+}
+
+function markAsPreloadedDeck(): void {
+  hasUserEdits = false;
+  updateSaveButtons();
+}
+
 // ─── Modal ───────────────────────────────────────────────────────────────────────────────
 
 function openDeckConfirmModal(deck: DeckInfo): void {
@@ -553,6 +713,7 @@ function loadDeck(deck: DeckInfo): void {
   clearErrors();
   pdfTitle.value = deck.title;
   cardCount.textContent = `${currentCards.length} cards ready — ${deck.title}`;
+  markAsPreloadedDeck();
 }
 
 function loadAllDecks(): void {
