@@ -802,6 +802,51 @@ goes here
       </div>
     </main>
 
+    <!-- ── Confirmation Modal ────────────────────────────────────────────── -->
+    <div
+      id="confirm-modal"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Load Deck</h3>
+          <button
+            class="modal-close"
+            id="modal-close-btn"
+            aria-label="Close modal"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p
+            id="modal-message"
+            class="text-sm text-slate-700 leading-relaxed"
+          ></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" id="modal-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="modal-confirm-btn">
+            Load Deck
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Footer ─────────────────────────────────────────────────────────── -->
     <footer class="text-center text-xs text-slate-400 py-6 px-4">
       Flashcard PDF Generator &middot; runs entirely in your browser &middot; no

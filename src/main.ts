@@ -36,6 +36,7 @@ let currentCards: Flashcard[] = [];
 let livePreviewIndex = 0;
 let livePreviewShowBack = false;
 let livePreviewShowBoth = false;
+let pendingDeck: DeckInfo | null = null;
 
 // ─── DOM refs ────────────────────────────────────────────────────────────────
 
@@ -51,17 +52,13 @@ const parseBtn = document.getElementById("parse-btn") as HTMLButtonElement;
 const generateBtn = document.getElementById(
   "generate-btn",
 ) as HTMLButtonElement;
-const previewSection = document.getElementById(
-  "preview-section",
-) as HTMLElement;
-const cardCount = document.getElementById("card-count") as HTMLElement;
-const cardPreview = document.getElementById("card-preview") as HTMLElement;
 const errorBox = document.getElementById("error-box") as HTMLElement;
 const fontSizeInput = document.getElementById("font-size") as HTMLInputElement;
 const includeNums = document.getElementById("include-nums") as HTMLInputElement;
 const pdfTitle = document.getElementById("pdf-title") as HTMLInputElement;
 const loadExampleBtns =
   document.querySelectorAll<HTMLButtonElement>("[data-example]");
+const cardCount = document.getElementById("card-count") as HTMLElement;
 
 // New option refs
 const cardSizeSelect = document.getElementById(
@@ -78,9 +75,6 @@ const copyPromptBtn = document.getElementById(
 ) as HTMLButtonElement;
 
 // Live preview refs
-const livePreviewSection = document.getElementById(
-  "live-preview-section",
-) as HTMLElement;
 const liveCardContainer = document.getElementById(
   "live-card-container",
 ) as HTMLElement;
@@ -99,6 +93,28 @@ const flipCardBtn = document.getElementById(
 ) as HTMLButtonElement;
 const toggleSideBtn = document.getElementById(
   "toggle-side-btn",
+) as HTMLButtonElement;
+const livePreviewControls = document.getElementById(
+  "live-preview-controls",
+) as HTMLElement;
+const livePreviewEmpty = document.getElementById(
+  "live-preview-empty",
+) as HTMLElement;
+const livePreviewBody = document.getElementById(
+  "live-preview-body",
+) as HTMLElement;
+
+// Modal refs
+const confirmModal = document.getElementById("confirm-modal") as HTMLElement;
+const modalMessage = document.getElementById("modal-message") as HTMLElement;
+const modalCloseBtn = document.getElementById(
+  "modal-close-btn",
+) as HTMLButtonElement;
+const modalCancelBtn = document.getElementById(
+  "modal-cancel-btn",
+) as HTMLButtonElement;
+const modalConfirmBtn = document.getElementById(
+  "modal-confirm-btn",
 ) as HTMLButtonElement;
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
@@ -194,7 +210,6 @@ function bindEvents(): void {
     livePreviewShowBack = false;
     renderPreview(currentCards);
     showLivePreview();
-    previewSection.classList.remove("hidden");
     generateBtn.disabled = false;
     clearErrors();
     cardCount.textContent = `${currentCards.length} cards ready (Big O set)`;
@@ -205,6 +220,14 @@ function bindEvents(): void {
     ?.addEventListener("click", () => {
       loadAllDecks();
     });
+
+  // Modal event handlers
+  modalCloseBtn?.addEventListener("click", closeModal);
+  modalCancelBtn?.addEventListener("click", closeModal);
+  modalConfirmBtn?.addEventListener("click", confirmLoadDeck);
+  confirmModal?.addEventListener("click", (e) => {
+    if (e.target === confirmModal) closeModal();
+  });
 }
 
 function toggleSeparatorRow(): void {
@@ -324,7 +347,6 @@ function handleParse(): void {
   livePreviewShowBack = false;
   renderPreview(currentCards);
   showLivePreview();
-  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
 }
 
@@ -380,33 +402,6 @@ function handleGenerate(): void {
 
 function renderPreview(cards: Flashcard[]): void {
   cardCount.textContent = `${cards.length} card${cards.length !== 1 ? "s" : ""} ready`;
-  cardPreview.innerHTML = "";
-
-  cards.slice(0, 12).forEach((card, i) => {
-    const el = document.createElement("div");
-    el.className = "card-thumb";
-    el.innerHTML = `
-      <div class="thumb-face thumb-front">
-        <span class="thumb-label">FRONT</span>
-        ${card.topic ? `<div class="thumb-topic">${esc(card.topic)}</div>` : ""}
-        <div class="thumb-body">${esc(card.front)}</div>
-      </div>
-      <div class="thumb-face thumb-back">
-        <span class="thumb-label">BACK</span>
-        <div class="thumb-body">${esc(card.back)}</div>
-      </div>
-      <div class="thumb-num">#${i + 1}</div>
-    `;
-    cardPreview.appendChild(el);
-  });
-
-  if (cards.length > 12) {
-    const more = document.createElement("div");
-    more.className =
-      "more-cards self-center text-sm text-slate-400 italic px-2";
-    more.textContent = `+ ${cards.length - 12} more cards...`;
-    cardPreview.appendChild(more);
-  }
 }
 
 // ─── Examples ────────────────────────────────────────────────────────────────
@@ -428,7 +423,6 @@ function loadExample(fmt: InputFormat): void {
   }
   toggleSeparatorRow();
   clearErrors();
-  previewSection.classList.add("hidden");
 }
 
 // ─── Error display ────────────────────────────────────────────────────────────
@@ -462,7 +456,38 @@ function esc(str: string): string {
 function setPlaceholder(_fmt: string): void {
   // could update placeholder text based on detected format
 }
+// ─── Modal ───────────────────────────────────────────────────────────────────────────────
 
+function openDeckConfirmModal(deck: DeckInfo): void {
+  pendingDeck = deck;
+  const hasCurrentCards = currentCards.length > 0;
+
+  if (hasCurrentCards) {
+    modalMessage.innerHTML = `
+      <strong class="text-slate-800">${esc(deck.title)}</strong> contains ${deck.cards.length} flashcard${deck.cards.length !== 1 ? "s" : ""}.<br><br>
+      Loading this deck will replace your current ${currentCards.length} card${currentCards.length !== 1 ? "s" : ""} and reset the preview.
+    `;
+  } else {
+    modalMessage.innerHTML = `
+      Load <strong class="text-slate-800">${esc(deck.title)}</strong> with ${deck.cards.length} flashcard${deck.cards.length !== 1 ? "s" : ""}?
+    `;
+  }
+
+  confirmModal.classList.remove("hidden");
+  modalConfirmBtn.focus();
+}
+
+function closeModal(): void {
+  confirmModal.classList.add("hidden");
+  pendingDeck = null;
+}
+
+function confirmLoadDeck(): void {
+  if (!pendingDeck) return;
+
+  loadDeck(pendingDeck);
+  closeModal();
+}
 // ─── Deck Library ─────────────────────────────────────────────────────────────
 
 function renderDeckLibrary(): void {
@@ -509,7 +534,7 @@ function renderDeckLibrary(): void {
         <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">${esc(deck.category)}</div>
         <div class="text-xs text-slate-500 leading-snug">${esc(deck.description)}</div>
       `;
-      card.addEventListener("click", () => loadDeck(deck));
+      card.addEventListener("click", () => openDeckConfirmModal(deck));
       grid.appendChild(card);
     }
 
@@ -524,7 +549,6 @@ function loadDeck(deck: DeckInfo): void {
   livePreviewShowBack = false;
   renderPreview(currentCards);
   showLivePreview();
-  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
   pdfTitle.value = deck.title;
@@ -541,7 +565,6 @@ function loadAllDecks(): void {
   livePreviewShowBack = false;
   renderPreview(currentCards);
   showLivePreview();
-  previewSection.classList.remove("hidden");
   generateBtn.disabled = false;
   clearErrors();
   pdfTitle.value = "Complete DSA Study Set";
@@ -551,7 +574,10 @@ function loadAllDecks(): void {
 // ─── Live Preview ─────────────────────────────────────────────────────────────
 
 function showLivePreview(): void {
-  livePreviewSection.classList.remove("hidden");
+  // Show controls, hide empty state, show card view
+  livePreviewControls.classList.remove("hidden");
+  livePreviewEmpty.classList.add("hidden");
+  livePreviewBody.classList.remove("hidden");
   renderLivePreview();
 }
 
