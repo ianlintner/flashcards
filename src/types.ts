@@ -61,6 +61,7 @@ export interface PDFOptions {
   fontSize: number;
   includeCardNumbers: boolean;
   pageFilter: PageFilter; // "all" | "fronts" (odd pages) | "backs" (even pages)
+  reverseOrder: boolean; // print cards last-to-first (useful for manual duplex)
   title?: string;
 }
 
@@ -73,4 +74,5 @@ export const DEFAULT_PDF_OPTIONS: PDFOptions = {
   fontSize: 18,
   includeCardNumbers: true,
   pageFilter: "all",
+  reverseOrder: false,
 };

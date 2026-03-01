@@ -410,7 +410,7 @@
                     </label>
                   </div>
                 </div>
-                <div class="flex items-start pt-5">
+                <div class="flex flex-col gap-2 pt-5">
                   <label
                     class="inline-flex items-center gap-2 text-sm cursor-pointer"
                   >
@@ -421,6 +421,16 @@
                       class="w-4 h-4 accent-blue-600 cursor-pointer"
                     />
                     Show card numbers
+                  </label>
+                  <label
+                    class="inline-flex items-center gap-2 text-sm cursor-pointer"
+                  >
+                    <input
+                      id="reverse-order"
+                      type="checkbox"
+                      class="w-4 h-4 accent-blue-600 cursor-pointer"
+                    />
+                    Reverse order
                   </label>
                 </div>
               </div>
@@ -436,8 +446,8 @@
               </div>
               <div>
                 <strong class="text-slate-500">Duplex:</strong> Print
-                <em>Fronts only</em>, reload pages, then print
-                <em>Backs only</em>.
+                <em>Fronts only</em>, flip &amp; reload pages, then print
+                <em>Backs only</em> with <em>Reverse order</em>.
               </div>
             </div>
           </section>

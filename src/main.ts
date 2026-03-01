@@ -266,6 +266,10 @@ function handleGenerate(): void {
     'input[name="page-filter"]:checked',
   )?.value || "all") as PageFilter;
 
+  const reverseOrder =
+    (document.getElementById("reverse-order") as HTMLInputElement)?.checked ??
+    false;
+
   const opts: PDFOptions = {
     ...DEFAULT_PDF_OPTIONS,
     cardSize: size,
@@ -276,6 +280,7 @@ function handleGenerate(): void {
     fontSize: parseFloat(fontSizeInput.value) || 18,
     includeCardNumbers: includeNums.checked,
     pageFilter,
+    reverseOrder,
     title: pdfTitle.value.trim() || "Flashcards",
   };
 
@@ -284,13 +289,14 @@ function handleGenerate(): void {
   const title = (pdfTitle.value.trim() || "flashcards")
     .replace(/\s+/g, "-")
     .toLowerCase();
-  const suffix =
+  const filterSuffix =
     pageFilter === "fronts"
       ? "-fronts"
       : pageFilter === "backs"
         ? "-backs"
         : "";
-  const filename = `${title}${suffix}.pdf`;
+  const reverseSuffix = reverseOrder ? "-rev" : "";
+  const filename = `${title}${filterSuffix}${reverseSuffix}.pdf`;
   doc.save(filename);
 }
 

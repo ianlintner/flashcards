@@ -36,10 +36,15 @@ export function generatePDF(cards: Flashcard[], options: PDFOptions): jsPDF {
   const filter = options.pageFilter ?? "all";
   const includeFronts = filter === "all" || filter === "fronts";
   const includeBacks = filter === "all" || filter === "backs";
+  const reverse = options.reverseOrder ?? false;
+
+  // Optionally reverse card order (useful for manual duplex printing)
+  const orderedCards = reverse ? [...cards].reverse() : cards;
 
   let pageIndex = 0;
 
-  cards.forEach((card, idx) => {
+  orderedCards.forEach((card, i) => {
+    const idx = reverse ? cards.length - 1 - i : i;
     if (includeFronts) {
       if (pageIndex > 0) doc.addPage([shorter, longer], orient);
       drawSide(doc, card, "FRONT", card.front, idx + 1, cards.length, options);
