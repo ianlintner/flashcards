@@ -1,3 +1,4 @@
+// ── Original decks ──────────────────────────────────────────────
 import { BIG_O_DATA_STRUCTURES } from "./big-o-data-structures";
 import { BIG_O_ALGORITHMS } from "./big-o-algorithms";
 import { BIG_O_CONTROL_STRUCTURES } from "./big-o-control-structures";
@@ -19,6 +20,60 @@ import { API_DESIGN } from "./api-design";
 import { SECURITY_FUNDAMENTALS } from "./security-fundamentals";
 import { DISTRIBUTED_SYSTEMS_DEEP } from "./distributed-systems-deep";
 import { LEETCODE_PROBLEMS_EXTENDED } from "./leetcode-problems-extended";
+
+// ── Phase A: DSA ────────────────────────────────────────────────
+import { GRAPH_ALGORITHMS } from "./graph-algorithms";
+import { DYNAMIC_PROGRAMMING } from "./dynamic-programming";
+import { SORTING_SEARCHING } from "./sorting-searching";
+import { TREES_ADVANCED } from "./trees-advanced";
+import { GREEDY_BIT_MANIPULATION } from "./greedy-bit-manipulation";
+import { DATA_STRUCTURES_DEEP } from "./data-structures-deep";
+import { RECURSION_FUNDAMENTALS } from "./recursion-fundamentals";
+import { ALGORITHMIC_PROBLEM_SOLVING } from "./algorithmic-problem-solving";
+
+// ── Phase B: ML / AI ────────────────────────────────────────────
+import { ML_FUNDAMENTALS } from "./ml-fundamentals";
+import { NEURAL_NETWORKS } from "./neural-networks";
+import { TRANSFORMERS_ATTENTION } from "./transformers-attention";
+import { LLM_FUNDAMENTALS } from "./llm-fundamentals";
+import { PROMPT_ENGINEERING } from "./prompt-engineering";
+import { ML_ALGORITHMS } from "./ml-algorithms";
+import { ML_SYSTEM_DESIGN } from "./ml-system-design";
+import { NLP_FUNDAMENTALS } from "./nlp-fundamentals";
+import { REINFORCEMENT_LEARNING } from "./reinforcement-learning";
+import { AI_ETHICS_SAFETY } from "./ai-ethics-safety";
+
+// ── Phase C: Cloud / DevOps ─────────────────────────────────────
+import { DOCKER_KUBERNETES } from "./docker-kubernetes";
+import { CICD_DEVOPS } from "./cicd-devops";
+import { CLOUD_FUNDAMENTALS } from "./cloud-fundamentals";
+import { DEVOPS_PRACTICES } from "./devops-practices";
+import { INFRASTRUCTURE_AS_CODE } from "./infrastructure-as-code";
+import { OBSERVABILITY_MONITORING } from "./observability-monitoring";
+
+// ── Phase D: Web / Software Engineering ─────────────────────────
+import { HTTP_WEB_PROTOCOLS } from "./http-web-protocols";
+import { GRAPHQL_API_PATTERNS } from "./graphql-api-patterns";
+import { TESTING_CODE_QUALITY } from "./testing-code-quality";
+import { BROWSER_INTERNALS } from "./browser-internals";
+import { SOFTWARE_ARCHITECTURE } from "./software-architecture";
+import { TYPESCRIPT_REACT_DEEP } from "./typescript-react-deep";
+
+// ── Phase E: CS Theory ──────────────────────────────────────────
+import { DISCRETE_MATH_CS } from "./discrete-math-cs";
+import { PROBABILITY_STATS_ML } from "./probability-stats-ml";
+import { LINEAR_ALGEBRA_ML } from "./linear-algebra-ml";
+import { COMPILER_DESIGN } from "./compiler-design";
+import { INFO_THEORY_CRYPTO } from "./info-theory-crypto";
+
+// ── Phase F: Languages & Case Studies ───────────────────────────
+import { PYTHON_ESSENTIALS } from "./python-essentials";
+import { JAVASCRIPT_DEEP_DIVE } from "./javascript-deep-dive";
+import { SQL_MASTERY } from "./sql-mastery";
+import { GO_FUNDAMENTALS } from "./go-fundamentals";
+import { RUST_OWNERSHIP } from "./rust-ownership";
+import { SYSTEM_DESIGN_CASES } from "./system-design-cases";
+
 import type { DeckInfo } from "./types";
 import { LEVEL_ORDER } from "./types";
 
@@ -28,6 +83,7 @@ export type { DeckLevel } from "./types";
 
 /** All available decks, sorted by level then title */
 export const DECK_LIBRARY: DeckInfo[] = [
+  // Original
   BIG_O_DATA_STRUCTURES,
   BIG_O_ALGORITHMS,
   BIG_O_CONTROL_STRUCTURES,
@@ -49,6 +105,53 @@ export const DECK_LIBRARY: DeckInfo[] = [
   SECURITY_FUNDAMENTALS,
   DISTRIBUTED_SYSTEMS_DEEP,
   LEETCODE_PROBLEMS_EXTENDED,
+  // Phase A — DSA
+  GRAPH_ALGORITHMS,
+  DYNAMIC_PROGRAMMING,
+  SORTING_SEARCHING,
+  TREES_ADVANCED,
+  GREEDY_BIT_MANIPULATION,
+  DATA_STRUCTURES_DEEP,
+  RECURSION_FUNDAMENTALS,
+  ALGORITHMIC_PROBLEM_SOLVING,
+  // Phase B — ML / AI
+  ML_FUNDAMENTALS,
+  NEURAL_NETWORKS,
+  TRANSFORMERS_ATTENTION,
+  LLM_FUNDAMENTALS,
+  PROMPT_ENGINEERING,
+  ML_ALGORITHMS,
+  ML_SYSTEM_DESIGN,
+  NLP_FUNDAMENTALS,
+  REINFORCEMENT_LEARNING,
+  AI_ETHICS_SAFETY,
+  // Phase C — Cloud / DevOps
+  DOCKER_KUBERNETES,
+  CICD_DEVOPS,
+  CLOUD_FUNDAMENTALS,
+  DEVOPS_PRACTICES,
+  INFRASTRUCTURE_AS_CODE,
+  OBSERVABILITY_MONITORING,
+  // Phase D — Web / SWE
+  HTTP_WEB_PROTOCOLS,
+  GRAPHQL_API_PATTERNS,
+  TESTING_CODE_QUALITY,
+  BROWSER_INTERNALS,
+  SOFTWARE_ARCHITECTURE,
+  TYPESCRIPT_REACT_DEEP,
+  // Phase E — CS Theory
+  DISCRETE_MATH_CS,
+  PROBABILITY_STATS_ML,
+  LINEAR_ALGEBRA_ML,
+  COMPILER_DESIGN,
+  INFO_THEORY_CRYPTO,
+  // Phase F — Languages & Case Studies
+  PYTHON_ESSENTIALS,
+  JAVASCRIPT_DEEP_DIVE,
+  SQL_MASTERY,
+  GO_FUNDAMENTALS,
+  RUST_OWNERSHIP,
+  SYSTEM_DESIGN_CASES,
 ].sort((a, b) => {
   const la = LEVEL_ORDER.indexOf(a.level);
   const lb = LEVEL_ORDER.indexOf(b.level);
@@ -74,6 +177,7 @@ export function getTotalCardCount(): number {
 
 // Re-export individual decks for direct imports
 export {
+  // Original
   BIG_O_DATA_STRUCTURES,
   BIG_O_ALGORITHMS,
   BIG_O_CONTROL_STRUCTURES,
@@ -95,4 +199,51 @@ export {
   SECURITY_FUNDAMENTALS,
   DISTRIBUTED_SYSTEMS_DEEP,
   LEETCODE_PROBLEMS_EXTENDED,
+  // Phase A — DSA
+  GRAPH_ALGORITHMS,
+  DYNAMIC_PROGRAMMING,
+  SORTING_SEARCHING,
+  TREES_ADVANCED,
+  GREEDY_BIT_MANIPULATION,
+  DATA_STRUCTURES_DEEP,
+  RECURSION_FUNDAMENTALS,
+  ALGORITHMIC_PROBLEM_SOLVING,
+  // Phase B — ML / AI
+  ML_FUNDAMENTALS,
+  NEURAL_NETWORKS,
+  TRANSFORMERS_ATTENTION,
+  LLM_FUNDAMENTALS,
+  PROMPT_ENGINEERING,
+  ML_ALGORITHMS,
+  ML_SYSTEM_DESIGN,
+  NLP_FUNDAMENTALS,
+  REINFORCEMENT_LEARNING,
+  AI_ETHICS_SAFETY,
+  // Phase C — Cloud / DevOps
+  DOCKER_KUBERNETES,
+  CICD_DEVOPS,
+  CLOUD_FUNDAMENTALS,
+  DEVOPS_PRACTICES,
+  INFRASTRUCTURE_AS_CODE,
+  OBSERVABILITY_MONITORING,
+  // Phase D — Web / SWE
+  HTTP_WEB_PROTOCOLS,
+  GRAPHQL_API_PATTERNS,
+  TESTING_CODE_QUALITY,
+  BROWSER_INTERNALS,
+  SOFTWARE_ARCHITECTURE,
+  TYPESCRIPT_REACT_DEEP,
+  // Phase E — CS Theory
+  DISCRETE_MATH_CS,
+  PROBABILITY_STATS_ML,
+  LINEAR_ALGEBRA_ML,
+  COMPILER_DESIGN,
+  INFO_THEORY_CRYPTO,
+  // Phase F — Languages & Case Studies
+  PYTHON_ESSENTIALS,
+  JAVASCRIPT_DEEP_DIVE,
+  SQL_MASTERY,
+  GO_FUNDAMENTALS,
+  RUST_OWNERSHIP,
+  SYSTEM_DESIGN_CASES,
 };

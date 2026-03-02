@@ -1,5 +1,6 @@
 import "./style.css";
 import "./player.css";
+import "./browser/browser.css";
 import { parseJSON, parseYAML, parseMarkdown, detectFormat } from "./parsers";
 import { generatePDF } from "./pdf-generator";
 import {
@@ -31,6 +32,8 @@ import {
   LEVEL_ORDER,
 } from "./decks/index";
 import type { DeckInfo, DeckLevel } from "./decks/index";
+import { registerRoute, initRouter, navigateTo } from "./router";
+import { openDeckBrowser, closeDeckBrowser } from "./browser/deck-browser";
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
@@ -126,6 +129,9 @@ const saveStateBtn = document.getElementById(
 const clearStateBtn = document.getElementById(
   "clear-state-btn",
 ) as HTMLButtonElement;
+const browseDecksBtn = document.getElementById(
+  "browse-decks-btn",
+) as HTMLButtonElement;
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
@@ -140,6 +146,7 @@ function init(): void {
   updateDimensionBadge();
   renderDeckLibrary();
   updateSaveButtons();
+  initAppRouter();
 
   // Check for saved state after a brief delay to allow page to settle
   setTimeout(() => {
@@ -151,6 +158,11 @@ function bindEvents(): void {
   parseBtn.addEventListener("click", handleParse);
   generateBtn.addEventListener("click", handleGenerate);
   formatSelect.addEventListener("change", toggleSeparatorRow);
+
+  // Browse decks button
+  browseDecksBtn?.addEventListener("click", () => {
+    navigateTo("/browse");
+  });
 
   loadExampleBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -753,6 +765,47 @@ function loadAllDecks(): void {
 
 function openPlayer(deck: DeckInfo): void {
   startPlayer(deck);
+}
+
+// ─── Router ───────────────────────────────────────────────────────────────────
+
+function initAppRouter(): void {
+  const browserCallbacks = {
+    onPlayDeck: (deck: DeckInfo) => {
+      navigateTo(`/play/${deck.id}`);
+      openPlayer(deck);
+    },
+    onLoadDeckForPdf: (deck: DeckInfo) => {
+      loadDeck(deck);
+    },
+  };
+
+  registerRoute("browse", "/browse", () => {
+    openDeckBrowser(browserCallbacks);
+  });
+
+  registerRoute("browse-category", "/browse/:category", (params) => {
+    openDeckBrowser(browserCallbacks, params.category);
+  });
+
+  registerRoute("play", "/play/:id", (params) => {
+    const deck = DECK_LIBRARY.find((d) => d.id === params.id);
+    if (deck) {
+      openPlayer(deck);
+    }
+  });
+
+  registerRoute("deck", "/deck/:id", (params) => {
+    const deck = DECK_LIBRARY.find((d) => d.id === params.id);
+    if (deck) {
+      loadDeck(deck);
+    }
+  });
+
+  initRouter(() => {
+    // Default / fallback: close overlays
+    closeDeckBrowser();
+  });
 }
 
 // ─── Live Preview ─────────────────────────────────────────────────────────────
