@@ -311,15 +311,18 @@ function bindBrowserEvents(overlay: HTMLElement): void {
       const deck = DECK_LIBRARY.find((d) => d.id === deckId);
       if (!deck) return;
 
+      // Save callbacks reference before closing (closeDeckBrowser nulls it out)
+      const savedCallbacks = callbacks;
+
       switch (action) {
         case "play":
           closeDeckBrowser();
-          callbacks?.onPlayDeck(deck);
+          savedCallbacks?.onPlayDeck(deck);
           break;
         case "pdf":
           closeDeckBrowser();
           navigateTo("");
-          callbacks?.onLoadDeckForPdf(deck);
+          savedCallbacks?.onLoadDeckForPdf(deck);
           break;
         case "share":
           shareDeck(deck);
@@ -335,8 +338,10 @@ function bindBrowserEvents(overlay: HTMLElement): void {
       const deckId = (card as HTMLElement).dataset.deckId!;
       const deck = DECK_LIBRARY.find((d) => d.id === deckId);
       if (!deck) return;
+      // Save callbacks reference before closing
+      const savedCallbacks = callbacks;
       closeDeckBrowser();
-      callbacks?.onPlayDeck(deck);
+      savedCallbacks?.onPlayDeck(deck);
     });
   });
 }

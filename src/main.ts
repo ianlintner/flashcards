@@ -772,8 +772,8 @@ function openPlayer(deck: DeckInfo): void {
 function initAppRouter(): void {
   const browserCallbacks = {
     onPlayDeck: (deck: DeckInfo) => {
+      // Just navigate; let the route handler open the player
       navigateTo(`/play/${deck.id}`);
-      openPlayer(deck);
     },
     onLoadDeckForPdf: (deck: DeckInfo) => {
       loadDeck(deck);
