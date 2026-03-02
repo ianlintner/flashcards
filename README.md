@@ -4,6 +4,7 @@ A browser-based TypeScript app that converts structured content into print-ready
 
 <img width="1174" height="770" alt="Screenshot 2026-03-02 at 5 35 00 PM" src="https://github.com/user-attachments/assets/8f0dffc8-8b86-4bb6-afc4-8309f619c9c7" />
 
+<img width="1024" height="817" alt="card" src="https://github.com/user-attachments/assets/7f3eb032-df31-4c6c-ac6d-f7f42be4db10" />
 
 
 🔗 **[Live Demo](https://ianlintner.github.io/flashcards/)**
