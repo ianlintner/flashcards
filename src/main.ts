@@ -1,4 +1,5 @@
 import "./style.css";
+import "./player.css";
 import { parseJSON, parseYAML, parseMarkdown, detectFormat } from "./parsers";
 import { generatePDF } from "./pdf-generator";
 import {
@@ -7,6 +8,7 @@ import {
   EXAMPLE_JSON,
   EXAMPLE_YAML,
 } from "./examples";
+import { startPlayer } from "./player/player";
 import type {
   InputFormat,
   PDFOptions,
@@ -693,8 +695,25 @@ function renderDeckLibrary(): void {
         </div>
         <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">${esc(deck.category)}</div>
         <div class="text-xs text-slate-500 leading-snug">${esc(deck.description)}</div>
+        <button class="deck-play-btn" title="Play flashcard game with this deck">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Play
+        </button>
       `;
-      card.addEventListener("click", () => openDeckConfirmModal(deck));
+      card.addEventListener("click", (e) => {
+        // Don't trigger if clicking play button
+        if ((e.target as HTMLElement).closest(".deck-play-btn")) return;
+        openDeckConfirmModal(deck);
+      });
+
+      const playBtn = card.querySelector(".deck-play-btn");
+      playBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openPlayer(deck);
+      });
+
       grid.appendChild(card);
     }
 
@@ -730,6 +749,10 @@ function loadAllDecks(): void {
   clearErrors();
   pdfTitle.value = "Complete DSA Study Set";
   cardCount.textContent = `${currentCards.length} cards ready — All Decks`;
+}
+
+function openPlayer(deck: DeckInfo): void {
+  startPlayer(deck);
 }
 
 // ─── Live Preview ─────────────────────────────────────────────────────────────

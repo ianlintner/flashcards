@@ -120,7 +120,21 @@ details > summary::-webkit-details-marker {
 .deck-card {
   @apply bg-white border border-slate-200 rounded-lg p-3
     cursor-pointer transition-all duration-150 flex flex-col gap-1
-    hover:border-blue-400 hover:shadow-md;
+    hover:border-blue-400 hover:shadow-md relative;
+}
+
+.deck-play-btn {
+  @apply absolute top-2 right-2 flex items-center gap-1 px-2 py-1
+    bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold
+    rounded-md transition-all duration-150 z-10;
+}
+
+.deck-play-btn:hover {
+  @apply shadow-lg scale-105;
+}
+
+.deck-play-btn svg {
+  @apply w-3 h-3;
 }
 
 /* ── AI prompt code block ───────────────────────────────────────────────────── */
