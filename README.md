@@ -1,6 +1,10 @@
-# Flashcard Generator
+# Flashcard Generator, Library & Player
 
 A browser-based TypeScript app that converts structured content into print-ready **6 × 4 inch landscape PDF flashcards** (front + back). Designed for physical printing with minimal ink usage.
+
+<img width="1174" height="770" alt="Screenshot 2026-03-02 at 5 35 00 PM" src="https://github.com/user-attachments/assets/8f0dffc8-8b86-4bb6-afc4-8309f619c9c7" />
+
+
 
 🔗 **[Live Demo](https://ianlintner.github.io/flashcards/)**
 
