@@ -374,6 +374,13 @@
   transform: scale(1.05);
 }
 
+.btn-judgment:disabled,
+.btn-judgment.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Progress Bar */
 .player-progress {
   height: 6px;

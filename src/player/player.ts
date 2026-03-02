@@ -120,11 +120,9 @@ export class FlashcardPlayer {
 
   judge(judgment: JudgmentType): void {
     if (!this.cardStack || !this.state.currentCard) return;
-    if (this.state.gameState !== "flipped") {
-      // Auto-flip if not already flipped
-      if (!this.state.isFlipped) {
-        this.flip();
-      }
+
+    // Only allow judgments when card is flipped (answer showing)
+    if (this.state.gameState !== "flipped" || !this.state.isFlipped) {
       return;
     }
 
@@ -175,7 +173,7 @@ export class FlashcardPlayer {
     }
 
     this.state.currentCard = this.cardStack.getCurrentCard();
-    this.state.isFlipped = false;
+    this.state.isFlipped = false; // Always start new card on front
     this.setState("playing");
   }
 
@@ -242,6 +240,7 @@ export class FlashcardPlayer {
     );
 
     this.state.currentCard = this.cardStack.getCurrentCard();
+    this.state.isFlipped = false; // Start on front side
     this.setState("intro");
 
     setTimeout(() => {

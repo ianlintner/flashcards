@@ -182,6 +182,18 @@ export function updatePlayerUI(state: PlayerState): void {
   // Update state visibility
   overlayElement.setAttribute("data-state", state.gameState);
 
+  // Disable judgment buttons when showing question (not flipped)
+  const judgmentButtons = overlayElement.querySelectorAll(".btn-judgment");
+  judgmentButtons.forEach((btn) => {
+    if (state.isFlipped) {
+      btn.removeAttribute("disabled");
+      btn.classList.remove("disabled");
+    } else {
+      btn.setAttribute("disabled", "true");
+      btn.classList.add("disabled");
+    }
+  });
+
   previousState = structuredClone(state);
 }
 
@@ -314,9 +326,18 @@ function bindPlayerEvents(): void {
   const correctBtn = overlayElement.querySelector("#judge-correct-btn");
   const easyBtn = overlayElement.querySelector("#judge-easy-btn");
 
-  wrongBtn?.addEventListener("click", () => callbacks?.onJudge("wrong"));
-  correctBtn?.addEventListener("click", () => callbacks?.onJudge("correct"));
-  easyBtn?.addEventListener("click", () => callbacks?.onJudge("easy"));
+  wrongBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    callbacks?.onJudge("wrong");
+  });
+  correctBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    callbacks?.onJudge("correct");
+  });
+  easyBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    callbacks?.onJudge("easy");
+  });
 
   // Pause button
   const pauseBtn = overlayElement.querySelector(".player-pause-btn");
