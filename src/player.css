@@ -184,16 +184,28 @@
   background: white;
   border-radius: 1.5rem;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 3rem;
+  padding: 2rem 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  overflow: auto;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .player-card__back {
   transform: rotateY(180deg);
+}
+
+/* Inner wrapper: centers content vertically when short, scrolls properly when long */
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: auto 0; /* vertical centering via auto margins */
+  min-height: 0;
+  flex-shrink: 0;
 }
 
 .card-topic {
@@ -202,15 +214,35 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .card-content {
   font-size: 1.5rem;
-  line-height: 1.6;
+  line-height: 1.5;
   text-align: center;
   color: #2d3748;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Auto-shrink font classes for long content */
+.card-content.text-md {
+  font-size: 1.2rem;
+  line-height: 1.45;
+}
+
+.card-content.text-sm {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.card-content.text-xs {
+  font-size: 0.875rem;
+  line-height: 1.35;
 }
 
 /* Card Animations */
@@ -664,11 +696,23 @@
 
   .player-card__front,
   .player-card__back {
-    padding: 2rem;
+    padding: 1.5rem;
   }
 
   .card-content {
     font-size: 1.125rem;
+  }
+
+  .card-content.text-md {
+    font-size: 1rem;
+  }
+
+  .card-content.text-sm {
+    font-size: 0.875rem;
+  }
+
+  .card-content.text-xs {
+    font-size: 0.75rem;
   }
 
   .player-controls {

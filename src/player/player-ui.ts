@@ -140,16 +140,24 @@ export function updatePlayerUI(state: PlayerState): void {
     const backSide = cardElement.querySelector(".player-card__back");
 
     if (frontSide) {
+      const frontText = escapeHTML(state.currentCard.front);
+      const frontSizeClass = getTextSizeClass(frontText);
       frontSide.innerHTML = `
-        ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
-        <div class="card-content">${escapeHTML(state.currentCard.front).replace(/\n/g, "<br>")}</div>
+        <div class="card-inner">
+          ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
+          <div class="card-content ${frontSizeClass}">${frontText.replace(/\n/g, "<br>")}</div>
+        </div>
       `;
     }
 
     if (backSide) {
+      const backText = escapeHTML(state.currentCard.back);
+      const backSizeClass = getTextSizeClass(backText);
       backSide.innerHTML = `
-        ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
-        <div class="card-content">${escapeHTML(state.currentCard.back).replace(/\n/g, "<br>")}</div>
+        <div class="card-inner">
+          ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
+          <div class="card-content ${backSizeClass}">${backText.replace(/\n/g, "<br>")}</div>
+        </div>
       `;
     }
   }
@@ -448,10 +456,14 @@ function getOverlayHTML(state: PlayerState): string {
         
         <div class="player-card">
           <div class="player-card__front">
-            <div class="card-content">Loading...</div>
+            <div class="card-inner">
+              <div class="card-content">Loading...</div>
+            </div>
           </div>
           <div class="player-card__back">
-            <div class="card-content">Answer</div>
+            <div class="card-inner">
+              <div class="card-content">Answer</div>
+            </div>
           </div>
         </div>
         
@@ -498,4 +510,15 @@ function escapeHTML(str: string): string {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
+}
+
+/** Return a CSS class to auto-shrink text based on content length + line count. */
+function getTextSizeClass(text: string): string {
+  const len = text.length;
+  const lines = text.split(/\n|<br>/g).length;
+  // Thresholds tuned for 6x4-ish card aspect ratio
+  if (len > 500 || lines > 14) return "text-xs";
+  if (len > 300 || lines > 10) return "text-sm";
+  if (len > 180 || lines > 7) return "text-md";
+  return "";
 }
