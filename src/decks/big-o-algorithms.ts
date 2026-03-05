@@ -18,19 +18,19 @@ const cards: Flashcard[] = [
     topic: "Insertion Sort",
     front:
       "What are the time and space complexities\nof Insertion Sort?\n\n(build sorted prefix, insert each element)",
-    back: "Best:    O(n)   - already sorted\nAverage: O(n^2)\nWorst:   O(n^2)\nSpace:   O(1) - in-place\n\nExcellent for small or nearly-sorted\narrays; used inside Timsort for small runs.",
+    back: "Best:    O(n)   - already sorted\nAverage: O(n^2)\nWorst:   O(n^2)\nSpace:   O(1) - in-place\n\nExcellent for small or nearly-sorted\narrays; used inside Timsort for small runs.\n\nLike sorting cards in your hand one by one.",
   },
   {
     topic: "Merge Sort",
     front:
       "What are the time and space complexities\nof Merge Sort?\n\n(divide, sort halves, merge)",
-    back: "Best / Avg / Worst: O(n log n)\nSpace: O(n) - auxiliary array\n\nStable sort; predictable O(n log n) in\nall cases. Extra memory is the tradeoff.\nPreferred for sorting linked lists.",
+    back: 'Best / Avg / Worst: O(n log n)\nSpace: O(n) - auxiliary array\n\nStable sort; predictable O(n log n) in\nall cases. Extra memory is the tradeoff.\nPreferred for sorting linked lists.\n\n"Divide to conquer, merge to order."',
   },
   {
     topic: "Quick Sort",
     front:
       "What are the time and space complexities\nof Quick Sort?\n\n(partition around pivot, recurse)",
-    back: "Best / Average: O(n log n)\nWorst:          O(n^2) - bad pivot\nSpace: O(log n) avg stack depth\n\nFastest in practice (cache friendly).\nWorst case avoided with random pivot\nor median-of-three strategy.",
+    back: 'Best / Average: O(n log n)\nWorst:          O(n^2) - bad pivot\nSpace: O(log n) avg stack depth\n\nFastest in practice (cache friendly).\nWorst case avoided with random pivot\nor median-of-three strategy.\n\n"Pivot is king - choose wisely."',
   },
   {
     topic: "Heap Sort",
@@ -75,7 +75,7 @@ const cards: Flashcard[] = [
     topic: "BFS - Breadth-First Search",
     front:
       "What are the time and space complexities\nof BFS on a graph?\n\nV = vertices,  E = edges",
-    back: "Time:  O(V + E)\nSpace: O(V) - visited set + queue\n\nEach vertex is enqueued once (O(V))\nand each edge is relaxed once (O(E)).\nFinds shortest path in unweighted graphs.",
+    back: "Time:  O(V + E)\nSpace: O(V) - visited set + queue\n\nEach vertex is enqueued once (O(V))\nand each edge is relaxed once (O(E)).\nFinds shortest path in unweighted graphs.\n\nThink level by level, like ripples in a pond.",
   },
   {
     topic: "DFS - Depth-First Search",
@@ -86,8 +86,8 @@ const cards: Flashcard[] = [
   {
     topic: "Dijkstra's Algorithm",
     front:
-      "What is the time complexity of\nDijkstra's shortest-path algorithm?\n\n(with a min-heap priority queue)",
-    back: "Time:  O((V + E) log V)\nSpace: O(V)\n\nEach vertex extracted from heap: O(V log V)\nEach edge relaxation: O(E log V)\nDoes NOT work with negative edges.",
+      "You need shortest driving routes from\nyour warehouse to all stores. All roads\nhave positive distances.\n\nWhat algorithm and time complexity?\n(with a min-heap priority queue)",
+    back: "Dijkstra's Algorithm\n\nTime:  O((V + E) log V)\nSpace: O(V)\n\nExtracts each vertex from heap: O(V log V)\nRelaxes each edge: O(E log V)\nDoes NOT work with negative edges.",
   },
   {
     topic: "Bellman-Ford Algorithm",
@@ -127,26 +127,44 @@ const cards: Flashcard[] = [
   {
     topic: "Two-Pointer Technique",
     front:
-      "What is the typical time complexity\nof the Two-Pointer technique\non a sorted array?",
-    back: "Time:  O(n)\nSpace: O(1)\n\nTwo pointers converge from opposite ends\n(or move in same direction).\nCommon for: pair sum, removing duplicates,\ncontainer with most water.",
+      "Given a sorted array of prices, find two\nitems that sum to a target budget.\n\nWhat technique solves this in O(n)?",
+    back: "Two-Pointer Technique\n\nTime:  O(n)   Space: O(1)\n\nOne pointer at start, one at end.\nSum too small -> move left pointer right.\nSum too large -> move right pointer left.\nAlso: removing duplicates, palindromes,\ncontainer with most water.",
   },
   {
     topic: "Sliding Window",
     front:
-      "What is the typical time complexity\nof the Sliding Window technique?",
-    back: "Time:  O(n)\nSpace: O(1) to O(k)\n\nMaintain a window [left, right] over\nthe array. Expand right, shrink left.\nCommon for: max subarray, longest\nsubstring, minimum window substring.",
+      "Find the maximum total sales in any\n7 consecutive days from a daily sales log.\n\nWhat technique solves this in O(n)?",
+    back: "Sliding Window\n\nTime:  O(n)   Space: O(1) to O(k)\n\nMaintain a window [left, right] over\nthe array. Expand right, shrink left.\nAs window slides, add new and drop old.\nAlso: longest substring without repeats,\nminimum window substring.",
   },
   {
-    topic: "Sorting Cheat Sheet",
+    topic: "Sorting Cheat Sheet - Time",
     front:
       "Rank these sorts by worst-case time:\n\n  Bubble, Insertion, Selection\n  Merge,  Quick,    Heap\n  Counting (k=n)",
-    back: "------------------------------\nO(n)       Counting Sort (k=n)\nO(n log n) Merge, Heap Sort\nO(n log n) Quick (avg) / O(n^2) worst\nO(n^2)     Bubble, Insertion, Selection\n------------------------------\nSpace:\n  O(1) in-place: Heap, Bubble, Insertion\n  O(n):          Merge, Counting\n  O(log n) stack: Quick",
+    back: "O(n)       Counting Sort (k=n)\nO(n log n) Merge Sort (always)\nO(n log n) Heap Sort  (always)\nO(n^2)     Quick Sort (worst; avg n log n)\nO(n^2)     Bubble, Insertion, Selection\n\nKey: Quick Sort is O(n^2) worst case\nbut fastest in practice (cache friendly).",
+  },
+  {
+    topic: "Sorting Cheat Sheet - Space & Stability",
+    front:
+      "For Bubble, Insertion, Merge, Quick,\nHeap, and Counting Sort:\n\nWhich are in-place? Which are stable?",
+    back: "In-place (O(1) extra):\n  Bubble, Insertion, Heap, Selection\n\nNot in-place:\n  Merge O(n), Counting O(k), Quick O(log n)\n\nStable (preserve equal-key order):\n  Bubble, Insertion, Merge, Counting\n\nUnstable: Heap, Selection, Quick",
   },
   {
     topic: "Comparison Sort Lower Bound",
     front:
       "What is the lower bound for\ncomparison-based sorting algorithms?\n\nCan any comparison sort beat it?",
-    back: "Lower bound: O(n log n)\n\nProven via decision tree argument:\nlog2(n!) = O(n log n) comparisons\nare required in the worst case.\n\nNon-comparison sorts (Counting, Radix,\nBucket) can achieve O(n) with constraints.",
+    back: "Lower bound: O(n log n)\n\nDecision tree argument: sorting n items\nneeds log2(n!) = O(n log n) compares.\n\nNo comparison sort can do better.\nCounting/Radix bypass this via bucketing.",
+  },
+  {
+    topic: "When to Use Which Sort",
+    front:
+      "You need to choose a sorting algorithm.\nWhat sort for each scenario?\n\n1) Small array (< 20 elements)\n2) General-purpose, speed matters\n3) Must preserve order of equal keys\n4) Integers in a small known range",
+    back: "1) Small -> Insertion Sort\n   Low overhead, fast on small n.\n2) General -> Quick Sort\n   Best avg cache performance.\n3) Stability needed -> Merge Sort\n   Guaranteed O(n log n) and stable.\n4) Small int range -> Counting Sort\n   O(n+k), no comparisons needed.\n\nReal-world: Timsort = Merge + Insertion.",
+  },
+  {
+    topic: "Binary Search Invariant",
+    front:
+      "What must be true for binary search\nto work correctly?\n\nWhat are two common implementation\nmistakes?",
+    back: "Requirement: monotonic property -\nthe search space must be sorted or\nhave a clear true/false boundary.\n\nCommon mistakes:\n1) Off-by-one: wrong lo<=hi vs lo<hi\n   or wrong mid+1 / mid-1 boundary.\n2) Overflow: mid = (lo+hi)/2 can\n   overflow. Use mid = lo+(hi-lo)/2.",
   },
 ];
 

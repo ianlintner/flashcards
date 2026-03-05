@@ -10,13 +10,14 @@ const cards: Flashcard[] = [
   {
     topic: "Activity Selection",
     front:
-      "Describe the Activity Selection problem.\n\nWhat is the greedy strategy?",
-    back: "Given activities with start/end times,\nfind maximum non-overlapping activities.\n\nGreedy: Always pick activity that\nFINISHES earliest.\n\n1. Sort by end time\n2. Select first activity\n3. For each next: if start >= last end,\n   select it\n\nTime: O(n log n) for sort",
+      "A conference room has 10 booking requests\nwith different start/end times.\n\nHow do you schedule the maximum number\nof non-overlapping meetings?",
+    back: "Greedy: Always pick the meeting that\nFINISHES earliest.\n\n1. Sort all requests by end time\n2. Select the first meeting\n3. For each remaining request:\n   if start >= last selected end, take it\n\nWhy earliest-finish? It leaves maximum\nremaining time for other meetings.\n\nTime: O(n log n) for the sort step",
   },
   {
     topic: "Huffman Coding",
-    front: "What is Huffman coding?\n\nHow does the algorithm work?",
-    back: "Optimal prefix-free binary encoding.\nFrequent chars get shorter codes.\n\nAlgorithm:\n1. Create leaf node for each char\n2. Build min-heap by frequency\n3. While heap size > 1:\n   - Extract two minimum nodes\n   - Create parent with combined freq\n   - Insert parent back\n4. Root is the Huffman tree\n\nTime: O(n log n)",
+    front:
+      "A file has characters with very different\nfrequencies (e.g., 'e' appears 1000x,\n'z' appears 2x).\n\nHow do you build a minimal-length encoding?",
+    back: 'Huffman coding: frequent chars -> short codes,\nrare chars -> longer codes.\n\nAlgorithm:\n1. Create leaf node per char with its freq\n2. Build a min-heap by frequency\n3. While heap size > 1:\n   - Extract two smallest nodes\n   - Merge into parent (combined freq)\n   - Push parent back\n4. Root = Huffman tree; left=0, right=1\n\nMnemonic: "Least frequent friends merge first"\nTime: O(n log n)',
   },
   {
     topic: "Interval Scheduling",
@@ -30,46 +31,34 @@ const cards: Flashcard[] = [
     back: "1. Divide: Break problem into subproblems\n2. Conquer: Solve subproblems recursively\n3. Combine: Merge subproblem solutions\n\nExamples:\n- Merge Sort: O(n log n)\n- Quick Sort: O(n log n) avg\n- Binary Search: O(log n)\n- Closest Pair of Points: O(n log n)\n- Strassen's Matrix Multiply: O(n^2.807)",
   },
   {
-    topic: "Master Theorem",
-    front:
-      "State the Master Theorem for\nrecurrences of the form:\nT(n) = aT(n/b) + O(n^d)",
-    back: "Compare log_b(a) with d:\n\nCase 1: d < log_b(a)\n  T(n) = O(n^(log_b(a)))\n\nCase 2: d = log_b(a)\n  T(n) = O(n^d * log n)\n\nCase 3: d > log_b(a)\n  T(n) = O(n^d)\n\nExample: Merge sort T(n) = 2T(n/2) + O(n)\na=2, b=2, d=1, log_2(2)=1 -> Case 2 -> O(n log n)",
-  },
-  {
     topic: "Bit Manipulation Basics",
     front:
-      "What are the essential\nbit manipulation operations?\n\nList 5 common tricks.",
-    back: "1. Check if bit set:\n   (n >> i) & 1\n\n2. Set bit:\n   n | (1 << i)\n\n3. Clear bit:\n   n & ~(1 << i)\n\n4. Toggle bit:\n   n ^ (1 << i)\n\n5. Check power of 2:\n   n > 0 && (n & (n-1)) === 0\n\nBonus: Count set bits (popcount):\n   while(n) { count++; n &= n-1; }",
+      "You need to toggle feature flags stored\nas bits in an integer config value.\n\nWhat are the 5 essential bit operations?",
+    back: "1. Check if bit i is set:\n   (n >> i) & 1\n\n2. Set bit i:\n   n | (1 << i)\n\n3. Clear bit i:\n   n & ~(1 << i)\n\n4. Toggle bit i:\n   n ^ (1 << i)\n\n5. Check power of 2:\n   n > 0 && (n & (n-1)) === 0\n\nPopcount (count set bits):\n  while(n) { count++; n &= n-1; }",
   },
   {
-    topic: "Bit Manipulation - XOR Tricks",
+    topic: "XOR Tricks",
     front:
-      "How does XOR help find the\nsingle number in an array where\nall others appear twice?",
-    back: "XOR properties:\n  a ^ a = 0\n  a ^ 0 = a\n  Commutative & associative\n\nSolution:\nlet result = 0;\nfor (const num of arr)\n  result ^= num;\nreturn result;\n\nPairs cancel out, leaving the single number.\n\nTime: O(n), Space: O(1)",
+      "An array has n numbers. Every number\nappears exactly twice except one.\n\nFind it in O(n) time, O(1) space.\n\nBonus: What if TWO numbers are unique?",
+    back: "Key XOR properties:\n  a ^ a = 0,  a ^ 0 = a\n\nSingle unique: XOR all elements.\nPairs cancel -> answer remains.\n\nTwo unique (a, b):\n1. XOR all -> x = a ^ b (nonzero)\n2. Find any set bit in x (differing bit)\n3. Split array into two groups by that bit\n4. XOR each group separately -> a and b\n\nTime: O(n), Space: O(1) both cases",
   },
   {
-    topic: "String Matching - KMP",
+    topic: "Greedy Choice Property",
     front:
-      "What is the KMP string matching algorithm?\n\nWhat is its time complexity?",
-    back: "Knuth-Morris-Pratt: finds pattern in text\nwithout re-examining characters.\n\n1. Build failure/prefix function:\n   lps[i] = length of longest proper\n   prefix that is also a suffix\n\n2. Use lps to skip comparisons on mismatch\n\nPreprocess: O(m)\nSearch:     O(n)\nTotal:      O(n + m)\nSpace:      O(m)\n\nm = pattern length, n = text length",
+      "Your vending machine gives change using\nUS coins (25, 10, 5, 1 cents).\nGreedy (largest coin first) works perfectly.\n\nBut with coins {1, 3, 4}, making change\nfor 6 cents - does greedy still work?",
+    back: "Greedy Choice Property: a locally optimal\nchoice leads to a globally optimal solution.\n\nUS coins: greedy works because each coin\nis >= 2x the next smaller denomination.\n\nCoins {1,3,4}, amount 6:\n  Greedy: 4+1+1 = 3 coins\n  Optimal: 3+3  = 2 coins\n  Greedy FAILS.\n\nTest greedy validity:\n1. Can you prove local choice is safe?\n2. Does remaining subproblem stay optimal?\nIf unsure, use DP instead.",
   },
   {
-    topic: "String Matching - Rabin-Karp",
+    topic: "Bit Masking for Subsets",
     front:
-      "How does Rabin-Karp string matching work?\n\nWhat is its expected time complexity?",
-    back: "Rolling hash-based approach.\n\n1. Compute hash of pattern\n2. Compute hash of first window in text\n3. Slide window: update hash in O(1)\n4. On hash match: verify characters\n\nExpected: O(n + m)\nWorst:    O(n * m) (many hash collisions)\n\nGood for: multiple pattern search,\nplagiarism detection.",
+      "You need to enumerate all subsets of\nn elements for a brute-force search.\n\nHow do you use bitmasks to represent\nand iterate through every subset?",
+    back: "Each integer from 0 to 2^n - 1 represents\none subset. Bit i = 1 means include item i.\n\nfor (mask = 0; mask < (1 << n); mask++)\n  for (i = 0; i < n; i++)\n    if (mask & (1 << i)) // item i included\n\nPractical uses:\n- Feature flags in config (each bit = flag)\n- Traveling salesman DP: dp[visited_mask]\n- Permission systems (read|write|exec = 7)\n\nSubsets of n items: exactly 2^n total\nTime: O(2^n * n) to enumerate all",
   },
   {
-    topic: "Amortized Analysis",
+    topic: "Greedy vs Dynamic Programming",
     front:
-      "What is amortized analysis?\n\nName three methods and give\nan example.",
-    back: "Average cost per operation over a sequence,\nnot per individual operation.\n\nMethods:\n1. Aggregate: total cost / n operations\n2. Accounting: charge extra for cheap ops\n   to pay for expensive ones\n3. Potential: define potential function\n\nExample: Dynamic array push\n  Most pushes: O(1)\n  Occasional resize: O(n)\n  Amortized: O(1) per push",
-  },
-  {
-    topic: "Network Flow - Max Flow",
-    front:
-      "What is the Max Flow problem?\n\nWhat is the Ford-Fulkerson method?",
-    back: "Find maximum flow from source s to sink t\nin a flow network with edge capacities.\n\nFord-Fulkerson:\n1. While augmenting path exists (s->t):\n   - Find path in residual graph\n   - Add bottleneck flow\n   - Update residual capacities\n\nEdmonds-Karp (BFS for path):\nTime: O(V * E^2)\n\nMax-Flow = Min-Cut (theorem)",
+      "You're solving an optimization problem.\nHow do you decide between greedy and DP?\n\nGive a concrete example where greedy\nfails but DP succeeds.",
+    back: "Greedy: makes one choice, never reconsiders.\nDP: explores all subproblems, picks best.\n\nGreedy works when:\n- Greedy choice property holds\n- Locally optimal = globally optimal\n\nDP needed when:\n- Choices interact / overlap\n- Must compare multiple options\n\nCoin change example:\n  Coins {1,3,4}, amount 6:\n  Greedy: 4+1+1 = 3 coins (wrong)\n  DP:     3+3   = 2 coins (correct)\n\nRule: if greedy proof is hard, use DP.",
   },
 ];
 
@@ -77,10 +66,10 @@ export const GREEDY_BIT_MANIPULATION: DeckInfo = {
   id: "greedy-bit-manipulation",
   title: "Greedy, D&C & Bit Manipulation",
   description:
-    "Greedy algorithms, divide and conquer, Master Theorem, bit manipulation tricks, string matching, and flow.",
+    "Greedy algorithms, greedy vs DP, divide and conquer, bit manipulation tricks, XOR patterns, and bitmask subsets.",
   category: "DSA",
   level: "intermediate",
   cards,
-  tags: ["greedy", "divide-conquer", "bit-manipulation", "string-matching"],
-  estimatedMinutes: 18,
+  tags: ["greedy", "divide-conquer", "bit-manipulation", "bitmask", "xor"],
+  estimatedMinutes: 15,
 };

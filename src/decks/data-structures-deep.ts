@@ -6,36 +6,37 @@ const cards: Flashcard[] = [
     topic: "Hash Table - Collision Strategies",
     front:
       "What are the two main collision\nresolution strategies in hash tables?\n\nCompare their trade-offs.",
-    back: "1. Chaining (open hashing):\n   Each bucket is a linked list.\n   Simple, works well with high load.\n   Extra memory for pointers.\n\n2. Open Addressing (closed hashing):\n   Find another slot in the array.\n   Methods: linear probing, quadratic,\n   double hashing.\n   Better cache locality, no pointers.",
+    back: "1. Chaining (open hashing):\n   Each bucket -> linked list\n   + Simple to implement\n   + Handles high load gracefully\n   - Extra memory for pointers\n   - Poor cache locality\n\n2. Open Addressing (closed hashing):\n   Probe for next open slot\n   (linear, quadratic, double hash)\n   + Cache-friendly (contiguous array)\n   + No extra pointer memory\n   - Degrades badly above ~0.7 load\n   - Deletion needs tombstones",
   },
   {
     topic: "Hash Table - Load Factor",
     front:
       "What is the load factor of a hash table?\n\nWhat happens when it gets too high?",
-    back: "Load factor = n / capacity\n(n = number of entries)\n\nHigher load factor -> more collisions\n-> degraded O(1) performance.\n\nTypical threshold: 0.75\nWhen exceeded: resize (usually 2x)\nand rehash all entries: O(n).\n\nAmortized insert still O(1).",
+    back: 'Load factor = n / capacity\n(n = number of entries)\n\nHigher load -> more collisions\n-> O(1) degrades toward O(n).\n\nTypical threshold: 0.75\nWhen exceeded: resize to 2x capacity,\nrehash all entries: O(n) cost.\nAmortized insert stays O(1).\n\nMnemonic: "Load over 0.75?\nTime to resize and thrive."',
   },
   {
-    topic: "Stack - Implementation & Uses",
-    front: "What is a stack?\n\nList 5 common applications of stacks.",
-    back: "LIFO (Last In, First Out) structure.\n\nApplications:\n1. Function call stack / recursion\n2. Undo operations (Ctrl+Z)\n3. Balanced parentheses checking\n4. Expression evaluation (postfix)\n5. DFS traversal\n\nAll operations O(1):\npush, pop, peek\n\nImplement with: array or linked list",
+    topic: "Stack - Balanced Brackets",
+    front:
+      "A code linter needs to check if\nbrackets in source code are balanced.\nE.g. {[()]} valid, {[(])} invalid.\n\nWhat data structure and algorithm?",
+    back: "Use a STACK (LIFO):\n\n1. Scan left to right\n2. Open bracket -> push onto stack\n3. Close bracket -> pop and check match\n4. Mismatch or empty stack -> invalid\n5. End: stack must be empty\n\nTime: O(n), Space: O(n)\n\nWhy stack? Most recent opener must\nclose first - exactly LIFO order.",
   },
   {
     topic: "Queue - Variants",
     front:
       "Name and describe 4 types of queues.\n\nWhat are their key differences?",
-    back: "1. Simple Queue (FIFO):\n   Enqueue at back, dequeue from front\n\n2. Circular Queue:\n   Wraps around, efficient array use\n\n3. Double-Ended Queue (Deque):\n   Insert/remove from both ends O(1)\n\n4. Priority Queue:\n   Dequeue by priority, not order\n   Usually implemented with a heap\n   Insert: O(log n), Extract: O(log n)",
+    back: "1. Simple Queue (FIFO):\n   Enqueue at back, dequeue from front\n\n2. Circular Queue:\n   Wraps around, efficient array use\n\n3. Double-Ended Queue (Deque):\n   Insert/remove from both ends O(1)\n   Uses: sliding window max,\n   palindrome check, 0-1 BFS\n\n4. Priority Queue:\n   Dequeue by priority, not order\n   Usually implemented with a heap\n   Insert: O(log n), Extract: O(log n)",
   },
   {
     topic: "Heap - Build Heap",
     front:
       "What is the time complexity of\nbuilding a heap from an array?\n\nWhy is it O(n) and not O(n log n)?",
-    back: "Building a heap is O(n), NOT O(n log n).\n\nBottom-up approach (sift down):\n- Most nodes are near the bottom\n- Bottom nodes do 0 work\n- Only root does O(log n) work\n\nSum: n/4*1 + n/8*2 + n/16*3 + ...\n= O(n)\n\nContrast: inserting n elements one by one\nIS O(n log n) (top-down).",
+    back: "Build heap = O(n), not O(n log n)!\n\nSift-down example [4,10,3,5,1]:\n     4\n    / \\\n  10   3   sift 10: swap w/ 1\n  / \\\n 5   1     sift 4: swap w/ 1\nResult: [1,4,3,5,10] min-heap\n\nWhy O(n): n/2 leaves need 0 swaps.\nSum: n/4*1 + n/8*2 + ... = O(n)\nInserting one-by-one = O(n log n).",
   },
   {
     topic: "Array vs Linked List",
     front:
       "When should you choose an Array\nover a Linked List, and vice versa?",
-    back: "Choose Array when:\n- Need random access O(1)\n- Data is fixed size or rarely inserted\n- Cache locality matters\n- Memory is tight (no pointer overhead)\n\nChoose Linked List when:\n- Frequent insert/delete at arbitrary positions\n- Don't know size in advance\n- No random access needed\n- Need constant time insert at head/tail",
+    back: "Access:  Array O(1) | List O(n)\nInsert*: Array O(n) | List O(1)\nAppend:  Both O(1) amortized\nCache:   Array great | List poor\nMemory:  Array data-only | List +ptr\nResize:  Array copies O(n) | List free\n\n* mid-sequence insert/delete.\n  List O(1) only with node reference.\n\nRule: default to arrays. Cache\nlocality usually beats linked list's\nO(1) insert in real-world benchmarks.",
   },
   {
     topic: "Graph - Adjacency List vs Matrix",

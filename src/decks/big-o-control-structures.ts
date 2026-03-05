@@ -53,8 +53,8 @@ const cards: Flashcard[] = [
   {
     topic: "Two Inputs (n and m)",
     front:
-      "What is the time complexity?\n\nfor (let i = 0; i < n; i++)\n  for (let j = 0; j < m; j++)\n    doWork();",
-    back: "Time: O(n * m)\n\nDo NOT simplify to O(n^2) unless n = m.\nTwo different inputs produce O(n * m).\n\nCommon mistake in interviews.",
+      "Scenario: You compare every user\nin list A (n users) against every\nproduct in list B (m products).\n\nfor (user of A)     // n\n  for (prod of B)   // m\n    match(user, prod);\n\nWhat is the time complexity?",
+    back: "Time: O(n * m)\n\nDo NOT simplify to O(n^2) unless n = m.\nTwo different inputs produce O(n * m).\n\nWhy it matters: if n = 1000, m = 10,\nit is 10,000 ops - not 1,000,000.\nAlways keep separate variables.",
   },
   {
     topic: "Recursion - Linear",
@@ -78,7 +78,7 @@ const cards: Flashcard[] = [
     topic: "Master Theorem - Overview",
     front:
       "State the Master Theorem for:\nT(n) = a * T(n/b) + O(n^c)\n\nWhat are the three cases?",
-    back: "Compare log_b(a) vs c:\n\nCase 1: log_b(a) > c\n  T(n) = O(n^(log_b(a)))\n\nCase 2: log_b(a) = c\n  T(n) = O(n^c * log n)\n\nCase 3: log_b(a) < c\n  T(n) = O(n^c)",
+    back: "Mnemonic: a workers, b pieces, c overhead.\nCompare log_b(a) vs c:\n\nCase 1: log_b(a) > c  (workers win)\n  T(n) = O(n^(log_b(a)))\n\nCase 2: log_b(a) = c  (tie)\n  T(n) = O(n^c * log n)\n\nCase 3: log_b(a) < c  (overhead wins)\n  T(n) = O(n^c)",
   },
   {
     topic: "Master Theorem - Binary Search",
@@ -88,8 +88,14 @@ const cards: Flashcard[] = [
   },
   {
     topic: "Amortized Analysis Concept",
-    front: "What is amortized analysis?\n\nGive one classic example.",
-    back: "Amortized = average cost per operation\nover a worst-case SEQUENCE of operations.\n\nExample: dynamic array push\n  Most pushes: O(1)\n  Occasional resize: O(n)\n  Amortized over n pushes: O(1) each\n\nNot the same as average-case analysis.",
+    front: "What is amortized analysis?\n\nGive two classic examples.",
+    back: "Amortized = average cost per operation\nover a worst-case SEQUENCE of operations.\n\n1) Dynamic array push:\n  Most pushes O(1), rare resize O(n).\n  Amortized: O(1) per push.\n\n2) Hash table insert:\n  Most inserts O(1), rare rehash O(n).\n  Amortized: O(1) per insert.\n\nNot the same as average-case analysis.",
+  },
+  {
+    topic: "Recognizing Complexity from Code",
+    front:
+      "Cheat sheet: What complexity does\neach code pattern typically produce?",
+    back: 'Single loop 0..n       -> O(n)\nLoop halving/doubling   -> O(log n)\nTwo nested loops 0..n   -> O(n^2)\nLoop inside halving     -> O(n log n)\nThree nested loops      -> O(n^3)\nTwo sequential loops    -> O(n) (add)\nTwo inputs n, m nested  -> O(n * m)\nRecursive halving + O(1)-> O(log n)\nTwo recursive calls     -> O(2^n)\n\nMnemonic: "Nest to multiply, sequence to add."\nAlways check what shrinks per call.',
   },
 ];
 

@@ -5,8 +5,8 @@ const cards: Flashcard[] = [
   {
     topic: "Array - Access by Index",
     front:
-      "What is the time complexity of accessing\nan element by index in an Array?\n\narr[i]",
-    back: "Time:  O(1) - Constant\nSpace: O(1)\n\nArrays occupy contiguous memory.\nAny index maps to a direct address offset,\nso no traversal is required.",
+      "Your server stores sessions in an Array.\nYou fetch session #42 via arr[42].\n\nWhat is the time complexity?",
+    back: "Time:  O(1) - Constant\nSpace: O(1)\n\nArrays use contiguous memory. Index maps\nto a direct address offset - no traversal.\n\nLike a mailbox number: go straight to it.",
   },
   {
     topic: "Array - Linear Search",
@@ -24,7 +24,7 @@ const cards: Flashcard[] = [
     topic: "Array - Insertion at Beginning",
     front:
       "What is the time complexity of inserting\nat the BEGINNING of an Array?\n\narr.unshift(val)",
-    back: "Time:  O(n) - Linear\nSpace: O(1)\n\nAll existing elements must be shifted\none position to the right to make room\nfor the new first element.",
+    back: "Time:  O(n) - Linear\nSpace: O(1)\n\nAll existing elements must be shifted\none position to the right to make room\nfor the new first element.\n\nThink: everyone scoots over on a bench.",
   },
   {
     topic: "Array - Deletion by Index",
@@ -35,8 +35,8 @@ const cards: Flashcard[] = [
   {
     topic: "Linked List - Access / Search",
     front:
-      "What is the time complexity of accessing\nan element by index in a Linked List?",
-    back: "Time:  O(n) - Linear\nSpace: O(1)\n\nLinked list nodes are not contiguous in\nmemory. Reaching index k requires walking\nthrough k->0 next pointers.",
+      "Your playlist is a Linked List.\nYou want to jump to track #50.\n\nWhat is the time complexity of\naccessing by index in a Linked List?",
+    back: "Time:  O(n) - Linear\nSpace: O(1)\n\nNodes are not contiguous in memory.\nReaching index k requires walking\nk next pointers from the head.",
   },
   {
     topic: "Linked List - Insert at Head",
@@ -57,6 +57,12 @@ const cards: Flashcard[] = [
     back: "Time:  O(1) if prev known\nTime:  O(n) to find prev by search\nSpace: O(1)\n\nWith prev: prev.next = node.next\nWithout: must traverse from head.",
   },
   {
+    topic: "Doubly Linked List vs Singly",
+    front:
+      "When should you choose a Doubly Linked\nList over a Singly Linked List?\n\nWhat is the key complexity advantage?",
+    back: "Doubly: O(1) delete given node ref\n  (prev pointer available - no search)\nSingly: O(n) delete without prev ref\n\nChoose doubly for:\n- Backward traversal (browser back)\n- O(1) delete by ref (LRU cache)\n- Deque implementation\n\nCost: extra pointer per node.",
+  },
+  {
     topic: "Hash Table - Lookup / Insert / Delete",
     front:
       "What is the AVERAGE time complexity\nfor lookup, insert, and delete\nin a Hash Table (HashMap)?",
@@ -66,17 +72,23 @@ const cards: Flashcard[] = [
     topic: "Hash Table - Collision Resolution",
     front:
       "What are the two main collision\nresolution strategies for Hash Tables?\n\nHow do they affect performance?",
-    back: "1. Chaining (linked lists per bucket)\n   Avg O(1+alpha),  alpha = n/m\n\n2. Open Addressing (linear/quadratic\n   probing, double hashing)\n   Degrades as load factor -> 1\n\nBoth O(n) worst case with many collisions.",
+    back: "1. Chaining: linked list per bucket\n   Avg O(1 + n/m)\n2. Open Addressing: probe next slot\n   (linear, quadratic, double hash)\n\nBoth degrade to O(n) with collisions.\n\nAnalogy: Chaining = overflow parking lot.\nOpen Addressing = circle the block.",
+  },
+  {
+    topic: "Hash Table - Rehashing",
+    front:
+      "Your hash map's load factor exceeds 0.75.\nWhat happens next?\n\nWhat is the amortized cost of inserts\nthat trigger rehashing?",
+    back: "Triggered when load factor (n/m)\nexceeds threshold (typically 0.75).\n\n1. Allocate new array (usually 2x)\n2. Re-hash and re-insert every key\n\nSingle rehash: O(n)\nAmortized insert: still O(1)\nLike moving to a bigger apartment.",
   },
   {
     topic: "Stack - Push / Pop / Peek",
     front: "What is the time complexity of\npush, pop, and peek on a Stack?",
-    back: "Time:  O(1) - Constant (all ops)\nSpace: O(n)\n\nA stack only ever touches the top element.\nWith an array or linked-list backing,\nall three operations are O(1).",
+    back: "Time:  O(1) - Constant (all ops)\nSpace: O(n)\n\nA stack only ever touches the top element.\nWith an array or linked-list backing,\nall three operations are O(1).\n\nLIFO: Last In, First Out. Stack of plates.",
   },
   {
     topic: "Queue - Enqueue / Dequeue",
     front: "What is the time complexity of\nenqueue and dequeue on a Queue?",
-    back: "Time:  O(1) amortized (linked-list)\nSpace: O(n)\n\nWith a doubly-linked list (or circular\nbuffer) both ends are O(1). A naive\narray-based queue has O(n) dequeue.",
+    back: "Time:  O(1) amortized (linked-list)\nSpace: O(n)\n\nWith a doubly-linked list (or circular\nbuffer) both ends are O(1). A naive\narray-based queue has O(n) dequeue.\n\nFIFO: First In, First Out. Like a line.",
   },
   {
     topic: "Deque - Operations",
@@ -86,7 +98,8 @@ const cards: Flashcard[] = [
   },
   {
     topic: "Binary Search Tree - Search / Insert",
-    front: "What is the time complexity of\nsearch and insert in a BST?",
+    front:
+      "You store user IDs in a Binary Search\nTree for fast membership checks.\n\nWhat is the time complexity of\nsearch and insert in a BST?",
     back: "Time:  O(log n) balanced | O(n) skewed\nSpace: O(h) where h = height\n\nA balanced BST (AVL, Red-Black) keeps\nh = log n. A degenerate (sorted input)\nBST degrades to a linked list -> O(n).",
   },
   {
@@ -110,7 +123,7 @@ const cards: Flashcard[] = [
   {
     topic: "Binary Heap - Insert",
     front: "What is the time complexity of\ninserting into a Binary Heap?",
-    back: 'Time:  O(log n)\nSpace: O(1) (in-place sift-up)\n\nThe new element is appended at the end\nthen "bubbled up" until the heap property\nis restored - at most log2(n) swaps.',
+    back: 'Time:  O(log n)\nSpace: O(1) (in-place sift-up)\n\n     10\n    /  \\\n  15    20    <- min-heap\n\nAppended at end, then "bubbled up"\n- at most log2(n) swaps.',
   },
   {
     topic: "Binary Heap - Extract Min/Max",
@@ -122,7 +135,13 @@ const cards: Flashcard[] = [
     topic: "Binary Heap - Build (Heapify)",
     front:
       "What is the time complexity of\nbuilding a heap from an unsorted array?",
-    back: "Time:  O(n) <- surprising!\nSpace: O(1) (in-place)\n\nBottom-up heapify performs O(n) total\nwork even though each sift-down is\nO(log n). Most nodes are near leaves.",
+    back: "Time:  O(n) <- surprising!\nSpace: O(1) (in-place)\n\nBottom-up heapify performs O(n) total\nwork even though each sift-down is\nO(log n). Most nodes are near leaves.\n\nMnemonic: leaves are lazy - zero work.",
+  },
+  {
+    topic: "Priority Queue vs Sorted Array",
+    front:
+      "You need to repeatedly insert elements\nand extract the minimum.\n\nWhen does a Priority Queue (heap) beat\na sorted array?",
+    back: "            PQ(heap)  Sorted Arr\nInsert:     O(log n)  O(n)\nExtract-min: O(log n)  O(1)*\nPeek-min:   O(1)      O(1)\n\n*O(1) if removing from end.\n\nPQ wins when inserts are frequent.\nSorted array wins for static data.",
   },
   {
     topic: "Trie - Insert / Search",

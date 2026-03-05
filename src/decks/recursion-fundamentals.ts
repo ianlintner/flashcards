@@ -19,16 +19,12 @@ const cards: Flashcard[] = [
     front: "What is tail recursion?\n\nWhy is it important for optimization?",
     back: "Tail recursion: the recursive call is\nthe LAST operation in the function.\n\n// Tail recursive:\nfunction fact(n, acc = 1):\n  if (n <= 1) return acc;\n  return fact(n - 1, n * acc);\n\nCompilers can optimize tail calls into\nloops (TCO), using O(1) stack space.\n\nNote: JS engines vary in TCO support.",
   },
-  {
-    topic: "Hashing - Good Hash Function",
-    front: "What properties make a good\nhash function?",
-    back: "1. Deterministic:\n   Same input -> same output\n\n2. Uniform Distribution:\n   Minimizes collisions\n\n3. Fast to compute: O(1) or O(m)\n   for strings of length m\n\n4. Avalanche effect:\n   Small change in input ->\n   large change in hash\n\n5. For crypto: pre-image resistance\n   (can't reverse the hash)",
-  },
+
   {
     topic: "Complexity Classes",
     front:
       "Rank these complexities from\nfastest to slowest:\n\nO(n!), O(1), O(n log n), O(2^n),\nO(n), O(log n), O(n^2), O(n^3)",
-    back: "Fastest to slowest:\n\nO(1)       - Constant\nO(log n)   - Logarithmic\nO(n)       - Linear\nO(n log n) - Linearithmic\nO(n^2)     - Quadratic\nO(n^3)     - Cubic\nO(2^n)     - Exponential\nO(n!)      - Factorial\n\nn = 20:\nO(n^2) = 400\nO(2^n) = 1,048,576\nO(n!)  = 2.4 * 10^18",
+    back: "Fastest to slowest:\n\nO(1)       - Constant\nO(log n)   - Logarithmic\nO(n)       - Linear\nO(n log n) - Linearithmic\nO(n^2)     - Quadratic\nO(2^n)     - Exponential\nO(n!)      - Factorial\n\nIf O(n) takes 1 sec at n=1000:\n  O(n log n) -> ~10 sec\n  O(n^2)     -> ~17 min\n  O(2^n)     -> heat death of universe",
   },
   {
     topic: "Big-O vs Big-Theta vs Big-Omega",
@@ -52,10 +48,16 @@ const cards: Flashcard[] = [
     back: "Draw the tree of recursive calls:\n\n1. Each node = work at that level\n2. Children = recursive subcalls\n3. Sum work at each level\n4. Total = sum across all levels\n\nExample: T(n) = 2T(n/2) + n\n\nLevel 0: n\nLevel 1: n/2 + n/2 = n\nLevel 2: n/4 * 4 = n\n...\nlog(n) levels, each costs n\nTotal: O(n log n)",
   },
   {
-    topic: "NP-Completeness",
+    topic: "Call Stack Visualization",
     front:
-      "What does NP-Complete mean?\n\nGive three examples of\nNP-Complete problems.",
-    back: "NP: Solution verifiable in polynomial time.\nNP-Complete: Hardest problems in NP.\n  - In NP (verifiable quickly)\n  - Every NP problem reduces to it\n\nExamples:\n1. Traveling Salesman (decision)\n2. Boolean Satisfiability (SAT)\n3. Graph Coloring\n4. Subset Sum\n5. Knapsack (decision version)\n\nIf any NPC problem solved in P,\nthen P = NP.",
+      "Draw the call stack for\nfactorial(4).\n\nHow does the stack grow and\nthen unwind?",
+    back: "Stack grows (push):\n  | fact(1) = 1    | <- base case\n  | fact(2) = 2*?  |\n  | fact(3) = 3*?  |\n  | fact(4) = 4*?  | <- first call\n\nStack unwinds (pop):\n  fact(1) returns 1\n  fact(2) returns 2*1 = 2\n  fact(3) returns 3*2 = 6\n  fact(4) returns 4*6 = 24\n\nMax depth = n frames -> O(n) space.\nEach frame stores n and return address.",
+  },
+  {
+    topic: "Recursion to Iteration Conversion",
+    front:
+      "Convert this recursive DFS to\niterative using an explicit stack:\n\nfunction dfs(node):\n  if (!node) return;\n  visit(node);\n  dfs(node.left);\n  dfs(node.right);",
+    back: "function dfsIterative(root):\n  const stack = [root];\n  while (stack.length > 0) {\n    const node = stack.pop();\n    if (!node) continue;\n    visit(node);\n    stack.push(node.right);\n    stack.push(node.left);\n  }\n\nKey idea: replace the call stack\nwith your own stack data structure.\nPush right first so left is visited\nfirst (LIFO order).",
   },
 ];
 
@@ -63,10 +65,10 @@ export const RECURSION_FUNDAMENTALS: DeckInfo = {
   id: "recursion-fundamentals",
   title: "Recursion & Algorithm Fundamentals",
   description:
-    "Recursion patterns, complexity analysis, asymptotic notation, NP-completeness, and algorithmic foundations.",
+    "Recursion patterns, call stacks, tail recursion, complexity analysis, asymptotic notation, and iteration conversion.",
   category: "DSA",
   level: "foundation",
   cards,
-  tags: ["recursion", "complexity", "Big-O", "NP"],
+  tags: ["recursion", "complexity", "Big-O", "call-stack"],
   estimatedMinutes: 15,
 };
