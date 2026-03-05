@@ -4,40 +4,45 @@ import type { DeckInfo } from "./types";
 const cards: Flashcard[] = [
   {
     topic: "Array vs Linked List",
-    front: "When should you choose an Array\nover a Linked List?",
-    back: "Use Array when:\n- Frequent random access by index\n- Cache-friendly iteration needed\n- Known or bounded size\n- Append-mostly workload\n\nUse Linked List when:\n- Frequent insert/delete at head\n- Unknown size, many insertions\n- No random access needed",
+    front:
+      "Your music app needs a playlist where\nusers jump to any song by number and\nappend new songs at the end.\n\nArray or Linked List? Why?",
+    back: "Array. Random access by index is O(1).\nAppend is amortized O(1).\n\nLinked List needs O(n) traversal\nto reach song #k.\n\nMnemonic: 'Array = Address book'\n(jump to any slot). 'Linked List =\nTreasure hunt' (follow clues one by one).\n\nUse Linked List for fast insert/delete\nat arbitrary positions.",
   },
   {
     topic: "HashMap vs TreeMap",
-    front: "When should you choose a HashMap\nvs a TreeMap (sorted map)?",
-    back: "HashMap:\n- O(1) avg lookup/insert/delete\n- Unordered keys\n- Best for pure key->value lookup\n\nTreeMap (BST-based):\n- O(log n) all operations\n- Keys maintained in sorted order\n- Range queries, min/max, floor/ceiling",
+    front:
+      "You're building a leaderboard that must\ndisplay players sorted by score and\nanswer 'who has rank 50-60?'\n\nHashMap or TreeMap?",
+    back: "TreeMap (BST-based).\n- Keys in sorted order -> ranked display\n- Range queries: O(log n + k) for result\n- Floor/ceiling for nearest score\n\nHashMap can't do sorted iteration\nor range queries without sorting all keys.\n\nUse HashMap for pure key->value lookups\nwhere order doesn't matter. O(1) avg.",
   },
   {
-    topic: "Stack - Use Cases",
-    front: "Name 5 classic use cases for a Stack\ndata structure.",
-    back: "1. Function call stack / recursion\n2. Undo/redo operations\n3. Balanced parentheses checking\n4. Expression evaluation (postfix)\n5. DFS traversal (explicit stack)\n\nAlso: browser back button, syntax\nparsing, monotonic stack problems.",
+    topic: "Stack in Practice",
+    front:
+      "A text editor needs an undo feature.\nEach action must be reversible in\nreverse chronological order.\n\nWhich data structure and why?",
+    back: "Stack (LIFO - Last In, First Out).\nMost recent action is undone first.\n\nMnemonic: 'Stack of plates' -\nyou always remove the top one.\n\nAlso used for:\n- Balanced parentheses checking\n- Expression evaluation (postfix)\n- DFS traversal (explicit stack)\n- Browser back button navigation",
   },
   {
-    topic: "Queue - Use Cases",
-    front: "Name 5 classic use cases for a Queue\ndata structure.",
-    back: "1. BFS traversal\n2. Task scheduling (FIFO)\n3. Print job spooling\n4. Message queues / event loops\n5. Rate limiting (sliding window)\n\nVariants: priority queue, deque,\ncircular buffer.",
+    topic: "Queue in Practice",
+    front:
+      "A print server receives jobs from\nmultiple users. Jobs must be processed\nin the order they arrive.\n\nWhich data structure and why?",
+    back: "Queue (FIFO - First In, First Out).\nEarliest job prints first.\n\nMnemonic: 'Checkout line' -\nfirst person in line gets served first.\n\nAlso used for:\n- BFS traversal\n- Task scheduling\n- Message queues / event loops\n- Rate limiting (sliding window)",
   },
   {
     topic: "Priority Queue / Heap",
     front:
-      "When should you use a Priority Queue?\n\nWhat data structure backs it?",
-    back: "Use when you need repeated access\nto the min or max element.\n\nBacked by a Binary Heap.\n\nUse cases:\n- Dijkstra's shortest path\n- Task scheduling by priority\n- Merge K sorted lists\n- Running median\n- Huffman encoding",
+      "An ER triage system must always treat\nthe most critical patient next, not the\none who arrived first.\n\nWhich data structure and why?",
+    back: "Priority Queue (backed by Binary Heap).\nO(log n) insert, O(1) access to min/max.\n\nUnlike Queue (FIFO), PQ serves by\npriority, not arrival order.\n\nAlso used for:\n- Dijkstra's shortest path\n- Merge K sorted lists\n- Running median (two heaps)\n- Huffman encoding",
   },
   {
-    topic: "HashSet - Use Cases",
+    topic: "HashSet in Practice",
     front:
-      "When should you use a HashSet?\n\nWhat problems does it solve well?",
-    back: "O(1) membership testing:\n- Duplicate detection\n- Two-sum (complement lookup)\n- Intersection/union of collections\n- Seen-tracking in graph traversal\n- Blacklist/whitelist filtering\n\nTradeoff: extra O(n) space for\nO(1) lookup instead of O(n) scan.",
+      "A web crawler needs to track which URLs\nit has already visited to avoid crawling\nthe same page twice.\n\nWhich data structure and why?",
+    back: "HashSet. O(1) membership testing -\njust ask 'seen this URL before?'\n\nMnemonic: 'Bouncer with a guest list' -\ninstant yes/no, no searching needed.\n\nAlso used for:\n- Duplicate detection in streams\n- Two-sum complement lookup\n- Intersection/union of collections\n\nTradeoff: O(n) space for O(1) lookup.",
   },
   {
-    topic: "Trie - Use Cases",
-    front: "When should you use a Trie\ninstead of a HashMap?",
-    back: "Trie excels at PREFIX operations:\n- Autocomplete / typeahead\n- Spell checking\n- IP routing (longest prefix match)\n- Word search / boggle\n- Counting words with shared prefix\n\nHashMap can't efficiently do prefix\nqueries without scanning all keys.",
+    topic: "Trie in Practice",
+    front:
+      "A search engine needs to suggest\ncompletions as the user types each letter.\nResults must update after every keystroke.\n\nWhy is a Trie better than a HashMap here?",
+    back: "Trie walks one node per character typed.\nAutocomplete = traverse to prefix node,\nthen collect all descendants.\n\nHashMap can't do prefix queries without\nscanning every key: O(total keys).\n\nTrie: O(prefix length) to reach node.\n\nAlso: spell check, IP routing\n(longest prefix match), word search.",
   },
   {
     topic: "Graph - When to Use",
@@ -51,8 +56,9 @@ const cards: Flashcard[] = [
   },
   {
     topic: "Binary Search - Beyond Arrays",
-    front: "Name 3 non-obvious applications\nof Binary Search.",
-    back: "1. Binary search on the ANSWER\n   (min/max optimization problems)\n\n2. Finding insertion point\n   (bisect_left / lower_bound)\n\n3. Search in rotated sorted array\n\n4. Square root / nth root\n\n5. Minimizing maximum (split array)\n\nKey insight: binary search works on\nany monotonic function, not just arrays.",
+    front:
+      "You must find the minimum eating speed\nto finish all banana piles in h hours.\nSpeed can be 1 to max(piles).\n\nHow is this a binary search problem?",
+    back: "Binary search on ANSWER SPACE.\nSpeed is monotonic: if speed k works,\nso does k+1. Search the boundary.\n\n  lo=1, hi=max(piles)\n  while lo < hi:\n    mid = (lo+hi)/2\n    if canFinish(mid, h): hi = mid\n    else: lo = mid+1\n\nAlso: split array largest sum,\nsquare root, ship packages in d days.",
   },
   {
     topic: "Dynamic Programming - When",
@@ -105,6 +111,12 @@ const cards: Flashcard[] = [
     topic: "Sliding Window vs Two Pointers",
     front: "What's the difference between\nSliding Window and Two Pointers?",
     back: "Two Pointers:\n- Both pointers can move independently\n- Often converge from opposite ends\n- Examples: pair sum, container water\n\nSliding Window:\n- Maintains a contiguous subarray\n- Right expands, left contracts\n- Examples: max subarray of size k,\n  longest substring without repeats\n\nSliding window IS a two-pointer technique\nbut not all two-pointer is sliding window.",
+  },
+  {
+    topic: "Data Structure Decision Tree",
+    front:
+      "You face a new problem. How do you\npick the right data structure based\non the key operation needed?",
+    back: "Decision tree:\n  Fast lookup by key? -> Hash Table\n  Need sorted order?  -> BST / TreeMap\n  Need FIFO?          -> Queue\n  Need undo / LIFO?   -> Stack\n  Repeated min/max?   -> Heap\n  Prefix search?      -> Trie\n  Connectivity?       -> Union-Find\n  Both ends?          -> Deque\n\nPick by the most frequent operation.",
   },
 ];
 

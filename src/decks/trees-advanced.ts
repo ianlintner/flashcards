@@ -3,83 +3,75 @@ import type { DeckInfo } from "./types";
 
 const cards: Flashcard[] = [
   {
-    topic: "Trie - Overview",
+    topic: "Trie (Prefix Tree)",
     front:
-      "What is a Trie (prefix tree)?\n\nWhat are its time complexities?\nWhen would you use one?",
-    back: "A tree where each node represents\na character; paths form words.\n\nInsert:  O(m) m = word length\nSearch:  O(m)\nPrefix:  O(m)\nSpace:   O(ALPHABET * N * m)\n\nUse for: autocomplete, spell check,\nIP routing, prefix matching.",
-  },
-  {
-    topic: "Segment Tree",
-    front:
-      "What is a Segment Tree?\n\nWhat operations does it support\nand at what complexity?",
-    back: "A binary tree for range queries\nand point/range updates.\n\nBuild:        O(n)\nRange query:  O(log n)\nPoint update: O(log n)\nRange update: O(log n) with lazy prop.\nSpace:        O(4n)\n\nUse for: range sum, min, max, GCD queries.",
-  },
-  {
-    topic: "Fenwick Tree (BIT)",
-    front:
-      "What is a Fenwick Tree\n(Binary Indexed Tree)?\n\nHow does it compare to a Segment Tree?",
-    back: "Array-based structure for prefix sums\nwith point updates.\n\nUpdate:      O(log n)\nPrefix sum:  O(log n)\nRange query: O(log n) via subtraction\nSpace:       O(n)\n\nSimpler to implement than segment tree.\nLess flexible (mainly additive queries).",
-  },
-  {
-    topic: "Union-Find (Disjoint Set)",
-    front: "What is Union-Find?\n\nWhat optimizations make it near O(1)?",
-    back: "Tracks elements in disjoint sets.\nSupports: find(x), union(x, y)\n\nOptimizations:\n1. Path Compression:\n   Make nodes point directly to root\n2. Union by Rank/Size:\n   Attach smaller tree under larger\n\nAmortized: O(alpha(n)) per operation\n(alpha = inverse Ackermann, nearly O(1))",
+      "Your phone's keyboard predicts words\nas you type. What data structure\npowers autocomplete?\n\nWhat are its complexities?",
+    back: "Trie: tree where each node = one char;\npaths from root spell words.\n\nInsert/Search/Prefix: all O(m)\nm = word length\nSpace: O(ALPHABET * N * m)\n\nUse for: autocomplete, spell check,\nIP routing, prefix matching.\n\nMnemonic: reTRIEval tree.",
   },
   {
     topic: "AVL Tree",
     front:
-      "What is an AVL Tree?\n\nHow does it maintain balance?\nWhat are the rotation types?",
-    back: "Self-balancing BST where height difference\nof left/right subtrees <= 1.\n\nRotations (4 cases):\n- Left-Left: right rotate\n- Right-Right: left rotate\n- Left-Right: left then right\n- Right-Left: right then left\n\nAll ops: O(log n) guaranteed\nStricter balance than Red-Black tree.",
+      "You need a sorted container with\nguaranteed O(log n) lookups.\nWhat self-balancing BST enforces\nthe strictest balance?\n\nHow does it maintain balance?",
+    back: "AVL: height diff of left/right\nsubtrees <= 1 at every node.\n\nRotations (4 cases):\n- LL: right rotate\n- RR: left rotate\n- LR: left then right\n- RL: right then left\n\nAll ops: O(log n) guaranteed.\nStricter than Red-Black -> faster lookup.",
   },
   {
     topic: "Red-Black Tree",
-    front: "What is a Red-Black Tree?\n\nList its five properties.",
-    back: "Self-balancing BST with color invariant.\n\n1. Every node is red or black\n2. Root is black\n3. Leaves (NIL) are black\n4. Red node has only black children\n5. All paths from node to leaves\n   have same number of black nodes\n\nHeight <= 2 * log(n+1)\nUsed in: TreeMap, TreeSet (Java), std::map",
-  },
-  {
-    topic: "B-Tree",
     front:
-      "What is a B-Tree?\n\nWhy is it used in databases\nand file systems?",
-    back: "Balanced m-ary search tree.\nEach node has m/2 to m children.\n\nAll ops: O(log n) with base m\n\nOptimized for disk I/O:\n- Nodes sized to match disk pages\n- Shallow tree = fewer disk reads\n- Used in MySQL (InnoDB), PostgreSQL,\n  file systems (NTFS, ext4)",
+      "Java's TreeMap and C++ std::map\nuse this balanced BST internally.\n\nWhat are its five invariant properties?",
+    back: "Red-Black: BST with color rules.\n\n1. Every node is red or black\n2. Root is always black\n3. Leaves (NIL) are black\n4. Red node -> both children black\n5. Equal black nodes on every\n   root-to-leaf path\n\nHeight <= 2*log(n+1)\nFewer rotations than AVL on mutation.",
   },
   {
-    topic: "Skip List",
-    front: "What is a Skip List?\n\nWhat are its time complexities?",
-    back: "Probabilistic data structure.\nMultiple layers of linked lists.\nHigher layers skip over elements.\n\nSearch:  O(log n) expected\nInsert:  O(log n) expected\nDelete:  O(log n) expected\nSpace:   O(n) expected\n\nSimpler alternative to balanced BSTs.\nUsed in Redis sorted sets, LevelDB.",
-  },
-  {
-    topic: "Bloom Filter",
-    front: "What is a Bloom Filter?\n\nWhat are its properties and trade-offs?",
-    back: "Probabilistic set membership test.\nUses bit array + k hash functions.\n\nInsert: O(k)\nQuery:  O(k)\nSpace:  O(m) bits\n\nProperties:\n- False positives possible\n- False negatives IMPOSSIBLE\n- Cannot delete elements\n  (use Counting Bloom Filter)\n\nUsed in: spell check, cache, CDNs",
-  },
-  {
-    topic: "LRU Cache",
+    topic: "B-Tree / B+ Tree",
     front:
-      "Design an LRU Cache with O(1)\nget and put operations.\n\nWhat data structures do you use?",
-    back: "Combine:\n1. Hash Map: key -> node pointer (O(1) lookup)\n2. Doubly Linked List: tracks usage order\n\nget(key):\n  Find in map, move node to front, return\n\nput(key, val):\n  If exists: update, move to front\n  If new: add to front, add to map\n  If over capacity: remove tail, delete from map\n\nBoth: O(1) time",
+      "A database reads data in 4KB pages.\nWhy don't databases use binary trees\nfor indexing?\n\nWhat structure do they use instead?",
+    back: "B-Tree: balanced m-ary search tree.\nEach node has m/2 to m children.\n\nAll ops: O(log_m n)\n\nWhy for databases:\n- Nodes sized to match disk pages\n- Shallow tree = fewer disk reads\n- Used in MySQL, PostgreSQL, ext4\n\nMnemonic: B = Broad - wide nodes,\nfewer disk trips.",
+  },
+  {
+    topic: "AVL vs Red-Black Tree",
+    front:
+      "When would you choose an AVL tree\nover a Red-Black tree, or vice versa?\n\nWhat real-world systems use each?",
+    back: "AVL: stricter balance (height diff <=1)\n- Faster lookups (shorter tree)\n- More rotations on insert/delete\n- Best for: read-heavy, in-memory data\n\nRed-Black: relaxed balance\n- Fewer rotations on mutation\n- Best for: std libs (Java TreeMap,\n  C++ std::map), databases\n\nMnemonic: AVL=Accurate, RB=Relaxed.",
+  },
+  {
+    topic: "Tree Serialization / Deserialization",
+    front:
+      "How do you convert a binary tree\nto a string and reconstruct it?\n\nWhat approach is simplest?\n(LeetCode #297)",
+    back: "Preorder DFS + null markers:\n\nSerialize: visit root, left, right.\nAppend null for missing children.\nResult: 1,2,null,null,3,4,5\n\nDeserialize: split string, use index.\nRecursively build: read val, create\nnode, recurse left then right.\n\nTime: O(n) | Space: O(n)",
+  },
+  {
+    topic: "Lowest Common Ancestor (LCA)",
+    front:
+      "Given two nodes in a tree, find their\ndeepest shared ancestor.\n\nWhat approaches work for a plain\nbinary tree vs BST vs general tree?",
+    back: "Binary tree (DFS): O(n)\n  If root is p or q, return it.\n  Recurse left/right. Both non-null\n  -> root is LCA. Else propagate.\n\nBST: O(h) - compare values.\n  Both < root: go left.\n  Both > root: go right. Split=LCA.\n\nGeneral tree: Binary Lifting O(log n)\n  Precompute 2^k-th ancestors.",
+  },
+  {
+    topic: "Morris Traversal",
+    front:
+      "Standard inorder traversal uses O(h)\nstack space. Can you do O(1) space\nwithout modifying the tree permanently?\n\nWhen is this worth the complexity?",
+    back: "Morris Traversal: O(1) space inorder\nvia temporary threading.\n\nFor each node:\n1. No left child: visit, go right.\n2. Has left: find inorder predecessor.\n   - No thread: link to current, go left.\n   - Thread exists: remove, visit, go right.\n\nTime: O(n) | Space: O(1)\nUse when memory is extremely tight.",
   },
   {
     topic: "Monotonic Queue",
     front:
-      "What is a Monotonic Queue?\n\nWhat problem does it solve efficiently?",
-    back: "A deque maintaining elements in\nmonotonic order (increasing or decreasing).\n\nSolves: Sliding Window Maximum/Minimum\nin O(n) total.\n\nFor max: maintain decreasing deque.\n- Pop back while back <= new element\n- Pop front if outside window\n- Front of deque is always the max\n\nEach element added/removed at most once.",
+      "You need the maximum value in every\nsliding window of size k over an array.\nBrute force is O(n*k).\n\nWhat structure solves this in O(n)?",
+    back: "Monotonic Deque: maintains elements\nin decreasing order.\n\n- Pop back while back <= new element\n- Pop front if outside window\n- Front is always the current max\n\nEach element pushed/removed at most once\n-> O(n) total.\n\nPattern: next greater / sliding extremum.",
   },
   {
     topic: "Persistent Data Structures",
     front:
-      "What are persistent data structures?\n\nGive an example and its use case.",
-    back: "Preserve all previous versions\nwhen modified (immutable history).\n\nExample: Persistent Segment Tree\n- Creates new nodes for changes\n- Shares unchanged nodes with old version\n- O(log n) per update\n- O(log n * Q) space for Q versions\n\nUse cases: version control, undo systems,\nfunctional programming, competitive prog.",
+      "An editor needs undo across 1000\nversions without copying the entire\ndocument each time.\n\nWhat technique preserves all versions\nefficiently?",
+    back: "Persistent structures: share unchanged\nnodes between versions (path copying).\n\nExample: Persistent Segment Tree\n- Copy only the changed path\n- O(log n) per update\n- O(log n * Q) space for Q versions\n\nUse: undo systems, version control,\nfunctional programming, time travel.",
   },
 ];
 
 export const TREES_ADVANCED: DeckInfo = {
   id: "trees-advanced",
-  title: "Trees & Advanced Data Structures",
+  title: "Trees & Advanced Structures",
   description:
-    "Tries, segment trees, Fenwick trees, Union-Find, balanced BSTs, skip lists, Bloom filters, and more.",
+    "Tries, balanced BSTs (AVL, Red-Black, B-Tree), tree serialization, LCA, Morris traversal, and more.",
   category: "DSA",
   level: "advanced",
   cards,
-  tags: ["trees", "segment-tree", "trie", "union-find", "Bloom-filter"],
-  estimatedMinutes: 20,
+  tags: ["trees", "trie", "avl", "red-black", "b-tree", "lca", "morris"],
+  estimatedMinutes: 15,
 };

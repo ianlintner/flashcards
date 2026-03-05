@@ -5,8 +5,8 @@ const cards: Flashcard[] = [
   {
     topic: "KMP String Matching",
     front:
-      "Describe the KMP (Knuth-Morris-Pratt)\nalgorithm.\n\nWhat is its time complexity?",
-    back: "Pattern matching without backtracking.\n\n1. Build failure/prefix function:\n   For each position, longest proper\n   prefix that is also a suffix.\n   Time: O(m) where m = pattern length.\n\n2. Search: use failure function to\n   skip already-matched characters.\n   Time: O(n) where n = text length.\n\nTotal: O(n + m)\nSpace: O(m) for failure function",
+      "A text editor's Find feature searches\nfor a pattern in a million-line file.\nNaive search is O(nm).\n\nHow do you achieve O(n+m)?",
+    back: "KMP (Knuth-Morris-Pratt):\nNever backtracks in the text.\n\n1. Build prefix/failure table: O(m)\n   Longest proper prefix = suffix\n2. Scan text; on mismatch, table\n   says where to resume: O(n)\n\nTotal: O(n + m) | Space: O(m)\n\nKey insight: work already matched\nis never re-examined.",
   },
   {
     topic: "Rabin-Karp String Matching",
@@ -15,8 +15,9 @@ const cards: Flashcard[] = [
   },
   {
     topic: "A* Search Algorithm",
-    front: "Describe A* search.\n\nHow does it differ from Dijkstra?",
-    back: "A* = Dijkstra + heuristic estimate\n\nf(n) = g(n) + h(n)\n  g(n) = actual cost from start\n  h(n) = estimated cost to goal\n\nHeuristic must be ADMISSIBLE:\n  h(n) <= actual cost (never overestimate)\n\nWith good heuristic: explores far fewer\nnodes than Dijkstra.\n\nTime: O(b^d) worst, much better in practice\nUsed in: pathfinding, games, robotics.",
+    front:
+      "Your robot navigates a grid with\nobstacles. Dijkstra is too slow because\nit explores equally in all directions.\n\nHow do you focus the search toward\nthe goal?",
+    back: "A* = Dijkstra + heuristic estimate\n\nf(n) = g(n) + h(n)\n  g(n) = actual cost from start\n  h(n) = estimated cost to goal\n\nHeuristic must be ADMISSIBLE:\n  h(n) <= actual cost (never overestimate)\n\nExplores far fewer nodes than Dijkstra.\nTime: O(b^d) worst, much better in practice.\nUsed in: pathfinding, games, robotics.",
   },
   {
     topic: "Tarjan's SCC Algorithm",
@@ -33,8 +34,8 @@ const cards: Flashcard[] = [
   {
     topic: "Network Flow: Ford-Fulkerson",
     front:
-      "Describe the Ford-Fulkerson method\nfor Maximum Flow.\n\nWhat is the complexity?",
-    back: "Find max flow from source to sink:\n\n1. While augmenting path exists\n   (s -> t in residual graph):\n   a. Find path (BFS or DFS)\n   b. Find bottleneck capacity\n   c. Update flow along path\n   d. Update residual graph\n\nWith BFS (Edmonds-Karp):\n  Time: O(V * E^2)\nWith DFS:\n  Time: O(E * max_flow)\n\nUsed in: bipartite matching,\nmin-cut, circulation problems.",
+      "A network of pipes connects a water\nplant (source) to a city (sink).\nEach pipe has a max capacity.\n\nWhat is the maximum flow, and how\ndo you compute it?",
+    back: "Ford-Fulkerson: find augmenting paths\nfrom source to sink repeatedly.\n\n1. Find path in residual graph\n2. Push flow = bottleneck (min edge)\n3. Update residual capacities\n4. Repeat until no path exists\n\nEdmonds-Karp (BFS): O(V * E^2)\n\nMnemonic: the bottleneck is the\nnarrowest pipe on each path.",
   },
   {
     topic: "Hungarian Algorithm",
@@ -70,8 +71,8 @@ const cards: Flashcard[] = [
   {
     topic: "Aho-Corasick Algorithm",
     front:
-      "What is the Aho-Corasick algorithm?\n\nHow does it differ from KMP?",
-    back: "Multi-pattern string matching:\nSearch for ALL patterns simultaneously.\n\nStructure: Trie + failure links\n  (generalization of KMP to multiple\n   patterns)\n\nBuild:   O(sum of pattern lengths)\nSearch:  O(n + number of matches)\n         n = text length\n\nUsed in: intrusion detection systems,\nanti-virus scanning, bioinformatics,\nfgrep (fast grep).",
+      "An antivirus scanner must check every\nfile against 10,000 malware signatures.\nRunning KMP 10,000 times is too slow.\n\nHow do you search for ALL patterns\nin a single pass?",
+    back: "Aho-Corasick: multi-pattern matching\nin one pass over the text.\n\nStructure: trie + failure links\n(KMP generalized to many patterns)\n\nBuild:  O(sum of pattern lengths)\nSearch: O(n + matches)\n\nMnemonic: build the dictionary trie,\nthen stream the text through it.",
   },
   {
     topic: "Z-Algorithm",
@@ -108,7 +109,13 @@ const cards: Flashcard[] = [
   {
     topic: "Amortized Analysis Techniques",
     front: "Name and describe the three main\namortized analysis techniques.",
-    back: "1. Aggregate Method\n   Total cost / number of operations\n   Ex: dynamic array n pushes = O(n)\n\n2. Accounting Method\n   Overcharge cheap ops, save credit\n   for expensive ops\n   Ex: push saves $2 for future resize\n\n3. Potential Method\n   Define potential function phi\n   Amortized = actual + delta(phi)\n   Most powerful, most abstract\n\nAll three give same result;\nchoice depends on what's easiest.",
+    back: "1. Aggregate Method\n   Total cost / number of operations\n   Ex: dynamic array n pushes = O(n)\n\n2. Accounting Method\n   Overcharge cheap ops, save credit\n   for expensive ops\n\n3. Potential Method\n   Define potential function phi\n   Amortized = actual + delta(phi)\n   Most powerful, most abstract",
+  },
+  {
+    topic: "Algorithm Design Paradigms Summary",
+    front:
+      "Name the five core algorithm design\nparadigms and when to use each.",
+    back: "1. Divide & Conquer: split, solve, merge\n2. Greedy: local optimal -> global\n3. DP: overlapping subproblems +\n   optimal substructure\n4. Backtracking: try all, prune invalid\n5. Randomized: use randomness for\n   expected good performance\n\nMnemonic: 'Don't Guess, Do Better,\nRandomly' (D&C, Greedy, DP, BT, Rand).",
   },
 ];
 

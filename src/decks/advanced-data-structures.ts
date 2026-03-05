@@ -11,26 +11,26 @@ const cards: Flashcard[] = [
   {
     topic: "Skip List",
     front:
-      "What is a Skip List?\nWhat are its complexities?\n\nWhat is it used for?",
+      "You need a sorted data structure with\nO(log n) search, insert, and delete,\nbut balanced BSTs are complex to code.\n\nWhat simpler alternative uses randomized\n'express lanes'?",
     back: "Probabilistic data structure:\nlayered linked lists with express lanes.\n\nSearch:  O(log n) expected\nInsert:  O(log n) expected\nDelete:  O(log n) expected\nSpace:   O(n) expected\n\nUsed in: Redis sorted sets,\nLevelDB/RocksDB memtable.\nSimpler to implement than balanced BST.",
   },
   {
     topic: "Bloom Filter",
     front:
-      "What is a Bloom Filter?\nWhat are its properties?\n\nWhen do you use it?",
+      "A CDN receives millions of URL requests\nper second. Before hitting the database,\nyou want a fast check: 'Is this URL\ndefinitely NOT cached?'\n\nWhat probabilistic structure fits?",
     back: 'Probabilistic set membership:\n  "Possibly in set" or "Definitely not"\n\nFalse positives: YES\nFalse negatives: NO\n\nInsert:  O(k) k = hash functions\nQuery:   O(k)\nSpace:   O(m) bits (compact!)\n\nUsed in: cache lookups, spam filters,\nCDN routing, database query optimization,\nChrome safe browsing.',
   },
   {
     topic: "Segment Tree",
     front:
-      "What is a Segment Tree?\nWhat are its complexities?\n\nWhat operations does it support?",
-    back: "Binary tree for range queries:\n\nBuild:        O(n)\nPoint update:  O(log n)\nRange query:   O(log n)\nRange update:  O(log n) with lazy prop\nSpace:         O(n)\n\nSupports: sum, min, max, gcd\nover arbitrary ranges.\n\nUsed when: frequent range queries\nwith interleaved updates.",
+      "A game server needs to answer\n'total damage dealt in range [L,R]'\nwhile players keep dealing damage.\n\nWhat data structure handles range\nqueries + point updates in O(log n)?",
+    back: "Segment Tree: binary tree for ranges.\n\nBuild:        O(n)\nPoint update:  O(log n)\nRange query:   O(log n)\nRange update:  O(log n) with lazy prop\nSpace:         O(n)\n\nSupports: sum, min, max, gcd.\nMnemonic: SEGment the array -\neach node owns a contiguous range.",
   },
   {
     topic: "Fenwick Tree (BIT)",
     front:
       "What is a Fenwick Tree\n(Binary Indexed Tree)?\n\nHow does it compare to Segment Tree?",
-    back: "Array-based structure for:\n  prefix sum queries + point updates\n\nBuild:        O(n)\nPoint update:  O(log n)\nPrefix query:  O(log n)\nRange query:   O(log n) (two prefix)\nSpace:         O(n)\n\nSimpler and faster constant factor\nthan Segment Tree.\nLimited to INVERTIBLE operations\n(sum, xor) - NOT min/max.",
+    back: "Fenwick / BIT: array-based\nprefix sums + point updates.\n\nBuild:  O(n) | Update:  O(log n)\nPrefix query:  O(log n)\nRange query:   O(log n) (two prefix)\nSpace:  O(n)\n\nSimpler than Segment Tree, but limited\nto invertible ops (sum, xor - NOT min/max).\nMnemonic: BIT by BIT - the binary form\nof each index decides its range.",
   },
   {
     topic: "Disjoint Set Union (Union-Find)",
@@ -46,7 +46,7 @@ const cards: Flashcard[] = [
   {
     topic: "LRU Cache Implementation",
     front:
-      "How do you implement an LRU Cache\nwith O(1) get and put?\n\nDescribe the internal structure.",
+      "Design a cache for a web browser\nthat evicts the page not visited for\nthe longest time when full.\n\nHow do you achieve O(1) get and put?",
     back: "HashMap<Key, DLL_Node> + Doubly LL\n\nDLL Node: { key, value, prev, next }\nDummy head + dummy tail sentinels.\n\nget(key):\n  map lookup -> node\n  move node to head (most recent)\n  return value\n\nput(key, val):\n  if exists: update + move to head\n  else: new node at head\n  if over capacity: remove tail.prev\n    + delete from map",
   },
   {
@@ -112,6 +112,12 @@ const cards: Flashcard[] = [
     front:
       "What are Immutable Data Structures?\n\nName 3 examples and their complexities.",
     back: "Updates create NEW versions,\nsharing structure with old version.\n\n1. Persistent List (cons list)\n   Prepend: O(1), Access: O(n)\n\n2. Persistent Balanced BST\n   All ops: O(log n)\n   Path-copying shares unchanged nodes\n\n3. Hash Array Mapped Trie (HAMT)\n   Used in Clojure, Scala, Haskell\n   Lookup/Update: O(log32 n) ~ O(1)\n\nBenefits: thread safety, undo, snapshots.",
+  },
+  {
+    topic: "When to Use Advanced Data Structures",
+    front:
+      "How do you choose among Segment Tree,\nBIT, Bloom Filter, Skip List,\nand Union-Find?\n\nGive the deciding factor for each.",
+    back: "Decision tree by problem pattern:\n\nRange queries + updates -> Segment Tree\nPrefix sums only -> BIT (simpler)\nSet membership, false+ OK -> Bloom Filter\nOrdered ops, simple code -> Skip List\nGroup/component tracking -> Union-Find\n\nMnemonic: 'Segments BIT Bloom,\nSkip to Union' - ordered by\nspecialization level.",
   },
 ];
 
