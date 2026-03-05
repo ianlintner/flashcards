@@ -11,24 +11,26 @@ const cards: Flashcard[] = [
   {
     topic: "Top-Down vs Bottom-Up",
     front:
-      "What is the difference between\ntop-down and bottom-up DP?\n\nWhich uses memoization vs tabulation?",
-    back: "Top-Down (Memoization):\n- Recursive with cache\n- Solves only needed subproblems\n- Can hit stack overflow for deep recursion\n\nBottom-Up (Tabulation):\n- Iterative, fills table from base cases\n- Solves all subproblems in order\n- Usually better constant factors",
+      "Your teammate asks: 'Should I use\nmemoization or tabulation for this\nDP problem?'\n\nHow do you decide, and what is each?",
+    back: "Mnemonic: Top-down = Recursive + Memo,\nBottom-up = Loops + Table.\n\nTop-Down: recursive + cache results.\nOnly solves needed subproblems.\nRisk: stack overflow if n is large.\n\nBottom-Up: iterative, table from base.\nNo stack risk, better constants.\n\nPrefer top-down for sparse subproblems.",
   },
   {
     topic: "Fibonacci - DP Example",
     front:
-      "Show how Fibonacci demonstrates\nthe power of DP.\n\nCompare naive recursion vs DP.",
-    back: "Naive: fib(n) = fib(n-1) + fib(n-2)\nTime: O(2^n) - exponential!\n\nDP (memoized): store fib[i]\nTime: O(n), Space: O(n)\n\nDP (tabulation, optimized):\nTime: O(n), Space: O(1)\nOnly keep prev two values.",
+      "You're solving the staircase problem:\nclimb n steps, taking 1 or 2 at a time.\nHow many distinct ways to reach the top?\n\nWhy is naive recursion too slow\nand how does DP fix it?",
+    back: "Naive: ways(n) = ways(n-1) + ways(n-2)\nTime: O(2^n) - overlapping calls explode!\nways(4) recalculates ways(2) three times.\n\nDP (memoized): cache ways[i]\nTime: O(n), Space: O(n)\n\nDP (tabulation, optimized):\nKeep only prev two values.\nTime: O(n), Space: O(1)",
   },
   {
     topic: "0/1 Knapsack",
-    front: "Describe the 0/1 Knapsack problem.\n\nWhat is the DP recurrence?",
-    back: "Given n items with weight w[i] and value v[i],\nmaximize value within capacity W.\n\ndp[i][w] = max(\n  dp[i-1][w],           // skip item i\n  dp[i-1][w-w[i]] + v[i] // take item i\n)\n\nTime: O(n * W)\nSpace: O(n * W), can optimize to O(W)",
+    front:
+      "Bag capacity = 7. Items:\nA(w=3,v=4) B(w=4,v=5) C(w=2,v=3).\nMaximize total value.\n\nWhat is the recurrence?\nMnemonic: 'Take it or Leave it'.",
+    back: "For each item: Take it or Leave it.\n\ndp[i][w] = max(\n  dp[i-1][w],             // leave it\n  dp[i-1][w-w[i]] + v[i]  // take it\n)\n\nExample: A+B fits (w=7), value=9.\nBeats A+C(v=7) and B+C(v=8).\n\nTime: O(n*W), Space: O(W) optimized",
   },
   {
     topic: "Longest Common Subsequence",
-    front: "What is LCS?\n\nWhat is the DP recurrence\nand time complexity?",
-    back: "LCS: longest subsequence common to two\nstrings (not necessarily contiguous).\n\nIf s1[i] == s2[j]:\n  dp[i][j] = dp[i-1][j-1] + 1\nElse:\n  dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n\nTime:  O(m * n)\nSpace: O(m * n), can optimize to O(min(m,n))",
+    front:
+      "Given s1='ACE' and s2='ABCDE',\nfind their longest common subsequence.\n\nShow the DP table and recurrence.",
+    back: "     ''  A  B  C  D  E\n''    0  0  0  0  0  0\nA     0  1  1  1  1  1\nC     0  1  1  2  2  2\nE     0  1  1  2  2  3\n\nMatch: dp[i][j] = dp[i-1][j-1]+1\nElse:  dp[i][j] = max(up, left)\n\nLCS = 'ACE', length 3\nTime: O(m*n), Space: O(min(m,n))",
   },
   {
     topic: "Longest Increasing Subsequence",
@@ -65,10 +67,16 @@ const cards: Flashcard[] = [
     back: "Use bitmask to represent subset of items\nas a single integer.\n\ndp[mask] = best answer using the subset\nof items encoded by mask.\n\nUseful for:\n- Traveling Salesman: dp[mask][i]\n- Assignment problems\n- Small n (n <= 20)\n\nTime: O(2^n * n)\nSpace: O(2^n)",
   },
   {
-    topic: "State Reduction",
+    topic: "DP Space Reduction",
     front:
-      "What is state reduction in DP?\n\nGive an example of reducing\nspace from O(n^2) to O(n).",
-    back: "If dp[i] only depends on dp[i-1],\nkeep only two rows instead of full table.\n\nExample: LCS\n- Full table: O(m * n) space\n- Two rows: O(min(m, n)) space\n\nExample: 0/1 Knapsack\n- Full: O(n * W) -> O(W)\n- Iterate W backwards to avoid overwrite",
+      "Your DP uses O(n) space but current\nrow only depends on the previous row.\nHow do you reduce to O(1) space?\n\nShow with Fibonacci as example.",
+    back: "Rolling array: if dp[i] only needs\ndp[i-1], keep just 2 variables.\n\nFibonacci: O(n) -> O(1)\n  prev=0, curr=1\n  for i in 2..n: prev,curr = curr,prev+curr\n\n2-row trick for 2D tables:\n  LCS: O(m*n) -> O(min(m,n))\n  Knapsack: O(n*W) -> O(W)\n  (iterate W backwards to avoid overwrite)",
+  },
+  {
+    topic: "DP State Design",
+    front:
+      "You need to solve: 'minimum cost to paint\nn houses with 3 colors, no two adjacent\nhouses the same color.'\n\nHow do you define the DP state?",
+    back: "State: dp[i][c] = min cost to paint\nhouses 0..i where house i uses color c.\n\nTransition:\n  dp[i][c] = cost[i][c] +\n    min(dp[i-1][other colors])\n\nBase: dp[0][c] = cost[0][c]\nAnswer: min(dp[n-1][0..2])\n\nKey: state captures what affects\nfuture decisions (last color chosen).",
   },
 ];
 

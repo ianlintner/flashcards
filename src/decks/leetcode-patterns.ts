@@ -27,8 +27,9 @@ const cards: Flashcard[] = [
   },
   {
     topic: "Binary Search Variations",
-    front: "List the main Binary Search\nvariations used in interviews.",
-    back: "1. Standard: find exact target\n2. Lower bound: first element >= target\n3. Upper bound: first element > target\n4. Rotated sorted array search\n5. Search on answer space\n   (min/max optimization)\n6. Peak finding (bitonic array)\n7. Search in 2D sorted matrix\n\nKey: identify MONOTONIC property.",
+    front:
+      "Given a sorted matrix where each row\nstarts greater than the last row ends,\nfind a target value.\n\nHow do you apply binary search here?",
+    back: "Treat m x n matrix as sorted array:\n  mid -> matrix[mid/n][mid%n]\n  Binary search indices 0..m*n-1\n\nBinary search variations:\n1. Standard: find exact target\n2. Lower/Upper bound (first >=, >)\n3. Rotated sorted array\n4. Search on answer space (min/max)\n5. Peak finding (bitonic array)\n\nKey: identify a MONOTONIC property.",
   },
   {
     topic: "BFS for Shortest Path",
@@ -39,8 +40,8 @@ const cards: Flashcard[] = [
   {
     topic: "DFS + Backtracking",
     front:
-      "Describe the Backtracking pattern.\n\nWhat is the general template?",
-    back: "Explore all candidates, abandon (prune)\npaths that can't lead to a solution.\n\nTemplate:\n  function backtrack(state, choices):\n    if goal reached: add to result\n    for each choice:\n      make choice\n      backtrack(new state, remaining)\n      undo choice  // BACKTRACK\n\nProblems: permutations, combinations,\nsubsets, N-queens, Sudoku solver.",
+      "You're solving N-Queens: place N queens\non an N x N board with no two attacking.\n\nHow does backtracking with pruning\nreduce this from brute force to practical?",
+    back: "Backtracking = DFS + pruning.\nBrute force: N^N placements.\nPrune: skip invalid branches EARLY,\ncutting the search tree dramatically.\n\nTemplate:\n  backtrack(state, choices):\n    if goal: record result\n    for choice (if valid):  // PRUNE\n      make -> recurse -> undo\n\nN-Queens prunes ~95% of branches.",
   },
   {
     topic: "Topological Sort Pattern",
@@ -53,9 +54,22 @@ const cards: Flashcard[] = [
     back: "Finding K largest: use MIN-heap of size K\n  -> if new elem > heap top, replace\n  Time: O(n log k)\n\nFinding K smallest: use MAX-heap of size K\n\nProblems:\n- Kth largest element\n- Top K frequent elements\n- K closest points to origin\n- Merge K sorted lists\n- Find median from data stream",
   },
   {
-    topic: "Dynamic Programming Patterns",
-    front: "List the main categories of\nDynamic Programming problems.",
-    back: "1. Linear DP (climbing stairs, house\n   robber, decode ways)\n2. Knapsack (0/1, unbounded, subset sum)\n3. String DP (LCS, edit distance,\n   palindromic subsequence)\n4. Grid DP (unique paths, min path sum)\n5. Interval DP (burst balloons, matrix\n   chain multiplication)\n6. Tree DP (diameter, max path sum)\n7. Bitmask DP (TSP, subset permutation)",
+    topic: "Linear DP Pattern",
+    front:
+      "You're solving 'House Robber': maximize\nmoney from non-adjacent houses in a row.\n\nHow do you set up the linear DP?",
+    back: "Linear DP: state depends on previous\n1-2 elements in a sequence.\n\ndp[i] = max(dp[i-1], dp[i-2]+nums[i])\n\nSame pattern: Climbing Stairs,\nDecode Ways, Maximum Subarray (Kadane).\n\nSignal: decision at position i\ndepends only on i-1 and/or i-2.",
+  },
+  {
+    topic: "Grid DP Pattern",
+    front:
+      "You're at top-left of an m x n grid.\nYou can only move right or down.\nHow many unique paths to bottom-right?\n\nWhat is the Grid DP approach?",
+    back: "dp[i][j] = ways to reach cell (i,j)\ndp[i][j] = dp[i-1][j] + dp[i][j-1]\nBase: dp[0][j] = dp[i][0] = 1\n\nVariants:\n- Min Path Sum (add grid cost)\n- Dungeon Game (work backwards)\n- Cherry Pickup (two agents)\n\nSignal: 2D grid, move right/down,\noptimize or count paths.",
+  },
+  {
+    topic: "State Machine DP",
+    front:
+      "In 'Best Time to Buy/Sell Stock with\nCooldown', you can hold, sell, or rest\neach day.\n\nHow does state machine DP model this?",
+    back: "Define states per day:\n  hold[i] = max profit while holding\n  sold[i] = max profit just sold\n  rest[i] = max profit in cooldown\n\nTransitions:\n  hold = max(hold, rest - price)\n  sold = hold + price\n  rest = max(rest, sold)\n\nAlso: Stock with K transactions,\nStock with transaction fee.",
   },
   {
     topic: "0/1 Knapsack Pattern",
@@ -64,8 +78,9 @@ const cards: Flashcard[] = [
   },
   {
     topic: "Monotonic Stack Pattern",
-    front: "Describe the Monotonic Stack pattern.\n\nWhat is the template?",
-    back: "Maintain stack in increasing or\ndecreasing order.\n\nTemplate (next greater element):\n  for i = n-1 to 0:\n    while stack not empty and\n          stack.top <= arr[i]:\n      stack.pop()\n    result[i] = stack.top or -1\n    stack.push(arr[i])\n\nProblems: next greater element, daily\ntemperatures, largest rectangle,\ntrapping rain water.",
+    front:
+      "For array [2, 1, 4, 3], find the next\nelement to the right that is larger\nthan each element (Next Greater Element).\n\nWhat data structure solves this in O(n)?",
+    back: "Monotonic Stack (decreasing order).\n  [2,1,4,3] -> result: [4,4,-1,-1]\n\nScan right to left:\n  for i = n-1 to 0:\n    while stack and top <= arr[i]: pop\n    result[i] = stack.top or -1\n    push(arr[i])\n\nAlso: daily temps, largest rectangle,\ntrapping rain water. Each elem pushed once.",
   },
   {
     topic: "Union-Find Pattern",
@@ -133,6 +148,12 @@ const cards: Flashcard[] = [
     front:
       "Describe the Interval Scheduling\npattern. What's the greedy strategy?",
     back: "To select MAX non-overlapping intervals:\n1. Sort by END time\n2. Greedily pick earliest-ending interval\n3. Skip overlapping intervals\n\nTo find MIN rooms / platforms:\n1. Sort start and end times separately\n2. Two-pointer sweep line\n3. Count overlapping at each point\n\nProblems: meeting rooms, non-overlapping\nintervals, minimum platforms.",
+  },
+  {
+    topic: "Pattern Recognition Strategy",
+    front:
+      "Given a brand new coding problem,\nhow do you identify which algorithmic\npattern to apply?\n\nWhat signals map to which patterns?",
+    back: "Decision tree for pattern matching:\n\nSorted input -> Binary Search / Two Ptrs\nOptimization -> DP or Greedy\nAll combos/perms -> Backtracking\nGraph structure -> BFS / DFS\nStream/subarray -> Sliding Window\nOrdering/deps -> Topological Sort\nGrouping -> Union-Find\nRepeated min/max -> Heap\n\nAsk: what varies? That is your state.",
   },
 ];
 
