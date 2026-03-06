@@ -76,6 +76,11 @@ import { FUNCTIONAL_PROGRAMMING_FOUNDATIONS } from "./functional-programming-fou
 import { ADVANCED_FUNCTIONAL_PROGRAMMING } from "./advanced-functional-programming";
 import { CATEGORY_THEORY_FOR_PROGRAMMERS } from "./category-theory-for-programmers";
 import { EFFECT_SYSTEMS } from "./effect-systems";
+import { HASKELL_SCALA_OCAML } from "./haskell-scala-ocaml";
+import { PARSER_COMBINATORS } from "./parser-combinators";
+import { DEPENDENT_TYPES_AND_GADTS } from "./dependent-types-and-gadts";
+import { STREAMING_AND_FRP } from "./streaming-and-frp";
+import { DENOTATIONAL_SEMANTICS } from "./denotational-semantics";
 import { SYSTEM_DESIGN_CASES } from "./system-design-cases";
 
 import type { DeckInfo } from "./types";
@@ -159,6 +164,11 @@ export const DECK_LIBRARY: DeckInfo[] = [
   ADVANCED_FUNCTIONAL_PROGRAMMING,
   CATEGORY_THEORY_FOR_PROGRAMMERS,
   EFFECT_SYSTEMS,
+  HASKELL_SCALA_OCAML,
+  PARSER_COMBINATORS,
+  DEPENDENT_TYPES_AND_GADTS,
+  STREAMING_AND_FRP,
+  DENOTATIONAL_SEMANTICS,
   SYSTEM_DESIGN_CASES,
 ].sort((a, b) => {
   const la = LEVEL_ORDER.indexOf(a.level);
@@ -257,5 +267,10 @@ export {
   ADVANCED_FUNCTIONAL_PROGRAMMING,
   CATEGORY_THEORY_FOR_PROGRAMMERS,
   EFFECT_SYSTEMS,
+  HASKELL_SCALA_OCAML,
+  PARSER_COMBINATORS,
+  DEPENDENT_TYPES_AND_GADTS,
+  STREAMING_AND_FRP,
+  DENOTATIONAL_SEMANTICS,
   SYSTEM_DESIGN_CASES,
 };
