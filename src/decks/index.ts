@@ -72,6 +72,7 @@ import { JAVASCRIPT_DEEP_DIVE } from "./javascript-deep-dive";
 import { SQL_MASTERY } from "./sql-mastery";
 import { GO_FUNDAMENTALS } from "./go-fundamentals";
 import { RUST_OWNERSHIP } from "./rust-ownership";
+import { LINEAR_TYPES_AND_OWNERSHIP } from "./linear-types-and-ownership";
 import { FUNCTIONAL_PROGRAMMING_FOUNDATIONS } from "./functional-programming-foundations";
 import { ADVANCED_FUNCTIONAL_PROGRAMMING } from "./advanced-functional-programming";
 import { CATEGORY_THEORY_FOR_PROGRAMMERS } from "./category-theory-for-programmers";
@@ -81,6 +82,10 @@ import { PARSER_COMBINATORS } from "./parser-combinators";
 import { DEPENDENT_TYPES_AND_GADTS } from "./dependent-types-and-gadts";
 import { STREAMING_AND_FRP } from "./streaming-and-frp";
 import { DENOTATIONAL_SEMANTICS } from "./denotational-semantics";
+import { THEOREM_PROVING_WITH_COQ_AGDA_IDRIS } from "./theorem-proving-with-coq-agda-idris";
+import { PROFUNCTORS_ARROWS_AND_FREE_APPLICATIVES } from "./profunctors-arrows-and-free-applicatives";
+import { EFFECT_HANDLERS_IN_DEPTH } from "./effect-handlers-in-depth";
+import { ADVANCED_OPTICS } from "./advanced-optics";
 import { SYSTEM_DESIGN_CASES } from "./system-design-cases";
 
 import type { DeckInfo } from "./types";
@@ -160,6 +165,7 @@ export const DECK_LIBRARY: DeckInfo[] = [
   SQL_MASTERY,
   GO_FUNDAMENTALS,
   RUST_OWNERSHIP,
+  LINEAR_TYPES_AND_OWNERSHIP,
   FUNCTIONAL_PROGRAMMING_FOUNDATIONS,
   ADVANCED_FUNCTIONAL_PROGRAMMING,
   CATEGORY_THEORY_FOR_PROGRAMMERS,
@@ -169,6 +175,10 @@ export const DECK_LIBRARY: DeckInfo[] = [
   DEPENDENT_TYPES_AND_GADTS,
   STREAMING_AND_FRP,
   DENOTATIONAL_SEMANTICS,
+  THEOREM_PROVING_WITH_COQ_AGDA_IDRIS,
+  PROFUNCTORS_ARROWS_AND_FREE_APPLICATIVES,
+  EFFECT_HANDLERS_IN_DEPTH,
+  ADVANCED_OPTICS,
   SYSTEM_DESIGN_CASES,
 ].sort((a, b) => {
   const la = LEVEL_ORDER.indexOf(a.level);
@@ -263,6 +273,7 @@ export {
   SQL_MASTERY,
   GO_FUNDAMENTALS,
   RUST_OWNERSHIP,
+  LINEAR_TYPES_AND_OWNERSHIP,
   FUNCTIONAL_PROGRAMMING_FOUNDATIONS,
   ADVANCED_FUNCTIONAL_PROGRAMMING,
   CATEGORY_THEORY_FOR_PROGRAMMERS,
@@ -272,5 +283,9 @@ export {
   DEPENDENT_TYPES_AND_GADTS,
   STREAMING_AND_FRP,
   DENOTATIONAL_SEMANTICS,
+  THEOREM_PROVING_WITH_COQ_AGDA_IDRIS,
+  PROFUNCTORS_ARROWS_AND_FREE_APPLICATIVES,
+  EFFECT_HANDLERS_IN_DEPTH,
+  ADVANCED_OPTICS,
   SYSTEM_DESIGN_CASES,
 };
