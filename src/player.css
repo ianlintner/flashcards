@@ -245,6 +245,15 @@
   line-height: 1.35;
 }
 
+/* 2-column layout for very dense content (backs with many lines) */
+.card-content.text-2col {
+  font-size: 0.875rem;
+  line-height: 1.35;
+  column-count: 2;
+  column-gap: 1.5rem;
+  text-align: left;
+}
+
 /* Card Animations */
 .player-card.swipe-left {
   animation: swipeLeft 0.4s ease-out forwards;
@@ -713,6 +722,15 @@
 
   .card-content.text-xs {
     font-size: 0.75rem;
+  }
+
+  /* On small screens, 2-col stays but shrinks font further */
+  .card-content.text-2col {
+    font-size: 0.75rem;
+    line-height: 1.3;
+    column-count: 2;
+    column-gap: 1rem;
+    text-align: left;
   }
 
   .player-controls {

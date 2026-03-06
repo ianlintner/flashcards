@@ -134,7 +134,12 @@ function drawSide(
   }
 }
 
-// ─── Body text: auto-shrink until content fits ────────────────────────────────
+// ─── Body text: auto-shrink until content fits; 2-col for dense backs ─────────
+
+/** Minimum single-column font size before switching to 2-column layout. */
+const TWO_COL_THRESHOLD_PT = 9;
+/** Gap between the two columns (inches). */
+const COL_GAP = 0.15;
 
 function drawBodyText(
   doc: jsPDF,
@@ -148,7 +153,7 @@ function drawBodyText(
 ): void {
   const bodyH = bottomY - topY;
 
-  // Measure total height at decreasing font sizes until it fits
+  // ── Try single-column first ───────────────────────────────────────────────
   let fontSize = Math.min(baseFontSize, 18);
   while (fontSize >= 5.5) {
     const lines = buildLines(doc, text, maxW, fontSize);
@@ -157,6 +162,87 @@ function drawBodyText(
     fontSize -= 0.5;
   }
 
+  // If single-column font is still readable, use it
+  if (fontSize >= TWO_COL_THRESHOLD_PT) {
+    drawColumnBlock(doc, text, x, topY, maxW, bodyH, bottomY, fontSize, opts);
+    return;
+  }
+
+  // ── Switch to 2-column layout for dense content ───────────────────────────
+  const colW = (maxW - COL_GAP) / 2;
+  const paragraphs = text.split("\n");
+
+  // Split paragraphs roughly in half by line count at a reasonable font size
+  let twoColFontSize = Math.min(baseFontSize, 18);
+  while (twoColFontSize >= 5.5) {
+    const allLines = buildLines(doc, text, colW, twoColFontSize);
+    const lineH = ptToIn(twoColFontSize) * 1.48;
+    const halfLines = Math.ceil(allLines.length / 2);
+    if (halfLines * lineH <= bodyH + 0.01) break;
+    twoColFontSize -= 0.5;
+  }
+
+  // Find the split point: accumulate lines per paragraph, split near midpoint
+  const paraLineCounts: number[] = paragraphs.map((p) =>
+    p.trim() === ""
+      ? 1
+      : (buildLines(doc, p, colW, twoColFontSize) as string[]).length,
+  );
+  const totalLines = paraLineCounts.reduce((a, b) => a + b, 0);
+  const targetHalf = Math.ceil(totalLines / 2);
+
+  let cumLines = 0;
+  let splitIdx = paragraphs.length;
+  for (let i = 0; i < paraLineCounts.length; i++) {
+    cumLines += paraLineCounts[i];
+    if (cumLines >= targetHalf) {
+      splitIdx = i + 1;
+      break;
+    }
+  }
+
+  const leftText = paragraphs.slice(0, splitIdx).join("\n");
+  const rightText = paragraphs.slice(splitIdx).join("\n");
+
+  // Draw left column
+  drawColumnBlock(
+    doc,
+    leftText,
+    x,
+    topY,
+    colW,
+    bodyH,
+    bottomY,
+    twoColFontSize,
+    opts,
+  );
+
+  // Draw right column
+  drawColumnBlock(
+    doc,
+    rightText,
+    x + colW + COL_GAP,
+    topY,
+    colW,
+    bodyH,
+    bottomY,
+    twoColFontSize,
+    opts,
+  );
+}
+
+/** Render a single column of text (used by both 1-col and 2-col paths). */
+function drawColumnBlock(
+  doc: jsPDF,
+  text: string,
+  x: number,
+  topY: number,
+  maxW: number,
+  bodyH: number,
+  bottomY: number,
+  fontSize: number,
+  opts: PDFOptions,
+): void {
   const lines = buildLines(doc, text, maxW, fontSize);
   const lineH = ptToIn(fontSize) * 1.48;
   const totalH = lines.length * lineH;

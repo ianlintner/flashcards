@@ -12,13 +12,13 @@ const cards: Flashcard[] = [
     topic: "Suffix Array - Longest Repeated Substring",
     front:
       'In an interview you\'re asked:\n"Find the longest repeated substring\nin a string efficiently."\n\nHow do you solve it with a suffix array?',
-    back: "1. Build suffix array: O(n log n)\n2. Build LCP (longest common prefix) array\n3. Max value in LCP array = length of\n   longest repeated substring\n4. Extract substring at that position\n\nWhy it works: repeated substrings are\nprefixes of suffixes that sort adjacent.\n\nTime: O(n log n) build + O(n) scan\nSpace: O(n)",
+    back: "1. Build suffix array: O(n log n)\n2. Build LCP (longest common prefix) array\n3. Max LCP value = longest repeated substr\n4. Extract substring at that position\n\nRepeated substrs are prefixes of suffixes\nthat sort adjacent in suffix array.\n\nTime: O(n log n) build + O(n) scan\nSpace: O(n)",
   },
   {
     topic: "Median of Two Sorted Arrays",
     front:
       "Interview: Given two sorted arrays of\nsize m and n, find the overall median\nin O(log min(m,n)) time.\n\nWhat is the key insight?",
-    back: "Binary search on the SMALLER array.\n\nKey insight: partition both arrays into\nleft/right halves with equal total size.\nOnly search partition of smaller array.\n\nValid partition when:\n  maxLeft1 <= minRight2 AND\n  maxLeft2 <= minRight1\n\nMedian = avg(max(lefts), min(rights))\nif even total, else max(lefts).\nTime: O(log(min(m,n)))",
+    back: "Binary search on the SMALLER array.\n\nPartition both arrays into left/right\nhalves with equal total elements.\nOnly search smaller array's partition.\n\nValid when: maxLeft1 <= minRight2\nAND maxLeft2 <= minRight1\n\nMedian: even -> avg(max(lefts), min(rights))\nodd -> max(lefts). Time: O(log(min(m,n)))",
   },
   {
     topic: "Intervals - Merge Intervals",
@@ -36,13 +36,13 @@ const cards: Flashcard[] = [
     topic: "Reservoir Sampling",
     front:
       "Your data pipeline streams millions of\nrecords. You need k random samples but\ndon't know the total count. How?",
-    back: "Reservoir Sampling:\n- Fill reservoir with first k items\n- For i-th item (i > k):\n  j = random(0..i)\n  if j < k: reservoir[j] = item\n\nEach item gets equal k/n probability.\n\nTime: O(n), Space: O(k)\n\nWhy it works: each swap maintains\nuniform probability across all items.",
+    back: "Reservoir Sampling:\n- Fill reservoir with first k items\n- For i-th item (i > k):\n  j = random(0..i)\n  if j < k: reservoir[j] = item\n\nEach item gets equal k/n probability.\nTime: O(n), Space: O(k)\n\nEach swap maintains uniform probability.",
   },
   {
     topic: "Dutch National Flag",
     front:
       "Given an array of 0s, 1s, and 2s,\nsort it in one pass with O(1) space.\nWhat algorithm do you use?",
-    back: "Dutch National Flag (3-way partition).\nThree pointers: lo=0, mid=0, hi=n-1\n\nWhile mid <= hi:\n- arr[mid]=0: swap(lo,mid), lo++, mid++\n- arr[mid]=1: mid++\n- arr[mid]=2: swap(mid,hi), hi--\n\nTime: O(n), Space: O(1)\nAlso used in 3-way quicksort\nfor arrays with many duplicate keys.",
+    back: "Dutch National Flag (3-way partition).\nThree pointers: lo=0, mid=0, hi=n-1\n\nWhile mid <= hi:\n- 0: swap(lo,mid), lo++, mid++\n- 1: mid++\n- 2: swap(mid,hi), hi--\n\nTime: O(n), Space: O(1)\nAlso used in 3-way quicksort (dupes).",
   },
   {
     topic: "Top-K Elements",
@@ -54,7 +54,7 @@ const cards: Flashcard[] = [
     topic: "Union-Find Applications",
     front:
       'Your interviewer says: "I have an\nundirected graph problem." When should\nyou reach for Union-Find over BFS/DFS?',
-    back: "Use Union-Find when you need:\n1. Connected components (dynamic edges)\n2. Cycle detection in undirected graphs\n3. Kruskal's MST (process sorted edges)\n4. Accounts Merge (group by shared email)\n5. Redundant Connection (find cycle edge)\n\nAdvantage over BFS/DFS: handles\nincremental edge additions in\nnear-O(1) amortized per operation.",
+    back: "Use Union-Find when you need:\n1. Connected components (dynamic edges)\n2. Cycle detection in undirected graphs\n3. Kruskal's MST (sorted edges)\n4. Accounts Merge (shared email grouping)\n5. Redundant Connection (cycle edge)\n\nAdvantage over BFS/DFS: incremental\nedge additions, near-O(1) amortized.",
   },
   {
     topic: "Randomized Algorithms",

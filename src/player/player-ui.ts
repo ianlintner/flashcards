@@ -512,11 +512,13 @@ function escapeHTML(str: string): string {
   return div.innerHTML;
 }
 
-/** Return a CSS class to auto-shrink text based on content length + line count. */
+/** Return a CSS class to auto-shrink text based on content length + line count.
+ *  For very dense backs, uses 2-column layout instead of tiny single-column text. */
 function getTextSizeClass(text: string): string {
   const len = text.length;
   const lines = text.split(/\n|<br>/g).length;
   // Thresholds tuned for 6x4-ish card aspect ratio
+  if (len > 600 || lines > 16) return "text-2col";
   if (len > 500 || lines > 14) return "text-xs";
   if (len > 300 || lines > 10) return "text-sm";
   if (len > 180 || lines > 7) return "text-md";

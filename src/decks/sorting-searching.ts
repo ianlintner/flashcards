@@ -12,13 +12,13 @@ const cards: Flashcard[] = [
     topic: "Binary Search on Rotated Array",
     front:
       "A sorted array was rotated at an\nunknown pivot. How do you search\nfor a target in O(log n)?\n\nExample: [4,5,6,7,0,1,2], target=0",
-    back: "Modified binary search - one half\nis always sorted:\n\nwhile (lo <= hi) {\n  mid = lo + ((hi - lo) >> 1);\n  if (arr[mid] === target) return mid;\n  if (arr[lo] <= arr[mid]) {\n    // left half is sorted\n    if (target >= arr[lo] && target < arr[mid])\n      hi = mid - 1;\n    else lo = mid + 1;\n  } else {\n    // right half is sorted\n    if (target > arr[mid] && target <= arr[hi])\n      lo = mid + 1;\n    else hi = mid - 1;\n  }\n}\n\nKey: check which half is sorted first.",
+    back: "One half is always sorted - check which,\nthen narrow to the half containing target.\n\nwhile lo <= hi:\n  mid = lo + ((hi-lo) >> 1)\n  if arr[mid] == target: return mid\n  if arr[lo] <= arr[mid]:  // left sorted\n    if arr[lo] <= target < arr[mid]: hi=mid-1\n    else: lo=mid+1\n  else:                    // right sorted\n    if arr[mid] < target <= arr[hi]: lo=mid+1\n    else: hi=mid-1",
   },
   {
     topic: "Two Pointers - Opposite Ends",
     front:
       "You have a sorted array and need to\nfind all pairs that sum to a target.\n\nWhat technique do you use and why?",
-    back: "Place left at start, right at end.\nMove them inward based on condition.\n\nUse case: Two Sum (sorted array)\nlet l = 0, r = n - 1;\nwhile (l < r) {\n  sum = arr[l] + arr[r];\n  if (sum === target) return [l, r];\n  if (sum < target) l++;\n  else r--;\n}\n\nTime: O(n), Space: O(1)",
+    back: "Left at start, right at end.\nMove inward based on comparison.\n\nlet l = 0, r = n - 1;\nwhile (l < r) {\n  sum = arr[l] + arr[r];\n  if (sum === target) return [l, r];\n  if (sum < target) l++;\n  else r--;\n}\nTime: O(n), Space: O(1)",
   },
   {
     topic: "Sliding Window - Fixed Size",
@@ -30,7 +30,7 @@ const cards: Flashcard[] = [
     topic: "Sliding Window - Variable Size",
     front:
       "Explain variable-size sliding window.\n\nFind smallest subarray with sum >= target.",
-    back: "Expand right pointer until condition met,\nthen shrink left pointer to minimize.\n\nlet l = 0, sum = 0, minLen = Infinity;\nfor (let r = 0; r < n; r++) {\n  sum += arr[r];\n  while (sum >= target) {\n    minLen = Math.min(minLen, r - l + 1);\n    sum -= arr[l++];\n  }\n}\n\nTime: O(n), Space: O(1)",
+    back: "Expand right until condition met,\nshrink left to minimize window.\n\nlet l = 0, sum = 0, minLen = Infinity;\nfor (let r = 0; r < n; r++) {\n  sum += arr[r];\n  while (sum >= target) {\n    minLen = Math.min(minLen, r - l + 1);\n    sum -= arr[l++];\n  }\n}\nTime: O(n), Space: O(1)",
   },
   {
     topic: "Prefix Sum",
@@ -65,7 +65,7 @@ const cards: Flashcard[] = [
   {
     topic: "Monotonic Stack",
     front: "What is a monotonic stack?\n\nWhat problems does it solve?",
-    back: "A stack where elements are kept in\nmonotonic (increasing or decreasing) order.\n\nPop elements that violate the order\nbefore pushing new element.\n\nSolves:\n- Next Greater Element\n- Next Smaller Element\n- Largest Rectangle in Histogram\n- Stock Span\n\nTime: O(n) - each element pushed/popped once",
+    back: "Stack kept in monotonic order (inc or dec).\nPop elements violating order before push.\n\nSolves: Next Greater/Smaller Element,\nLargest Rectangle in Histogram, Stock Span.\n\nTemplate (next greater):\n  for each element:\n    while stack and stack.top < element:\n      pop -> element is its next greater\n    push element\nTime: O(n) - each element pushed/popped once",
   },
   {
     topic: "Backtracking Template",
@@ -76,13 +76,13 @@ const cards: Flashcard[] = [
     topic: "Quick Select (kth Element)",
     front:
       "You need the kth smallest element\nfrom an unsorted array but sorting\nthe whole array is too expensive.\n\nWhat algorithm and what complexity?",
-    back: "Quick Select - partition like quicksort\nbut recurse into only one half.\n\nAvg: O(n), Worst: O(n^2), Space: O(1)\n\nPartition schemes:\n- Lomuto: single scan pointer, simple.\n  Picks last element as pivot.\n  More swaps on average.\n- Hoare: two converging pointers,\n  fewer swaps, faster in practice.\n\nUse random pivot to avoid O(n^2).\nMedian-of-medians gives O(n) worst case.",
+    back: "Partition like quicksort but only recurse\ninto the half containing kth element.\n\nAvg: O(n), Worst: O(n^2), Space: O(1)\n\nPartition schemes:\n- Lomuto: single scan, last element as pivot\n- Hoare: two converging pointers, fewer swaps\n\nUse random pivot to avoid O(n^2).\nMedian-of-medians guarantees O(n) worst case.",
   },
   {
     topic: "Stable vs Unstable Sort",
     front:
       "You sort employees by name, then\nre-sort by department. After the\nsecond sort, are names still ordered\nwithin each department?\n\nWhen does this matter?",
-    back: "Only if the second sort is STABLE.\n\nStable sort preserves relative order\nof equal elements (same sort key).\n\nStable:   Merge, Insertion,\n          Counting, Radix\nUnstable: Quick, Heap, Selection\n\nWhy it matters: multi-key sorting.\nSort by secondary key first, then\nprimary key with a stable sort.\nUnstable would scramble the\nsecondary key ordering.",
+    back: "Only if the second sort is STABLE.\nStable preserves relative order of\nelements with equal sort keys.\n\nStable:   Merge, Insertion, Counting, Radix\nUnstable: Quick, Heap, Selection\n\nWhy it matters: multi-key sorting.\nSort by secondary key first, then primary\nwith stable sort. Unstable would scramble\nthe secondary ordering.",
   },
 ];
 

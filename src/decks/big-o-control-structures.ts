@@ -89,7 +89,7 @@ const cards: Flashcard[] = [
   {
     topic: "Amortized Analysis Concept",
     front: "What is amortized analysis?\n\nGive two classic examples.",
-    back: "Amortized = average cost per operation\nover a worst-case SEQUENCE of operations.\n\n1) Dynamic array push:\n  Most pushes O(1), rare resize O(n).\n  Amortized: O(1) per push.\n\n2) Hash table insert:\n  Most inserts O(1), rare rehash O(n).\n  Amortized: O(1) per insert.\n\nNot the same as average-case analysis.",
+    back: "Amortized = average cost per op over a\nworst-case SEQUENCE of operations.\n\n1) Dynamic array push:\n   Most O(1), rare resize O(n).\n   Amortized: O(1) per push.\n2) Hash table insert:\n   Most O(1), rare rehash O(n).\n   Amortized: O(1) per insert.\n\nNot the same as average-case analysis.",
   },
   {
     topic: "Recognizing Complexity from Code",

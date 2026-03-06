@@ -6,37 +6,37 @@ const cards: Flashcard[] = [
     topic: "Graph Representation Choice",
     front:
       "You're building a social network (millions\nof users, avg 200 friends each) vs a\n20-node circuit board with most nodes\nconnected.\n\nWhich graph representation for each?",
-    back: "Adjacency List: O(V + E) space\n- Use for SPARSE graphs (E << V^2)\n- Social network: list wins (200 edges\n  per node vs millions^2 matrix cells)\n- Edge lookup: O(degree)\n\nAdjacency Matrix: O(V^2) space\n- Use for DENSE graphs (E near V^2)\n- Circuit board: matrix wins (fast O(1)\n  edge lookup, small V)\n\nRule of thumb: if E < V^2/4, use list.\nMost real-world graphs are sparse -> list.",
+    back: "Adjacency List: O(V + E) space\n- SPARSE graphs (E << V^2)\n- Social net: 200 edges/node vs V^2 matrix\n- Edge lookup: O(degree)\n\nAdjacency Matrix: O(V^2) space\n- DENSE graphs (E near V^2)\n- Fast O(1) edge lookup, good for small V\n\nRule: if E < V^2/4, use list.\nMost real graphs are sparse -> list.",
   },
   {
     topic: "BFS - Implementation Template",
     front:
       "Your GPS needs to find the route with\nthe fewest turns (unweighted graph).\n\nWrite the BFS template and explain\nwhy BFS guarantees fewest edges.",
-    back: "function bfs(graph, start):\n  queue = [start]\n  visited = new Set([start])\n  dist = {start: 0}\n  while queue not empty:\n    node = queue.shift()\n    for neighbor of graph[node]:\n      if neighbor not in visited:\n        visited.add(neighbor)\n        dist[neighbor] = dist[node] + 1\n        queue.push(neighbor)\n\nWhy fewest edges? BFS explores level by\nlevel - first time a node is reached is\nalways via the shortest path.\nTime: O(V + E), Space: O(V)",
+    back: "bfs(graph, start):\n  queue=[start]; visited={start}; dist={start:0}\n  while queue:\n    node = queue.shift()\n    for nbr of graph[node]:\n      if nbr not visited:\n        visited.add(nbr)\n        dist[nbr] = dist[node]+1\n        queue.push(nbr)\n\nFewest edges guaranteed: BFS explores\nlevel-by-level. Time: O(V+E), Space: O(V)",
   },
   {
     topic: "DFS - Recursive vs Iterative",
     front:
       "You need to explore a graph deeply.\nWhen should you use recursive DFS\nvs iterative DFS with an explicit stack?\n\nWhat's the key trade-off?",
-    back: "Recursive DFS:\n+ Clean code, natural for backtracking\n- Risk of stack overflow on deep graphs\n- Call stack limited (~10K-50K frames)\n\nIterative DFS (explicit stack):\n+ Handles any depth safely\n+ Can process very large graphs\n- Slightly more boilerplate\n\nTemplate (iterative):\n  stack = [start]; visited = new Set()\n  while stack not empty:\n    node = stack.pop()\n    if node in visited: continue\n    visited.add(node)\n    push neighbors to stack\n\nTime: O(V + E) both versions",
+    back: "Recursive: clean, good for backtracking.\n  Risk: stack overflow (~10K-50K frame limit)\nIterative: handles any depth, more boilerplate.\n\nTemplate (iterative):\n  stack=[start]; visited=Set()\n  while stack:\n    node=stack.pop()\n    if visited: continue\n    visited.add(node); push neighbors\n\nTime: O(V + E) both versions",
   },
   {
     topic: "Dijkstra's Algorithm",
     front:
       "You're routing packets in a network\nwith positive-weight links.\n\nImplement Dijkstra's with a min-heap.\nWhy must you check distance before\nprocessing a popped node?",
-    back: "heap = [(0, source)]\ndist = {source: 0}\nwhile heap:\n  (d, u) = heap.pop()\n  if d > dist[u]: continue  // STALE\n  for (v, w) of neighbors[u]:\n    if dist[u] + w < dist.get(v, inf):\n      dist[v] = dist[u] + w\n      heap.push((dist[v], v))\n\nWhy the stale check? A node can be pushed\nmultiple times as shorter paths are found.\nWithout it, you process outdated entries.\n\nFails with negative edges: a later negative\nedge could improve an already-finalized node.\nTime: O((V + E) log V)",
+    back: "heap=[(0,src)]; dist={src:0}\nwhile heap:\n  (d,u) = heap.pop()\n  if d > dist[u]: continue  // STALE\n  for (v,w) of neighbors[u]:\n    if dist[u]+w < dist.get(v,inf):\n      dist[v]=dist[u]+w; heap.push((dist[v],v))\n\nStale check: node can be pushed multiple\ntimes; skip if already processed shorter.\nFails with negative edges (could improve\na finalized node). Time: O((V+E) log V)",
   },
   {
     topic: "Bellman-Ford - Negative Cycles",
     front:
       "A currency exchange graph has rates as\nedge weights (log-transformed so addition\n= multiplication).\n\nHow does Bellman-Ford detect a negative\ncycle (arbitrage opportunity)?",
-    back: "Bellman-Ford: relax ALL edges V-1 times.\n\nfor i in 1..V-1:\n  for each edge (u, v, w):\n    if dist[u] + w < dist[v]:\n      dist[v] = dist[u] + w\n\nNegative cycle detection (the V-th pass):\n  for each edge (u, v, w):\n    if dist[u] + w < dist[v]:\n      -> NEGATIVE CYCLE EXISTS\n\nWhy? V-1 passes suffice for shortest paths\nin any cycle-free graph. If the V-th pass\nstill improves a distance, a negative\ncycle is reachable from source.\nTime: O(V * E)",
+    back: "Relax ALL edges V-1 times:\n  for i in 1..V-1:\n    for (u,v,w): if dist[u]+w < dist[v]:\n      dist[v] = dist[u]+w\n\nV-th pass detects negative cycles:\n  for (u,v,w): if dist[u]+w < dist[v]:\n    -> NEGATIVE CYCLE EXISTS\n\nWhy? V-1 passes suffice for cycle-free\ngraphs. V-th pass improving = neg cycle.\nTime: O(V * E)",
   },
   {
     topic: "Topological Sort",
     front:
       "A build system has package dependencies:\nA -> B means A must build before B.\n\nHow do you determine a valid build order?\nWhat if there's a circular dependency?",
-    back: "Topological sort: linear order where every\nedge (u,v) has u before v. DAGs only.\n\nKahn's Algorithm (BFS):\n1. Compute in-degree for each node\n2. Enqueue all nodes with in-degree 0\n3. While queue not empty:\n   - Dequeue node, add to order\n   - Decrement in-degree of neighbors\n   - Enqueue any neighbor hitting 0\n4. If order.length < V -> CYCLE exists\n\nAlternative: DFS post-order, then reverse.\n\nCircular dependency -> not a DAG ->\nno valid topological order exists.\nTime: O(V + E)",
+    back: "Linear order where every edge (u,v) has\nu before v. Only works on DAGs.\n\nKahn's (BFS):\n1. Compute in-degree per node\n2. Enqueue all with in-degree 0\n3. Dequeue node, add to order,\n   decrement neighbor in-degrees,\n   enqueue any that hit 0\n4. If order.length < V -> CYCLE\n\nAlt: DFS post-order, then reverse.\nTime: O(V + E)",
   },
   {
     topic: "Minimum Spanning Tree - Kruskal's",
