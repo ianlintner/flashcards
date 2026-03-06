@@ -72,6 +72,10 @@ import { JAVASCRIPT_DEEP_DIVE } from "./javascript-deep-dive";
 import { SQL_MASTERY } from "./sql-mastery";
 import { GO_FUNDAMENTALS } from "./go-fundamentals";
 import { RUST_OWNERSHIP } from "./rust-ownership";
+import { FUNCTIONAL_PROGRAMMING_FOUNDATIONS } from "./functional-programming-foundations";
+import { ADVANCED_FUNCTIONAL_PROGRAMMING } from "./advanced-functional-programming";
+import { CATEGORY_THEORY_FOR_PROGRAMMERS } from "./category-theory-for-programmers";
+import { EFFECT_SYSTEMS } from "./effect-systems";
 import { SYSTEM_DESIGN_CASES } from "./system-design-cases";
 
 import type { DeckInfo } from "./types";
@@ -151,6 +155,10 @@ export const DECK_LIBRARY: DeckInfo[] = [
   SQL_MASTERY,
   GO_FUNDAMENTALS,
   RUST_OWNERSHIP,
+  FUNCTIONAL_PROGRAMMING_FOUNDATIONS,
+  ADVANCED_FUNCTIONAL_PROGRAMMING,
+  CATEGORY_THEORY_FOR_PROGRAMMERS,
+  EFFECT_SYSTEMS,
   SYSTEM_DESIGN_CASES,
 ].sort((a, b) => {
   const la = LEVEL_ORDER.indexOf(a.level);
@@ -245,5 +253,9 @@ export {
   SQL_MASTERY,
   GO_FUNDAMENTALS,
   RUST_OWNERSHIP,
+  FUNCTIONAL_PROGRAMMING_FOUNDATIONS,
+  ADVANCED_FUNCTIONAL_PROGRAMMING,
+  CATEGORY_THEORY_FOR_PROGRAMMERS,
+  EFFECT_SYSTEMS,
   SYSTEM_DESIGN_CASES,
 };
