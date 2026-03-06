@@ -1,6 +1,10 @@
-export function flipCard(cardElement: HTMLElement): Promise<void> {
+export function flipCard(
+  cardElement: HTMLElement,
+  isFlipped: boolean,
+): Promise<void> {
   return new Promise((resolve) => {
     cardElement.classList.add("flipping");
+    cardElement.classList.toggle("flipped", isFlipped);
     setTimeout(() => {
       cardElement.classList.remove("flipping");
       resolve();

@@ -105,6 +105,11 @@ export function renderPlayerUI(state: PlayerState, cbs: PlayerCallbacks): void {
 export function updatePlayerUI(state: PlayerState): void {
   if (!overlayElement) return;
 
+  const cardChanged = didCardChange(
+    previousState?.currentCard ?? null,
+    state.currentCard,
+  );
+
   // Update score
   const scoreEl = overlayElement.querySelector(".player-score");
   if (scoreEl) {
@@ -136,6 +141,10 @@ export function updatePlayerUI(state: PlayerState): void {
 
   // Update card content
   if (state.currentCard && cardElement) {
+    if (cardChanged) {
+      resetCardForState(cardElement, state.isFlipped);
+    }
+
     const frontSide = cardElement.querySelector(".player-card__front");
     const backSide = cardElement.querySelector(".player-card__back");
 
@@ -171,11 +180,10 @@ export function updatePlayerUI(state: PlayerState): void {
   if (
     previousState &&
     previousState.isFlipped !== state.isFlipped &&
-    cardElement
+    cardElement &&
+    !cardChanged
   ) {
-    flipCard(cardElement).then(() => {
-      cardElement!.classList.toggle("flipped", state.isFlipped);
-    });
+    void flipCard(cardElement, state.isFlipped);
   }
 
   // Check for milestones
@@ -510,6 +518,36 @@ function escapeHTML(str: string): string {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
+}
+
+function didCardChange(
+  previousCard: PlayerState["currentCard"],
+  currentCard: PlayerState["currentCard"],
+): boolean {
+  if (previousCard === currentCard) return false;
+  if (!previousCard || !currentCard) return previousCard !== currentCard;
+
+  return (
+    previousCard.front !== currentCard.front ||
+    previousCard.back !== currentCard.back ||
+    previousCard.topic !== currentCard.topic
+  );
+}
+
+function resetCardForState(card: HTMLElement, isFlipped: boolean): void {
+  card.classList.remove(
+    "flipping",
+    "swipe-left",
+    "swipe-right",
+    "swipe-down",
+    "shake",
+    "pulse",
+    "tint-red",
+    "tint-green",
+    "tint-gold",
+  );
+  card.style.transform = "";
+  card.classList.toggle("flipped", isFlipped);
 }
 
 /** Return a CSS class to auto-shrink text based on content length + line count.
