@@ -121,8 +121,7 @@ export class FlashcardPlayer {
   judge(judgment: JudgmentType): void {
     if (!this.cardStack || !this.state.currentCard) return;
 
-    // Only allow judgments when card is flipped (answer showing)
-    if (this.state.gameState !== "flipped" || !this.state.isFlipped) {
+    if (!this.canJudge(judgment)) {
       return;
     }
 
@@ -162,6 +161,21 @@ export class FlashcardPlayer {
     setTimeout(() => {
       this.nextCard();
     }, 400);
+  }
+
+  private canJudge(judgment: JudgmentType): boolean {
+    if (
+      this.state.gameState !== "playing" &&
+      this.state.gameState !== "flipped"
+    ) {
+      return false;
+    }
+
+    if (judgment === "wrong") {
+      return this.state.gameState === "flipped" && this.state.isFlipped;
+    }
+
+    return true;
   }
 
   private nextCard(): void {

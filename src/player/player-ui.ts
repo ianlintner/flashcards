@@ -198,19 +198,35 @@ export function updatePlayerUI(state: PlayerState): void {
   // Update state visibility
   overlayElement.setAttribute("data-state", state.gameState);
 
-  // Disable judgment buttons when showing question (not flipped)
-  const judgmentButtons = overlayElement.querySelectorAll(".btn-judgment");
-  judgmentButtons.forEach((btn) => {
-    if (state.isFlipped) {
-      btn.removeAttribute("disabled");
-      btn.classList.remove("disabled");
-    } else {
-      btn.setAttribute("disabled", "true");
-      btn.classList.add("disabled");
-    }
-  });
+  updateJudgmentButtons(state);
 
   previousState = structuredClone(state);
+}
+
+function updateJudgmentButtons(state: PlayerState): void {
+  if (!overlayElement) return;
+
+  const canJudgeCorrectOrEasy =
+    state.gameState === "playing" || state.gameState === "flipped";
+  const canJudgeWrong = state.gameState === "flipped" && state.isFlipped;
+
+  setButtonEnabled("#judge-wrong-btn", canJudgeWrong);
+  setButtonEnabled("#judge-correct-btn", canJudgeCorrectOrEasy);
+  setButtonEnabled("#judge-easy-btn", canJudgeCorrectOrEasy);
+}
+
+function setButtonEnabled(selector: string, enabled: boolean): void {
+  const button = overlayElement?.querySelector(selector);
+  if (!(button instanceof HTMLButtonElement)) return;
+
+  if (enabled) {
+    button.removeAttribute("disabled");
+    button.classList.remove("disabled");
+    return;
+  }
+
+  button.setAttribute("disabled", "true");
+  button.classList.add("disabled");
 }
 
 function handleStateTransition(
@@ -364,6 +380,7 @@ function handleKeyDown(e: KeyboardEvent): void {
   if (!callbacks || !previousState) return;
 
   const state = previousState.gameState;
+  const isFlipped = previousState.isFlipped;
 
   // ESC - close/pause
   if (e.key === "Escape") {
@@ -385,21 +402,21 @@ function handleKeyDown(e: KeyboardEvent): void {
     return;
   }
 
-  // Only allow judgments when flipped
-  if (state !== "flipped") return;
+  const canJudgeCorrectOrEasy = state === "playing" || state === "flipped";
+  const canJudgeWrong = state === "flipped" && isFlipped;
 
   // Left arrow / 1 - wrong
-  if (e.key === "ArrowLeft" || e.key === "1") {
+  if ((e.key === "ArrowLeft" || e.key === "1") && canJudgeWrong) {
     e.preventDefault();
     callbacks.onJudge("wrong");
   }
   // Right arrow / 2 - correct
-  else if (e.key === "ArrowRight" || e.key === "2") {
+  else if ((e.key === "ArrowRight" || e.key === "2") && canJudgeCorrectOrEasy) {
     e.preventDefault();
     callbacks.onJudge("correct");
   }
   // Down arrow / 3 - easy
-  else if (e.key === "ArrowDown" || e.key === "3") {
+  else if ((e.key === "ArrowDown" || e.key === "3") && canJudgeCorrectOrEasy) {
     e.preventDefault();
     callbacks.onJudge("easy");
   }
