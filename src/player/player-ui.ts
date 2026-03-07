@@ -141,33 +141,37 @@ export function updatePlayerUI(state: PlayerState): void {
 
   // Update card content
   if (state.currentCard && cardElement) {
+    const renderCardContent = (): void => {
+      const frontSide = cardElement?.querySelector(".player-card__front");
+      const backSide = cardElement?.querySelector(".player-card__back");
+
+      if (frontSide) {
+        const frontText = escapeHTML(state.currentCard!.front);
+        const frontSizeClass = getTextSizeClass(frontText);
+        frontSide.innerHTML = `
+          <div class="card-inner">
+            ${state.currentCard!.topic ? `<div class="card-topic">${escapeHTML(state.currentCard!.topic)}</div>` : ""}
+            <div class="card-content ${frontSizeClass}">${frontText.replace(/\n/g, "<br>")}</div>
+          </div>
+        `;
+      }
+
+      if (backSide) {
+        const backText = escapeHTML(state.currentCard!.back);
+        const backSizeClass = getTextSizeClass(backText);
+        backSide.innerHTML = `
+          <div class="card-inner">
+            ${state.currentCard!.topic ? `<div class="card-topic">${escapeHTML(state.currentCard!.topic)}</div>` : ""}
+            <div class="card-content ${backSizeClass}">${backText.replace(/\n/g, "<br>")}</div>
+          </div>
+        `;
+      }
+    };
+
     if (cardChanged) {
-      resetCardForState(cardElement, state.isFlipped);
-    }
-
-    const frontSide = cardElement.querySelector(".player-card__front");
-    const backSide = cardElement.querySelector(".player-card__back");
-
-    if (frontSide) {
-      const frontText = escapeHTML(state.currentCard.front);
-      const frontSizeClass = getTextSizeClass(frontText);
-      frontSide.innerHTML = `
-        <div class="card-inner">
-          ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
-          <div class="card-content ${frontSizeClass}">${frontText.replace(/\n/g, "<br>")}</div>
-        </div>
-      `;
-    }
-
-    if (backSide) {
-      const backText = escapeHTML(state.currentCard.back);
-      const backSizeClass = getTextSizeClass(backText);
-      backSide.innerHTML = `
-        <div class="card-inner">
-          ${state.currentCard.topic ? `<div class="card-topic">${escapeHTML(state.currentCard.topic)}</div>` : ""}
-          <div class="card-content ${backSizeClass}">${backText.replace(/\n/g, "<br>")}</div>
-        </div>
-      `;
+      resetCardForState(cardElement, state.isFlipped, renderCardContent);
+    } else {
+      renderCardContent();
     }
   }
 
@@ -551,9 +555,15 @@ function didCardChange(
   );
 }
 
-function resetCardForState(card: HTMLElement, isFlipped: boolean): void {
+function resetCardForState(
+  card: HTMLElement,
+  isFlipped: boolean,
+  onResetComplete: () => void,
+): void {
   card.classList.remove(
     "flipping",
+    "content-hidden",
+    "instant-reset",
     "swipe-left",
     "swipe-right",
     "swipe-down",
@@ -563,8 +573,23 @@ function resetCardForState(card: HTMLElement, isFlipped: boolean): void {
     "tint-green",
     "tint-gold",
   );
+  card.classList.add("content-hidden");
+  card.classList.add("instant-reset");
   card.style.transform = "";
   card.classList.toggle("flipped", isFlipped);
+
+  // Force the card to snap to its new orientation before fresh content renders.
+  // Without this, the persistent transform transition can animate a new card from
+  // back -> front and briefly expose the new answer side.
+  void card.offsetWidth;
+
+  requestAnimationFrame(() => {
+    onResetComplete();
+
+    requestAnimationFrame(() => {
+      card.classList.remove("instant-reset", "content-hidden");
+    });
+  });
 }
 
 /** Return a CSS class to auto-shrink text based on content length + line count.

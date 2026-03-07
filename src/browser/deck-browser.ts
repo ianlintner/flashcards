@@ -21,6 +21,12 @@ let overlayEl: HTMLElement | null = null;
 let filter: FilterState = createDefaultFilter();
 let debounceTimer: number | null = null;
 
+function handleBrowserEscape(e: KeyboardEvent): void {
+  if (e.key !== "Escape" || !overlayEl) return;
+  navigateTo("");
+  closeDeckBrowser();
+}
+
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export function openDeckBrowser(
@@ -32,10 +38,14 @@ export function openDeckBrowser(
   if (initialCategory) {
     filter.categories.add(initialCategory);
   }
-  render();
+  document.removeEventListener("keydown", handleBrowserEscape);
+  document.addEventListener("keydown", handleBrowserEscape);
+  render(true);
 }
 
 export function closeDeckBrowser(): void {
+  document.removeEventListener("keydown", handleBrowserEscape);
+
   if (overlayEl) {
     overlayEl.classList.add("browser-overlay--exit");
     setTimeout(() => {
@@ -52,15 +62,15 @@ export function isDeckBrowserOpen(): boolean {
 
 // ─── Rendering ───────────────────────────────────────────────────────────────
 
-function render(): void {
-  // Remove existing
-  overlayEl?.remove();
+function render(autoFocusSearch = false): void {
+  const overlay = overlayEl ?? document.createElement("div");
 
-  const overlay = document.createElement("div");
-  overlay.id = "deck-browser-overlay";
-  overlay.className = "browser-overlay";
-  document.body.appendChild(overlay);
-  overlayEl = overlay;
+  if (!overlayEl) {
+    overlay.id = "deck-browser-overlay";
+    overlay.className = "browser-overlay";
+    document.body.appendChild(overlay);
+    overlayEl = overlay;
+  }
 
   const filteredDecks = filterDecks(DECK_LIBRARY, filter);
   const allCategories = getCategories(DECK_LIBRARY);
@@ -167,7 +177,7 @@ function render(): void {
     </div>
   `;
 
-  bindBrowserEvents(overlay);
+  bindBrowserEvents(overlay, autoFocusSearch);
 }
 
 function renderDeckCard(deck: DeckInfo): string {
@@ -217,22 +227,15 @@ function renderDeckCard(deck: DeckInfo): string {
 
 // ─── Event binding ───────────────────────────────────────────────────────────
 
-function bindBrowserEvents(overlay: HTMLElement): void {
+function bindBrowserEvents(
+  overlay: HTMLElement,
+  autoFocusSearch: boolean,
+): void {
   // Close button
   overlay.querySelector(".browser-close-btn")?.addEventListener("click", () => {
     navigateTo("");
     closeDeckBrowser();
   });
-
-  // ESC key
-  const escHandler = (e: KeyboardEvent): void => {
-    if (e.key === "Escape") {
-      navigateTo("");
-      closeDeckBrowser();
-      document.removeEventListener("keydown", escHandler);
-    }
-  };
-  document.addEventListener("keydown", escHandler);
 
   // Search
   const searchInput = overlay.querySelector(
@@ -245,8 +248,10 @@ function bindBrowserEvents(overlay: HTMLElement): void {
       rerender();
     }, 150);
   });
-  // Auto-focus search
-  searchInput?.focus();
+  // Auto-focus search only on initial open, not on every filter rerender.
+  if (autoFocusSearch) {
+    searchInput?.focus();
+  }
 
   // Category pills
   overlay.querySelectorAll(".browser-cat-pill").forEach((btn) => {
@@ -350,7 +355,7 @@ function rerender(): void {
   if (!overlayEl || !callbacks) return;
   const scrollTop =
     overlayEl.querySelector(".browser-container")?.scrollTop ?? 0;
-  render();
+  render(false);
   const container = overlayEl?.querySelector(".browser-container");
   if (container) container.scrollTop = scrollTop;
 }

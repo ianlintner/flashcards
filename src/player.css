@@ -167,6 +167,15 @@
   user-select: none;
 }
 
+.player-card.instant-reset {
+  transition: none;
+}
+
+.player-card.content-hidden .player-card__front,
+.player-card.content-hidden .player-card__back {
+  opacity: 0;
+}
+
 .player-card.flipped {
   transform: rotateY(180deg);
 }
@@ -189,6 +198,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  transition: opacity 0.18s ease;
   overflow-y: auto;
   overflow-x: hidden;
 }
