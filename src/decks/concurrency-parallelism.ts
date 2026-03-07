@@ -108,6 +108,36 @@ export const CONCURRENCY_PARALLELISM: DeckInfo = {
       back: "A Future/Promise is a placeholder for\na value that will be available later.\n\nStates: Pending -> Fulfilled / Rejected\n\nAllows:\n- Composing async operations (.then)\n- Error propagation (.catch)\n- Parallel execution (Promise.all)\n\nFoundation of async/await:\nawait promise = suspend until resolved.",
     },
     {
+      topic: "CPU-Bound vs I/O-Bound Work",
+      front:
+        "How should you choose between\nthreads, async I/O, and processes\nfor CPU-bound vs I/O-bound work?",
+      back: "I/O-bound work spends most time\nwaiting on network, disk, or DB.\n\nBest fits:\n- Async/event loop: many sockets, APIs\n- Threads: blocking libraries, mixed I/O\n\nCPU-bound work spends time computing.\n\nBest fits:\n- Processes: bypass language runtimes like\n  Python GIL, isolate failures\n- Worker threads: native parallel compute\n- SIMD/GPU: dense numeric workloads\n\nRule: use async for waiting,\nparallel workers for crunching.",
+    },
+    {
+      topic: "Fork-Join and Work Stealing",
+      front:
+        "What are the fork-join and\nwork-stealing patterns?\n\nWhy do they scale well?",
+      back: "Fork-join splits a task into smaller\nsubtasks, runs them in parallel, then\njoins the partial results.\n\nWork stealing:\n- Each worker keeps a deque of tasks\n- Idle workers steal from busy workers\n- Reduces central scheduling bottlenecks\n\nGreat for recursive divide-and-conquer:\n- Parallel quicksort / mergesort\n- Tree traversal\n- Graph search\n- Batch task pools\n\nUsed by: Java ForkJoinPool, Cilk,\nIntel TBB, Rust Rayon.",
+    },
+    {
+      topic: "Amdahl vs Gustafson",
+      front:
+        "What do Amdahl's Law and\nGustafson's Law say about\nparallel speedup?",
+      back: "Amdahl's Law:\n  Speedup <= 1 / (S + P/N)\n  S = serial fraction, P = parallel part\n  Even tiny serial work limits scaling.\n\nExample:\n  10% serial => max speedup is 10x\n  no matter how many CPUs you add.\n\nGustafson's Law:\n  If workload grows with CPU count,\n  effective speedup can scale nearly linearly.\n\nTakeaway:\n- Amdahl warns about bottlenecks\n- Gustafson justifies larger workloads\n- Both matter for real system design",
+    },
+    {
+      topic: "Actor Model",
+      front:
+        "What is the actor model?\n\nHow does it differ from shared-memory\nthreading?",
+      back: "Actor model:\n- Each actor owns its private state\n- Actors communicate by message passing\n- No direct shared mutable memory\n\nBenefits:\n- Fewer locks and races\n- Natural isolation and supervision\n- Good fit for distributed systems\n\nTrade-offs:\n- Message serialization overhead\n- Harder debugging across mailboxes\n- Ordering is per mailbox, not global\n\nUsed by: Erlang/OTP, Akka, Orleans.",
+    },
+    {
+      topic: "False Sharing",
+      front:
+        "What is false sharing?\n\nWhy can it kill parallel performance\neven without lock contention?",
+      back: "False sharing happens when threads\nupdate different variables that live on\nthe same CPU cache line.\n\nResult:\n- Cache line bounces between cores\n- Throughput collapses\n- Profiling shows coherence traffic\n\nFixes:\n- Pad hot counters onto separate lines\n- Use per-thread buffers, then reduce\n- Lower write frequency on shared data\n- Prefer local accumulation + merge\n\nA classic performance bug: not wrong,\njust impressively slow.",
+    },
+    {
       topic: "Volatile & Memory Visibility",
       front:
         "What does 'volatile' (Java) or\nmemory ordering (C++) ensure?\n\nWhy is it not enough alone?",

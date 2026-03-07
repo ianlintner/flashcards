@@ -71,6 +71,30 @@ export const DISTRIBUTED_SYSTEMS_DEEP: DeckInfo = {
       back: "Problem: hash(key) % N breaks when\nN (node count) changes -- almost all\nkeys remap.\n\nConsistent hashing:\n- Nodes and keys map to a hash ring\n  (0 to 2^32).\n- Key is assigned to the first node\n  clockwise from its position.\n- When node added/removed, only K/N\n  keys remap (K=keys, N=nodes).\n\nVirtual nodes:\n- Each physical node gets multiple\n  positions on ring.\n- Improves balance (avoids hotspots).\n- More vnodes = better distribution\n  but more metadata.\n\nUsed by:\n- Cassandra (partition assignment)\n- DynamoDB (partition ring)\n- CDNs (request routing)\n- Memcached (client-side)\n- Load balancers (sticky sessions)\n\nAlternative: rendezvous hashing\n(highest random weight).",
     },
     {
+      topic: "Replication Strategies",
+      front:
+        "Compare leader-follower,\nmulti-leader, and leaderless\nreplication strategies.",
+      back: "Leader-follower:\n- One primary accepts writes\n- Replicas follow asynchronously or sync\n- Simple, common, easy reads\n- Failover and lag are key risks\n\nMulti-leader:\n- Multiple regions or writers accept writes\n- Good for geo-local latency\n- Conflict resolution gets hard fast\n\nLeaderless:\n- Any replica can accept reads/writes\n- Uses quorums and conflict resolution\n- High availability, more client logic\n\nExamples:\n- PostgreSQL/MySQL: leader-follower\n- CouchDB: multi-leader\n- Dynamo/Cassandra: leaderless",
+    },
+    {
+      topic: "Cluster Topologies",
+      front:
+        "What clustering strategies are common\nin production distributed systems?",
+      back: "Common strategies:\n1. Active-passive:\n   standby takes over on failure.\n2. Active-active:\n   all nodes serve traffic.\n3. Leader-follower:\n   one write leader, many readers.\n4. Shared-nothing:\n   each node owns its own data shard.\n5. Shared-disk:\n   nodes share storage, coordinate access.\n\nTrade-offs:\n- Active-active improves availability\n- Active-passive simplifies failover logic\n- Shared-nothing scales best horizontally\n- Shared-disk simplifies storage but\n  coordination becomes the tax collector",
+    },
+    {
+      topic: "Service Discovery and Membership",
+      front:
+        "How do service discovery and\ncluster membership work?\n\nWhy are they foundational?",
+      back: "A distributed system must know:\n- which nodes are alive\n- where each service lives\n- when topology changes\n\nApproaches:\n1. Client-side discovery:\n   client queries registry, picks instance\n2. Server-side discovery:\n   load balancer queries registry\n3. DNS-based discovery:\n   simple but slower to react\n\nMembership often uses:\n- gossip / SWIM\n- heartbeats\n- leases and TTLs\n\nExamples: Consul, ZooKeeper, etcd,\nKubernetes service registry.",
+    },
+    {
+      topic: "MapReduce at Cluster Scale",
+      front:
+        "What makes MapReduce effective\nat cluster scale, and what usually\nbreaks performance?",
+      back: "MapReduce works because map tasks run\nclose to the data, reduce tasks aggregate\nby key, and failures are retried.\n\nWhat matters:\n- Data locality: move compute to data\n- Shuffle efficiency: network is the tax\n- Combiner use: reduce network volume\n- Partitioning: balance reducer load\n\nCommon failure modes:\n- Hot keys and data skew\n- Too many tiny files/tasks\n- Slow stragglers dominate job time\n- Recomputing large shuffles repeatedly\n\nModern successors: Spark, Flink, Beam.",
+    },
+    {
       topic: "Split-Brain Problem",
       front: "What is the split-brain problem?\n\nHow do you prevent it?",
       back: "Split-brain: network partition causes\ncluster to split into subgroups, each\nthinking it's the leader/primary.\n\nDanger: both sides accept writes\n-> divergent state -> data loss on merge.\n\nPrevention:\n1. Quorum: require majority (N/2 + 1)\n   to operate. Minority side goes\n   read-only or stops.\n\n2. Fencing:\n   - STONITH (Shoot The Other Node\n     In The Head): power off old leader.\n   - Fencing tokens: new leader gets\n     higher token. Storage rejects old.\n\n3. Witness/tiebreaker:\n   Odd number of nodes, or add a\n   lightweight witness node.\n\n4. Leader lease with strict timeout:\n   Old leader must stop before lease\n   expires. New election only after.\n\nReal-world:\n- ZooKeeper: majority quorum.\n- etcd/Raft: same.\n- Redis Sentinel: quorum + fencing.",

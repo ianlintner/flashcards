@@ -45,6 +45,12 @@ const cards: Flashcard[] = [
     back: "Cache strategies:\n  - Cache-aside (lazy loading)\n  - Write-through\n  - Write-behind (async write)\n  - Read-through\n\nDistribution:\n  - Consistent hashing for partitioning\n  - Replication for availability\n  - Gossip protocol for membership\n\nEviction policies:\n  LRU, LFU, TTL-based\n\nChallenges:\n  - Cache stampede (lock/probabilistic)\n  - Hot keys (local cache + L1/L2)\n  - Consistency (eventual vs strong)\n  - Cache warming on cold start",
   },
   {
+    topic: "Caching Strategies",
+    front:
+      "How do cache-aside, read-through,\nwrite-through, and write-behind\nstrategies compare?",
+    back: "Cache-aside:\n  App checks cache, then DB on miss.\n  Simple, most common.\n\nRead-through:\n  Cache layer fetches on miss itself.\n  Cleaner client code.\n\nWrite-through:\n  Write cache and DB together.\n  Better consistency, slower writes.\n\nWrite-behind:\n  Write cache first, flush DB later.\n  Fastest writes, more risk on failure.\n\nGood add-ons:\n- TTL and jitter\n- request coalescing\n- negative caching\n- L1 local + L2 distributed cache",
+  },
+  {
     topic: "Rate Limiter",
     front: "Design a distributed rate limiter.\n\nWhat algorithms can you use?",
     back: "Algorithms:\n1. Token Bucket\n   Tokens added at rate r, bucket size b\n   Request takes 1 token. Allows bursts.\n\n2. Leaky Bucket\n   Queue + fixed-rate processing.\n   Smooths traffic.\n\n3. Fixed Window Counter\n   Count per time window. Edge case:\n   burst at window boundary.\n\n4. Sliding Window Log\n   Sorted set of timestamps. Accurate\n   but memory-intensive.\n\n5. Sliding Window Counter\n   Weighted average of current + prev\n   window. Good balance.\n\nDistributed: Redis INCR with TTL or\nLua script for atomicity.",
@@ -101,6 +107,12 @@ const cards: Flashcard[] = [
     back: "Architecture:\n  Origin -> Edge servers worldwide\n\nRequest flow:\n  DNS -> nearest edge (anycast/geo DNS)\n  Cache HIT: serve from edge\n  Cache MISS: fetch from origin,\n    cache at edge, serve\n\nCache strategies:\n  Pull (lazy): cache on first request\n  Push (eager): proactive distribution\n\nInvalidation:\n  TTL expiry, purge API, versioned URLs\n\nOptimizations:\n  - TLS termination at edge\n  - HTTP/2 multiplexing\n  - Image/video optimization\n  - Regional mid-tier caches\n\nProviders: CloudFront, Akamai, Cloudflare.",
   },
   {
+    topic: "CDN Caching Strategy",
+    front:
+      "What decisions matter most when\ndesigning CDN caching and invalidation?",
+    back: "Important levers:\n- Cache key: host + path + query + headers\n- TTL: long for static assets, short for HTML\n- Versioned asset URLs for safe rollout\n- Origin shielding / mid-tier caches\n- Compression and image resizing at edge\n\nInvalidation options:\n- Wait for TTL\n- Purge by URL or tag\n- Deploy immutable versioned assets\n\nPitfalls:\n- Personalized responses cached globally\n- Query-string explosion hurting hit rate\n- Cache poisoning from weak key design",
+  },
+  {
     topic: "Distributed ID Generator",
     front:
       "Design a globally unique ID generator\nfor a distributed system.\n\nWhat are the approaches?",
@@ -110,6 +122,12 @@ const cards: Flashcard[] = [
     topic: "Load Balancer Design",
     front: "Design a load balancer.\n\nWhat are the main strategies?",
     back: "L4 (Transport layer):\n  TCP/UDP level. Fast, no content\n  inspection. IP + port routing.\n\nL7 (Application layer):\n  HTTP-aware. Content-based routing,\n  SSL termination, compression.\n\nAlgorithms:\n- Round Robin\n- Weighted Round Robin\n- Least Connections\n- Least Response Time\n- IP Hash (sticky sessions)\n- Consistent Hashing\n\nHealth checking:\n  Active (probe) + passive (error rate)\n\nHA: active-passive or active-active pair\nwith shared virtual IP (VRRP).",
+  },
+  {
+    topic: "Gateway vs Load Balancer",
+    front:
+      "What is the difference between\nan API gateway, a reverse proxy,\nand a load balancer?",
+    back: "Load balancer:\n  Distributes traffic across instances.\n  Focus: availability and throughput.\n\nReverse proxy:\n  Fronts backend servers, often adds\n  TLS termination, caching, routing.\n\nAPI gateway:\n  Edge entry point for APIs with:\n  auth, rate limiting, quotas, logging,\n  request shaping, versioning.\n\nIn practice:\n- Nginx/Envoy can act as all three\n- Gateway is policy-heavy\n- Load balancer is traffic-heavy\n- Reverse proxy is the flexible middle",
   },
   {
     topic: "MapReduce / Batch Processing",
@@ -143,7 +161,7 @@ export const SYSTEM_DESIGN: DeckInfo = {
   id: "system-design",
   title: "System Design",
   description:
-    "25 system design topics: URL shortener, social feeds, streaming, distributed caches, consensus protocols, and architectural patterns.",
+    "System design topics across caching, gateways, CDNs, distributed data systems, messaging, consensus, and large-scale architecture patterns.",
   level: "staff-principal",
   category: "System Design",
   cards,
