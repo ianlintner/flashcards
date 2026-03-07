@@ -22,11 +22,11 @@
 /* Container */
 .player-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 1440px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem);
   position: relative;
 }
 
@@ -130,6 +130,7 @@
   position: relative;
   perspective: 1000px;
   margin: 2rem 0;
+  padding-inline: clamp(0rem, 5vw, 5rem);
 }
 
 /* Swipe Hints */
@@ -157,8 +158,8 @@
 
 /* Card */
 .player-card {
-  width: 100%;
-  max-width: 600px;
+  width: min(100%, 680px);
+  max-width: none;
   aspect-ratio: 3 / 2;
   position: relative;
   transform-style: preserve-3d;
@@ -687,6 +688,36 @@
 .player-overlay[data-state="complete"] .player-controls,
 .player-overlay[data-state="results"] .player-controls {
   display: none;
+}
+
+@media (min-width: 768px) {
+  .player-container {
+    padding-inline: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .player-card {
+    width: min(100%, 820px);
+  }
+
+  .player-card__front,
+  .player-card__back {
+    padding: 2.25rem 2.75rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .player-card {
+    width: min(100%, 980px);
+  }
+
+  .player-card__front,
+  .player-card__back {
+    padding: 2.5rem 3rem;
+  }
+
+  .card-content {
+    font-size: 1.625rem;
+  }
 }
 
 /* Mobile Responsive */
