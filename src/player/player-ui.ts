@@ -40,6 +40,14 @@ export function renderPlayerUI(state: PlayerState, cbs: PlayerCallbacks): void {
   const overlay = document.createElement("div");
   overlay.id = "player-overlay";
   overlay.className = "player-overlay";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "player-dialog-title");
+  overlay.setAttribute(
+    "aria-describedby",
+    "player-screenreader-help player-card-status",
+  );
+  overlay.tabIndex = -1;
   overlay.innerHTML = getOverlayHTML(state);
 
   document.body.appendChild(overlay);
@@ -99,6 +107,7 @@ export function renderPlayerUI(state: PlayerState, cbs: PlayerCallbacks): void {
   // Show intro animation
   requestAnimationFrame(() => {
     overlay.classList.add("active");
+    overlay.focus();
   });
 }
 
@@ -137,6 +146,20 @@ export function updatePlayerUI(state: PlayerState): void {
     const percentage =
       (state.session.cardsStudied / state.cardStack.length) * 100 || 0;
     progressBar.style.width = `${percentage}%`;
+    progressBar.setAttribute("role", "progressbar");
+    progressBar.setAttribute("aria-valuemin", "0");
+    progressBar.setAttribute(
+      "aria-valuemax",
+      state.cardStack.length.toString(),
+    );
+    progressBar.setAttribute(
+      "aria-valuenow",
+      Math.min(state.session.cardsStudied, state.cardStack.length).toString(),
+    );
+    progressBar.setAttribute(
+      "aria-label",
+      `Studied ${state.session.cardsStudied} of ${state.cardStack.length} cards`,
+    );
   }
 
   // Update card content
@@ -203,6 +226,7 @@ export function updatePlayerUI(state: PlayerState): void {
   overlayElement.setAttribute("data-state", state.gameState);
 
   updateJudgmentButtons(state);
+  updateAccessibility(state, cardChanged);
 
   previousState = structuredClone(state);
 }
@@ -304,10 +328,10 @@ function renderResults(state: PlayerState): void {
     </div>
     
     <div class="results-actions">
-      <button class="btn btn-primary btn-lg" id="play-again-btn">
+      <button class="btn btn-primary btn-lg" type="button" id="play-again-btn">
         🔄 Play Again
       </button>
-      <button class="btn btn-secondary btn-lg" id="results-close-btn">
+      <button class="btn btn-secondary btn-lg" type="button" id="results-close-btn">
         Done
       </button>
     </div>
@@ -319,6 +343,9 @@ function renderResults(state: PlayerState): void {
 
   playAgainBtn?.addEventListener("click", () => callbacks?.onPlayAgain());
   closeBtn?.addEventListener("click", () => callbacks?.onClose());
+  if (playAgainBtn instanceof HTMLButtonElement) {
+    playAgainBtn.focus();
+  }
 }
 
 function showMilestoneNotification(streak: number): void {
@@ -383,6 +410,15 @@ function bindPlayerEvents(): void {
 function handleKeyDown(e: KeyboardEvent): void {
   if (!callbacks || !previousState) return;
 
+  const target = e.target instanceof HTMLElement ? e.target : null;
+  if (
+    target &&
+    target !== cardElement &&
+    ["BUTTON", "INPUT", "SELECT", "TEXTAREA", "A"].includes(target.tagName)
+  ) {
+    return;
+  }
+
   const state = previousState.gameState;
   const isFlipped = previousState.isFlipped;
 
@@ -399,8 +435,8 @@ function handleKeyDown(e: KeyboardEvent): void {
   // Don't handle keys during intro or results
   if (state === "intro" || state === "complete" || state === "results") return;
 
-  // SPACE / F - flip
-  if (e.key === " " || e.key.toLowerCase() === "f") {
+  // SPACE / ENTER / F - flip
+  if (e.key === " " || e.key === "Enter" || e.key.toLowerCase() === "f") {
     e.preventDefault();
     callbacks.onFlip();
     return;
@@ -452,10 +488,17 @@ export function destroyPlayerUI(): void {
 function getOverlayHTML(state: PlayerState): string {
   return `
     <div class="player-container">
+      <h1 class="sr-only" id="player-dialog-title">Flashcard player for ${escapeHTML(state.session.deckTitle || "deck")}</h1>
+      <p class="sr-only" id="player-screenreader-help">
+        Use Space, Enter, or F to flip the current card. After the answer is shown, use Left Arrow or 1 for need review, Right Arrow or 2 for got it, Down Arrow or 3 for easy, and Escape to close.
+      </p>
+      <div class="sr-only" id="player-live-region" aria-live="polite" aria-atomic="true"></div>
+      <div class="sr-only" id="player-card-status"></div>
+
       <!-- Header -->
       <div class="player-header">
-        <button class="player-close-btn" title="Close (ESC)">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="player-close-btn" type="button" title="Close (ESC)" aria-label="Close flashcard player">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -479,42 +522,42 @@ function getOverlayHTML(state: PlayerState): string {
 
       <!-- Card Display -->
       <div class="player-card-container">
-        <div class="swipe-hint swipe-hint-left">
+        <div class="swipe-hint swipe-hint-left" aria-hidden="true">
           <span>← Need Review</span>
         </div>
         
-        <div class="player-card">
-          <div class="player-card__front">
+        <div class="player-card" role="button" tabindex="0" aria-describedby="player-screenreader-help player-card-status" aria-label="Flashcard. Loading question.">
+          <div class="player-card__front" id="player-card-front">
             <div class="card-inner">
               <div class="card-content">Loading...</div>
             </div>
           </div>
-          <div class="player-card__back">
+          <div class="player-card__back" id="player-card-back" aria-hidden="true">
             <div class="card-inner">
               <div class="card-content">Answer</div>
             </div>
           </div>
         </div>
         
-        <div class="swipe-hint swipe-hint-right">
+        <div class="swipe-hint swipe-hint-right" aria-hidden="true">
           <span>Easy →</span>
         </div>
       </div>
 
       <!-- Controls -->
       <div class="player-controls">
-        <button class="btn btn-judgment btn-wrong" id="judge-wrong-btn" title="Need Review (← or 1)">
-          <span class="btn-icon">❌</span>
+        <button class="btn btn-judgment btn-wrong" type="button" id="judge-wrong-btn" title="Need Review (← or 1)" aria-label="Mark card as need review">
+          <span class="btn-icon" aria-hidden="true">❌</span>
           <span class="btn-text">Need Review</span>
         </button>
         
-        <button class="btn btn-judgment btn-correct" id="judge-correct-btn" title="Got It! (→ or 2)">
-          <span class="btn-icon">✓</span>
+        <button class="btn btn-judgment btn-correct" type="button" id="judge-correct-btn" title="Got It! (→ or 2)" aria-label="Mark card as got it">
+          <span class="btn-icon" aria-hidden="true">✓</span>
           <span class="btn-text">Got It!</span>
         </button>
         
-        <button class="btn btn-judgment btn-easy" id="judge-easy-btn" title="Easy (↓ or 3)">
-          <span class="btn-icon">⚡</span>
+        <button class="btn btn-judgment btn-easy" type="button" id="judge-easy-btn" title="Easy (↓ or 3)" aria-label="Mark card as easy">
+          <span class="btn-icon" aria-hidden="true">⚡</span>
           <span class="btn-text">Easy</span>
         </button>
       </div>
@@ -603,4 +646,81 @@ function getTextSizeClass(text: string): string {
   if (len > 300 || lines > 10) return "text-sm";
   if (len > 180 || lines > 7) return "text-md";
   return "";
+}
+
+function updateAccessibility(state: PlayerState, cardChanged: boolean): void {
+  if (!overlayElement || !cardElement) return;
+
+  const frontSide = cardElement.querySelector(".player-card__front");
+  const backSide = cardElement.querySelector(".player-card__back");
+  const statusEl = overlayElement.querySelector("#player-card-status");
+  const liveRegion = overlayElement.querySelector("#player-live-region");
+
+  const activeText = state.currentCard
+    ? state.isFlipped
+      ? state.currentCard.back
+      : state.currentCard.front
+    : "";
+  const sideLabel = state.isFlipped ? "answer" : "question";
+  const topicText = state.currentCard?.topic
+    ? ` Topic: ${state.currentCard.topic}.`
+    : "";
+  const helpText = state.isFlipped
+    ? " Use Left Arrow for need review, Right Arrow for got it, Down Arrow for easy, or Space to flip back."
+    : " Press Space, Enter, or F to flip the card and hear the answer.";
+  const statusText = state.currentCard
+    ? `Showing ${sideLabel} side.${topicText} ${formatAnnouncementText(activeText)}${helpText}`
+    : "No active card.";
+
+  cardElement.setAttribute("aria-label", statusText);
+  cardElement.setAttribute(
+    "aria-disabled",
+    state.gameState === "playing" || state.gameState === "flipped"
+      ? "false"
+      : "true",
+  );
+  cardElement.tabIndex =
+    state.gameState === "playing" || state.gameState === "flipped" ? 0 : -1;
+
+  frontSide?.setAttribute("aria-hidden", state.isFlipped ? "true" : "false");
+  backSide?.setAttribute("aria-hidden", state.isFlipped ? "false" : "true");
+
+  if (statusEl) {
+    statusEl.textContent = statusText;
+  }
+
+  if (!liveRegion) return;
+
+  let announcement = "";
+
+  if (!previousState) {
+    announcement = `Started flashcard player for ${state.session.deckTitle}. ${statusText}`;
+  } else if (cardChanged) {
+    announcement = `Next card. ${statusText}`;
+  } else if (previousState.isFlipped !== state.isFlipped) {
+    announcement = state.isFlipped
+      ? `Answer revealed. ${formatAnnouncementText(state.currentCard?.back ?? "")}`
+      : `Question side. ${formatAnnouncementText(state.currentCard?.front ?? "")}`;
+  } else if (
+    previousState.gameState !== state.gameState &&
+    state.gameState === "results"
+  ) {
+    announcement = `Session complete. Final score ${state.session.score}. Accuracy ${Math.round(getAccuracy(state.session) * 100)} percent.`;
+  }
+
+  if (announcement) {
+    liveRegion.textContent = announcement;
+  }
+
+  if (previousState?.gameState === "intro" && state.gameState === "playing") {
+    requestAnimationFrame(() => {
+      cardElement?.focus();
+    });
+  }
+}
+
+function formatAnnouncementText(text: string): string {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (normalized.length <= 220) return normalized;
+  return `${normalized.slice(0, 217)}...`;
 }

@@ -19,6 +19,18 @@
   opacity: 1;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Container */
 .player-container {
   width: 100%;
@@ -55,6 +67,14 @@
 .player-close-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
+}
+
+.player-close-btn:focus-visible,
+.player-card:focus-visible,
+.btn-judgment:focus-visible,
+.results-actions button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
 }
 
 .player-stats {
@@ -165,6 +185,7 @@
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -506,6 +527,7 @@
 
 .stat-card {
   background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-radius: 1rem;
   padding: 1.5rem;
@@ -688,6 +710,38 @@
 .player-overlay[data-state="complete"] .player-controls,
 .player-overlay[data-state="results"] .player-controls {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-overlay,
+  .player-close-btn,
+  .player-card,
+  .player-card__front,
+  .player-card__back,
+  .btn-judgment,
+  .player-progress-bar,
+  .player-results,
+  .milestone-notification,
+  .confetti-piece {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .player-overlay {
+    background: Canvas;
+  }
+
+  .player-card__front,
+  .player-card__back,
+  .btn-judgment,
+  .player-close-btn,
+  .stat-card,
+  .results-breakdown {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
 }
 
 @media (min-width: 768px) {

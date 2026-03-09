@@ -20,6 +20,7 @@ let callbacks: BrowserCallbacks | null = null;
 let overlayEl: HTMLElement | null = null;
 let filter: FilterState = createDefaultFilter();
 let debounceTimer: number | null = null;
+let lastFocusedElement: HTMLElement | null = null;
 
 function handleBrowserEscape(e: KeyboardEvent): void {
   if (e.key !== "Escape" || !overlayEl) return;
@@ -34,6 +35,10 @@ export function openDeckBrowser(
   initialCategory?: string,
 ): void {
   callbacks = cbs;
+  lastFocusedElement =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
   filter = createDefaultFilter();
   if (initialCategory) {
     filter.categories.add(initialCategory);
@@ -51,6 +56,8 @@ export function closeDeckBrowser(): void {
     setTimeout(() => {
       overlayEl?.remove();
       overlayEl = null;
+      lastFocusedElement?.focus();
+      lastFocusedElement = null;
     }, 250);
   }
   callbacks = null;
@@ -68,6 +75,14 @@ function render(autoFocusSearch = false): void {
   if (!overlayEl) {
     overlay.id = "deck-browser-overlay";
     overlay.className = "browser-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-labelledby", "browser-dialog-title");
+    overlay.setAttribute(
+      "aria-describedby",
+      "browser-dialog-help browser-results-count",
+    );
+    overlay.tabIndex = -1;
     document.body.appendChild(overlay);
     overlayEl = overlay;
   }
@@ -83,6 +98,9 @@ function render(autoFocusSearch = false): void {
 
   overlay.innerHTML = `
     <div class="browser-container">
+      <h1 class="sr-only" id="browser-dialog-title">Deck library browser</h1>
+      <p class="sr-only" id="browser-dialog-help">Search decks, filter by category or level, sort results, then open a deck to play, load for PDF, or share.</p>
+
       <!-- Header -->
       <div class="browser-header">
         <div class="browser-header__left">
@@ -90,25 +108,26 @@ function render(autoFocusSearch = false): void {
           <span class="browser-header__badge">${DECK_LIBRARY.length} decks &middot; ${totalCards} cards</span>
         </div>
         <div class="browser-header__right">
-          <div class="browser-search">
+          <label class="browser-search" for="browser-search-input">
             ${getIcon("search")}
-            <input type="text" class="browser-search__input" placeholder="Search decks..." value="${escAttr(filter.search)}" />
-          </div>
-          <button class="browser-close-btn" title="Close (Esc)">
+            <span class="sr-only">Search decks</span>
+            <input type="text" id="browser-search-input" class="browser-search__input" placeholder="Search decks..." value="${escAttr(filter.search)}" autocomplete="off" />
+          </label>
+          <button class="browser-close-btn" type="button" title="Close (Esc)" aria-label="Close deck browser">
             ${getIcon("close")}
           </button>
         </div>
       </div>
 
       <!-- Category pills -->
-      <div class="browser-categories">
-        <button class="browser-cat-pill ${filter.categories.size === 0 ? "browser-cat-pill--active" : ""}" data-category="all">
+      <div class="browser-categories" role="group" aria-label="Filter decks by category">
+        <button class="browser-cat-pill ${filter.categories.size === 0 ? "browser-cat-pill--active" : ""}" type="button" data-category="all" aria-pressed="${filter.categories.size === 0 ? "true" : "false"}">
           All
         </button>
         ${orderedCategories
           .map(
             (cat) => `
-          <button class="browser-cat-pill ${filter.categories.has(cat) ? "browser-cat-pill--active" : ""}" data-category="${escAttr(cat)}">
+          <button class="browser-cat-pill ${filter.categories.has(cat) ? "browser-cat-pill--active" : ""}" type="button" data-category="${escAttr(cat)}" aria-pressed="${filter.categories.has(cat) ? "true" : "false"}">
             <span class="browser-cat-pill__icon">${getCategoryIcon(cat)}</span>
             ${escHtml(cat)}
           </button>
@@ -119,8 +138,8 @@ function render(autoFocusSearch = false): void {
 
       <!-- Level tabs + sort -->
       <div class="browser-filters">
-        <div class="browser-level-tabs">
-          <button class="browser-level-tab ${filter.levels.size === 0 ? "browser-level-tab--active" : ""}" data-level="all">All Levels</button>
+        <div class="browser-level-tabs" role="group" aria-label="Filter decks by level">
+          <button class="browser-level-tab ${filter.levels.size === 0 ? "browser-level-tab--active" : ""}" type="button" data-level="all" aria-pressed="${filter.levels.size === 0 ? "true" : "false"}">All Levels</button>
           ${(
             [
               "foundation",
@@ -132,7 +151,7 @@ function render(autoFocusSearch = false): void {
           )
             .map(
               (lvl) => `
-            <button class="browser-level-tab ${filter.levels.has(lvl) ? "browser-level-tab--active" : ""}" data-level="${lvl}">
+            <button class="browser-level-tab ${filter.levels.has(lvl) ? "browser-level-tab--active" : ""}" type="button" data-level="${lvl}" aria-pressed="${filter.levels.has(lvl) ? "true" : "false"}">
               ${LEVEL_LABELS[lvl]}
             </button>
           `,
@@ -141,7 +160,8 @@ function render(autoFocusSearch = false): void {
         </div>
         <div class="browser-sort">
           ${getIcon("sort")}
-          <select class="browser-sort__select">
+          <label class="sr-only" for="browser-sort-select">Sort decks</label>
+          <select class="browser-sort__select" id="browser-sort-select" aria-label="Sort decks">
             <option value="level-easy" ${filter.sortBy === "level-easy" ? "selected" : ""}>Easiest First</option>
             <option value="level-hard" ${filter.sortBy === "level-hard" ? "selected" : ""}>Hardest First</option>
             <option value="alpha-asc" ${filter.sortBy === "alpha-asc" ? "selected" : ""}>A-Z</option>
@@ -153,13 +173,13 @@ function render(autoFocusSearch = false): void {
       </div>
 
       <!-- Results count -->
-      <div class="browser-results-count">
+      <div class="browser-results-count" id="browser-results-count" role="status" aria-live="polite">
         ${filteredDecks.length === DECK_LIBRARY.length ? `Showing all ${filteredDecks.length} decks` : `${filteredDecks.length} of ${DECK_LIBRARY.length} decks`}
-        ${filteredDecks.length === 0 ? ` &mdash; <button class="browser-clear-filters">clear filters</button>` : ""}
+        ${filteredDecks.length === 0 ? ` &mdash; <button class="browser-clear-filters" type="button">clear filters</button>` : ""}
       </div>
 
       <!-- Deck grid -->
-      <div class="browser-grid">
+      <div class="browser-grid" role="list" aria-label="Deck results">
         ${filteredDecks.map((deck) => renderDeckCard(deck)).join("")}
       </div>
 
@@ -187,7 +207,7 @@ function renderDeckCard(deck: DeckInfo): string {
     : `~${Math.max(5, Math.round(deck.cards.length * 1.5))}min`;
 
   return `
-    <div class="browser-deck-card" data-deck-id="${escAttr(deck.id)}">
+    <article class="browser-deck-card" role="button" tabindex="0" aria-label="${escAttr(`${deck.title}, ${LEVEL_LABELS[deck.level]}, ${deck.cards.length} cards, ${deck.description}`)}" data-deck-id="${escAttr(deck.id)}">
       <div class="browser-deck-card__header">
         <span class="browser-deck-card__icon">${getCategoryIcon(deck.category)}</span>
         <span class="browser-deck-card__count">${deck.cards.length} cards</span>
@@ -211,17 +231,17 @@ function renderDeckCard(deck: DeckInfo): string {
           : ""
       }
       <div class="browser-deck-card__actions">
-        <button class="browser-action-btn browser-action-btn--play" data-action="play" data-deck-id="${escAttr(deck.id)}" title="Play this deck">
+        <button class="browser-action-btn browser-action-btn--play" type="button" data-action="play" data-deck-id="${escAttr(deck.id)}" title="Play this deck" aria-label="Play ${escAttr(deck.title)}">
           ${getIcon("play")} Play
         </button>
-        <button class="browser-action-btn browser-action-btn--pdf" data-action="pdf" data-deck-id="${escAttr(deck.id)}" title="Load for PDF">
+        <button class="browser-action-btn browser-action-btn--pdf" type="button" data-action="pdf" data-deck-id="${escAttr(deck.id)}" title="Load for PDF" aria-label="Load ${escAttr(deck.title)} for PDF generation">
           ${getIcon("pdf")} PDF
         </button>
-        <button class="browser-action-btn browser-action-btn--share" data-action="share" data-deck-id="${escAttr(deck.id)}" title="Share link">
+        <button class="browser-action-btn browser-action-btn--share" type="button" data-action="share" data-deck-id="${escAttr(deck.id)}" title="Share link" aria-label="Share ${escAttr(deck.title)} link">
           ${getIcon("share")}
         </button>
       </div>
-    </div>
+    </article>
   `;
 }
 
@@ -231,6 +251,12 @@ function bindBrowserEvents(
   overlay: HTMLElement,
   autoFocusSearch: boolean,
 ): void {
+  if (autoFocusSearch) {
+    requestAnimationFrame(() => {
+      overlay.focus();
+    });
+  }
+
   // Close button
   overlay.querySelector(".browser-close-btn")?.addEventListener("click", () => {
     navigateTo("");
@@ -344,6 +370,18 @@ function bindBrowserEvents(
       const deck = DECK_LIBRARY.find((d) => d.id === deckId);
       if (!deck) return;
       // Save callbacks reference before closing
+      const savedCallbacks = callbacks;
+      closeDeckBrowser();
+      savedCallbacks?.onPlayDeck(deck);
+    });
+
+    card.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if ((e.target as HTMLElement).closest(".browser-action-btn")) return;
+      e.preventDefault();
+      const deckId = (card as HTMLElement).dataset.deckId!;
+      const deck = DECK_LIBRARY.find((d) => d.id === deckId);
+      if (!deck) return;
       const savedCallbacks = callbacks;
       closeDeckBrowser();
       savedCallbacks?.onPlayDeck(deck);

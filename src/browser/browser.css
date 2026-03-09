@@ -15,6 +15,10 @@
   animation: browser-fade-out 0.25s ease forwards;
 }
 
+.browser-overlay:focus {
+  outline: none;
+}
+
 @keyframes browser-fade-in {
   from {
     opacity: 0;
@@ -132,6 +136,18 @@
 .browser-close-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
+}
+
+.browser-close-btn:focus-visible,
+.browser-cat-pill:focus-visible,
+.browser-level-tab:focus-visible,
+.browser-sort__select:focus-visible,
+.browser-action-btn:focus-visible,
+.browser-clear-filters:focus-visible,
+.browser-deck-card:focus-visible,
+.browser-search__input:focus-visible {
+  outline: 3px solid rgba(147, 197, 253, 0.95);
+  outline-offset: 3px;
 }
 
 /* Category pills */
@@ -278,6 +294,11 @@
   border-color: rgba(59, 130, 246, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.browser-deck-card:focus-visible {
+  border-color: rgba(147, 197, 253, 0.9);
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.2);
 }
 
 .browser-deck-card__header {
@@ -490,6 +511,20 @@
   to {
     transform: translateX(100%);
     opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .browser-overlay,
+  .browser-close-btn,
+  .browser-cat-pill,
+  .browser-level-tab,
+  .browser-deck-card,
+  .browser-action-btn,
+  .toast,
+  .toast--exit {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
