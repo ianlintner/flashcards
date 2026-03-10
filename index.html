@@ -61,6 +61,8 @@
     />
   </head>
   <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <a href="#app-main" class="skip-link">Skip to main content</a>
+
     <!-- ── Header ─────────────────────────────────────────────────────────── -->
     <header
       class="bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg sticky top-0 z-30"
@@ -96,6 +98,8 @@
         <div class="flex items-center gap-3">
           <button
             id="browse-decks-btn"
+            type="button"
+            aria-label="Open deck browser"
             class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-150 cursor-pointer border-none"
           >
             <svg
@@ -123,11 +127,32 @@
     </header>
 
     <!-- ── Main ──────────────────────────────────────────────────────────── -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5">
+    <main
+      id="app-main"
+      class="max-w-7xl mx-auto px-4 sm:px-6 py-5 space-y-5"
+      tabindex="-1"
+    >
+      <div
+        id="app-live-region"
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+      <div
+        id="app-alert-region"
+        class="sr-only"
+        aria-live="assertive"
+        aria-atomic="true"
+      ></div>
+
       <!-- ════════════════════════════════════════════════════════════════ -->
       <!-- Live Card Preview (hero position)                              -->
       <!-- ════════════════════════════════════════════════════════════════ -->
-      <section class="section-card" id="live-preview-section">
+      <section
+        class="section-card"
+        id="live-preview-section"
+        aria-labelledby="live-preview-heading"
+      >
         <div class="section-header">
           <svg
             class="w-4 h-4 text-indigo-500"
@@ -147,7 +172,7 @@
               d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
-          <h2>Card Preview</h2>
+          <h2 id="live-preview-heading">Card Preview</h2>
           <span id="live-card-info" class="text-xs text-slate-400 ml-1"></span>
           <div
             class="ml-auto flex items-center gap-2 hidden"
@@ -156,6 +181,8 @@
             <button
               class="btn btn-ghost btn-sm"
               id="prev-card-btn"
+              type="button"
+              aria-label="Show previous preview card"
               title="Previous card (←)"
             >
               <svg
@@ -180,6 +207,8 @@
             <button
               class="btn btn-ghost btn-sm"
               id="next-card-btn"
+              type="button"
+              aria-label="Show next preview card"
               title="Next card (→)"
             >
               <svg
@@ -200,6 +229,8 @@
             <button
               class="btn btn-ghost btn-sm"
               id="flip-card-btn"
+              type="button"
+              aria-label="Flip preview card"
               title="Flip card (F)"
             >
               <svg
@@ -221,6 +252,8 @@
             <button
               class="btn btn-ghost btn-sm"
               id="toggle-side-btn"
+              type="button"
+              aria-label="Toggle showing both sides of the preview card"
               title="Show both sides (B)"
             >
               <svg
@@ -284,13 +317,22 @@
           class="section-body p-6 bg-slate-100/50 overflow-x-auto hidden"
           id="live-preview-body"
         >
-          <div id="live-card-container" class="live-card-container"></div>
+          <div
+            id="live-card-container"
+            class="live-card-container"
+            role="group"
+            aria-label="Flashcard preview"
+          ></div>
         </div>
       </section>
 
       <!-- ── Action Bar ───────────────────────────────────────────────── -->
       <div class="flex flex-wrap items-center gap-3" id="action-bar">
-        <button class="btn btn-primary justify-center py-2.5" id="parse-btn">
+        <button
+          class="btn btn-primary justify-center py-2.5"
+          id="parse-btn"
+          type="button"
+        >
           <svg
             class="w-4 h-4"
             fill="none"
@@ -309,6 +351,7 @@
         <button
           class="btn btn-success justify-center py-2.5 text-base"
           id="generate-btn"
+          type="button"
           disabled
         >
           <svg
@@ -328,6 +371,8 @@
         </button>
         <span
           id="card-count"
+          role="status"
+          aria-live="polite"
           class="text-sm font-semibold text-emerald-600 ml-1"
         ></span>
       </div>
@@ -341,7 +386,7 @@
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="w-full lg:w-[58%] space-y-5 min-w-0">
           <!-- ── Card Content Input ─────────────────────────────────────── -->
-          <section class="section-card">
+          <section class="section-card" aria-labelledby="card-content-heading">
             <div class="section-header">
               <svg
                 class="w-4 h-4 text-blue-500"
@@ -356,7 +401,7 @@
                   d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
                 />
               </svg>
-              <h2>Card Content</h2>
+              <h2 id="card-content-heading">Card Content</h2>
               <span class="ml-auto text-xs text-slate-400"
                 >Paste or type your flashcards</span
               >
@@ -387,19 +432,32 @@
                 </div>
                 <div class="flex gap-1.5 items-end">
                   <span class="text-xs text-slate-400 pb-2.5">Load:</span>
-                  <button class="btn btn-ghost btn-sm" data-example="markdown">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    data-example="markdown"
+                    type="button"
+                  >
                     MD
                   </button>
-                  <button class="btn btn-ghost btn-sm" data-example="json">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    data-example="json"
+                    type="button"
+                  >
                     JSON
                   </button>
-                  <button class="btn btn-ghost btn-sm" data-example="yaml">
+                  <button
+                    class="btn btn-ghost btn-sm"
+                    data-example="yaml"
+                    type="button"
+                  >
                     YAML
                   </button>
                 </div>
                 <div class="flex gap-1.5 items-end ml-auto">
                   <button
                     id="save-state-btn"
+                    type="button"
                     class="btn btn-ghost btn-sm"
                     title="Save current content to browser storage"
                   >
@@ -420,6 +478,7 @@
                   </button>
                   <button
                     id="clear-state-btn"
+                    type="button"
                     class="btn btn-ghost btn-sm text-red-600 hover:bg-red-50"
                     title="Clear saved content from browser storage"
                   >
@@ -442,6 +501,9 @@
               </div>
 
               <!-- Textarea -->
+              <label class="sr-only" for="input-area"
+                >Flashcard content input</label
+              >
               <textarea
                 id="input-area"
                 spellcheck="false"
@@ -453,6 +515,8 @@
               <!-- Error box -->
               <div
                 id="error-box"
+                role="alert"
+                aria-live="assertive"
                 class="bg-red-50 border border-red-200 rounded-lg p-3 hidden"
               ></div>
             </div>
@@ -495,14 +559,26 @@
             </summary>
             <div class="section-body space-y-3">
               <div class="flex flex-wrap gap-2">
-                <button class="btn btn-warning btn-sm" id="load-all-decks-btn">
+                <button
+                  class="btn btn-warning btn-sm"
+                  id="load-all-decks-btn"
+                  type="button"
+                >
                   Load All Decks
                 </button>
-                <button class="btn btn-ghost btn-sm" id="load-all-btn">
+                <button
+                  class="btn btn-ghost btn-sm"
+                  id="load-all-btn"
+                  type="button"
+                >
                   Load Big O Cards (25)
                 </button>
               </div>
-              <div id="deck-library-container"></div>
+              <div
+                id="deck-library-container"
+                role="list"
+                aria-label="Built-in deck library"
+              ></div>
             </div>
           </details>
         </div>
@@ -514,7 +590,7 @@
           class="w-full lg:w-[42%] lg:sticky lg:top-[68px] space-y-5 min-w-0"
         >
           <!-- ── PDF Options ────────────────────────────────────────────── -->
-          <section class="section-card">
+          <section class="section-card" aria-labelledby="pdf-options-heading">
             <div class="section-header">
               <svg
                 class="w-4 h-4 text-emerald-500"
@@ -534,7 +610,7 @@
                   d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                 />
               </svg>
-              <h2>PDF Options</h2>
+              <h2 id="pdf-options-heading">PDF Options</h2>
             </div>
             <div class="section-body space-y-4">
               <!-- Title -->
@@ -752,6 +828,7 @@
               <div class="flex items-center justify-between mb-2">
                 <span class="field-label">Prompt Template</span>
                 <button class="btn btn-ghost btn-sm" id="copy-prompt-btn">
+                  type="button"
                   <svg
                     class="w-3.5 h-3.5"
                     fill="none"
@@ -920,13 +997,16 @@ goes here
       class="modal-overlay hidden"
       role="dialog"
       aria-modal="true"
+      aria-labelledby="confirm-modal-title"
+      aria-describedby="modal-message"
     >
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title">Load Deck</h3>
+          <h3 class="modal-title" id="confirm-modal-title">Load Deck</h3>
           <button
             class="modal-close"
             id="modal-close-btn"
+            type="button"
             aria-label="Close modal"
           >
             <svg
@@ -951,8 +1031,10 @@ goes here
           ></p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-ghost" id="modal-cancel-btn">Cancel</button>
-          <button class="btn btn-primary" id="modal-confirm-btn">
+          <button class="btn btn-ghost" id="modal-cancel-btn" type="button">
+            Cancel
+          </button>
+          <button class="btn btn-primary" id="modal-confirm-btn" type="button">
             Load Deck
           </button>
         </div>

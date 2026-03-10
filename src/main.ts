@@ -132,6 +132,10 @@ const clearStateBtn = document.getElementById(
 const browseDecksBtn = document.getElementById(
   "browse-decks-btn",
 ) as HTMLButtonElement;
+const appLiveRegion = document.getElementById("app-live-region") as HTMLElement;
+const appAlertRegion = document.getElementById(
+  "app-alert-region",
+) as HTMLElement;
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
@@ -140,6 +144,13 @@ init();
 function init(): void {
   inputArea.value = EXAMPLE_MARKDOWN;
   formatSelect.value = "markdown";
+
+  if (inputArea) {
+    inputArea.setAttribute(
+      "aria-describedby",
+      "card-content-heading error-box card-count",
+    );
+  }
 
   bindEvents();
   toggleSeparatorRow();
@@ -261,6 +272,33 @@ function bindEvents(): void {
   saveStateBtn?.addEventListener("click", saveState);
   clearStateBtn?.addEventListener("click", clearSavedState);
   inputArea?.addEventListener("input", handleTextareaInput);
+
+  liveCardContainer?.addEventListener("keydown", (e) => {
+    if (currentCards.length === 0) return;
+    const target = e.target as HTMLElement;
+    if (!target.closest(".live-card")) return;
+
+    switch (e.key) {
+      case "ArrowLeft":
+        navigateLivePreview(-1);
+        e.preventDefault();
+        break;
+      case "ArrowRight":
+        navigateLivePreview(1);
+        e.preventDefault();
+        break;
+      case "Enter":
+      case " ":
+      case "f":
+      case "F":
+        if (!livePreviewShowBoth) {
+          livePreviewShowBack = !livePreviewShowBack;
+          renderLivePreview();
+          e.preventDefault();
+        }
+        break;
+    }
+  });
 }
 
 function toggleSeparatorRow(): void {
@@ -381,6 +419,7 @@ function handleParse(): void {
   renderPreview(currentCards);
   showLivePreview();
   generateBtn.disabled = false;
+  announceStatus(`Parsed ${currentCards.length} cards.`);
 }
 
 // ─── PDF generation ───────────────────────────────────────────────────────────
@@ -429,6 +468,7 @@ function handleGenerate(): void {
   const reverseSuffix = reverseOrder ? "-rev" : "";
   const filename = `${title}${filterSuffix}${reverseSuffix}.pdf`;
   doc.save(filename);
+  announceStatus(`Downloading PDF ${filename}.`);
 }
 
 // ─── Preview ─────────────────────────────────────────────────────────────────
@@ -468,11 +508,13 @@ function showErrors(errs: string[]): void {
     )
     .join("");
   errorBox.classList.remove("hidden");
+  announceAlert(errs.join(" "));
 }
 
 function clearErrors(): void {
   errorBox.innerHTML = "";
   errorBox.classList.add("hidden");
+  announceAlert("");
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -572,6 +614,7 @@ function showSaveConfirmation(): void {
   const now = new Date().toLocaleTimeString();
   cardCount.textContent = `Saved at ${now}`;
   cardCount.className = "text-sm font-semibold text-blue-600 ml-1";
+  announceStatus(`Draft saved at ${now}.`);
   setTimeout(() => {
     if (currentCards.length > 0) {
       cardCount.textContent = `${currentCards.length} cards ready`;
@@ -585,6 +628,7 @@ function showSaveConfirmation(): void {
 function showClearConfirmation(): void {
   cardCount.textContent = "Saved state cleared";
   cardCount.className = "text-sm font-semibold text-slate-600 ml-1";
+  announceStatus("Saved draft cleared.");
   setTimeout(() => {
     if (currentCards.length > 0) {
       cardCount.textContent = `${currentCards.length} cards ready`;
@@ -699,24 +743,26 @@ function renderDeckLibrary(): void {
     for (const deck of decks) {
       const card = document.createElement("div");
       card.className = "deck-card";
+      card.setAttribute("role", "listitem");
       card.title = `Click to load "${deck.title}"`;
       card.innerHTML = `
-        <div class="flex items-center justify-between gap-2">
+        <button class="deck-card__main" type="button" aria-label="Load ${esc(deck.title)} deck with ${deck.cards.length} cards. ${esc(deck.description)}">
+          <div class="flex items-center justify-between gap-2">
           <span class="text-sm font-bold text-slate-800">${esc(deck.title)}</span>
           <span class="text-[11px] font-semibold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full whitespace-nowrap shrink-0">${deck.cards.length} cards</span>
-        </div>
-        <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">${esc(deck.category)}</div>
-        <div class="text-xs text-slate-500 leading-snug">${esc(deck.description)}</div>
-        <button class="deck-play-btn" title="Play flashcard game with this deck">
+          </div>
+          <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">${esc(deck.category)}</div>
+          <div class="text-xs text-slate-500 leading-snug">${esc(deck.description)}</div>
+        </button>
+        <button class="deck-play-btn" type="button" title="Play flashcard game with this deck" aria-label="Play ${esc(deck.title)} deck">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l11-7z"/>
           </svg>
           Play
         </button>
       `;
-      card.addEventListener("click", (e) => {
-        // Don't trigger if clicking play button
-        if ((e.target as HTMLElement).closest(".deck-play-btn")) return;
+      const mainButton = card.querySelector(".deck-card__main");
+      mainButton?.addEventListener("click", () => {
         openDeckConfirmModal(deck);
       });
 
@@ -745,6 +791,7 @@ function loadDeck(deck: DeckInfo): void {
   pdfTitle.value = deck.title;
   cardCount.textContent = `${currentCards.length} cards ready — ${deck.title}`;
   markAsPreloadedDeck();
+  announceStatus(`Loaded ${deck.title} with ${currentCards.length} cards.`);
 }
 
 function loadAllDecks(): void {
@@ -761,6 +808,7 @@ function loadAllDecks(): void {
   clearErrors();
   pdfTitle.value = "Complete DSA Study Set";
   cardCount.textContent = `${currentCards.length} cards ready — All Decks`;
+  announceStatus(`Loaded all decks with ${currentCards.length} cards.`);
 }
 
 function openPlayer(deck: DeckInfo): void {
@@ -815,6 +863,7 @@ function showLivePreview(): void {
   livePreviewControls.classList.remove("hidden");
   livePreviewEmpty.classList.add("hidden");
   livePreviewBody.classList.remove("hidden");
+  liveCardContainer.setAttribute("aria-live", "polite");
   renderLivePreview();
 }
 
@@ -840,6 +889,11 @@ function renderLivePreview(): void {
   if (liveCardInfo) {
     liveCardInfo.textContent = card.topic || "";
   }
+
+  liveCardContainer.setAttribute(
+    "aria-label",
+    `Previewing card ${idx} of ${total}${card.topic ? `. Topic ${card.topic}` : ""}`,
+  );
 
   // Update button state
   if (toggleSideBtn) {
@@ -869,6 +923,10 @@ function renderLivePreview(): void {
     el.appendChild(hint);
     liveCardContainer.appendChild(el);
   }
+
+  announceStatus(
+    `Previewing card ${idx} of ${total}${card.topic ? `, ${card.topic}` : ""}, showing ${livePreviewShowBoth ? "both sides" : livePreviewShowBack ? "back" : "front"}.`,
+  );
 }
 
 function buildLiveCard(
@@ -879,6 +937,8 @@ function buildLiveCard(
 ): HTMLElement {
   const el = document.createElement("div");
   el.className = "live-card" + (side === "BACK" ? " live-card--back" : "");
+  el.tabIndex = 0;
+  el.setAttribute("role", "article");
 
   const text = side === "FRONT" ? card.front : card.back;
   const badgeClass =
@@ -895,7 +955,28 @@ function buildLiveCard(
     <div class="live-card__footer">${num} / ${total}</div>
   `;
 
+  el.setAttribute(
+    "aria-label",
+    `${side === "FRONT" ? "Front" : "Back"} of card ${num} of ${total}${card.topic ? `. Topic ${card.topic}.` : "."} ${text.replace(/\s+/g, " ").trim()}`,
+  );
+
   return el;
+}
+
+function announceStatus(message: string): void {
+  if (!appLiveRegion) return;
+  appLiveRegion.textContent = "";
+  requestAnimationFrame(() => {
+    appLiveRegion.textContent = message;
+  });
+}
+
+function announceAlert(message: string): void {
+  if (!appAlertRegion) return;
+  appAlertRegion.textContent = "";
+  requestAnimationFrame(() => {
+    appAlertRegion.textContent = message;
+  });
 }
 
 function formatCardText(escaped: string): string {

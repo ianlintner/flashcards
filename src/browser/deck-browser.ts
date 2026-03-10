@@ -375,7 +375,8 @@ function bindBrowserEvents(
       savedCallbacks?.onPlayDeck(deck);
     });
 
-    card.addEventListener("keydown", (e) => {
+    card.addEventListener("keydown", (event) => {
+      const e = event as KeyboardEvent;
       if (e.key !== "Enter" && e.key !== " ") return;
       if ((e.target as HTMLElement).closest(".browser-action-btn")) return;
       e.preventDefault();
