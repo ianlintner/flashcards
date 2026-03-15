@@ -640,6 +640,19 @@ function resetCardForState(
 function getTextSizeClass(text: string): string {
   const len = text.length;
   const lines = text.split(/\n|<br>/g).length;
+  const isSmallScreen =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 640px)").matches;
+
+  if (isSmallScreen) {
+    // On phones, prioritize a single readable column and shrink sooner.
+    if (len > 520 || lines > 15) return "text-xxs";
+    if (len > 360 || lines > 11) return "text-xs";
+    if (len > 220 || lines > 8) return "text-sm";
+    if (len > 140 || lines > 6) return "text-md";
+    return "";
+  }
+
   // Thresholds tuned for 6x4-ish card aspect ratio
   if (len > 600 || lines > 16) return "text-2col";
   if (len > 500 || lines > 14) return "text-xs";
