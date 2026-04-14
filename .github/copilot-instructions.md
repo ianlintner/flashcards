@@ -135,3 +135,16 @@ jsPDF built-in fonts use **WinAnsi encoding (Latin-1 / Win-1252)**. Any characte
 | Change card dimensions | `src/types.ts` → `DEFAULT_PDF_OPTIONS.cardWidth/cardHeight` |
 | Add a new import format | `src/parsers.ts` + new case in `detectFormat()` + UI wiring in `main.ts` |
 | Change PDF layout/margins | `src/pdf-generator.ts` constants `PAD`, `TOP_BAR_H`, `FOOT_H` |
+
+## Caretaker
+
+This repo uses the [caretaker](https://github.com/ianlintner/caretaker) autonomous
+maintenance system. The orchestrator runs weekly via GitHub Actions and assigns tasks to
+`@copilot` via structured issue and PR comments.
+
+Agent instruction files live in `.github/agents/`:
+- `maintainer-pr.md` — how to respond to PR fix requests
+- `maintainer-issue.md` — how to execute assigned issues
+- `maintainer-upgrade.md` — how to apply caretaker upgrades
+
+Always check these files when you receive a caretaker assignment.
